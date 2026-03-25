@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sharaf DG — Smart Search | Powered by Yango Tech AI</title>
+<title>Sharaf DG — Smart Search | Powered by Yango Tech AI × YandexGPT</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -39,10 +39,16 @@ header{background:var(--white);border-bottom:3px solid var(--orange);position:st
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
 /* API BAR */
-.api-bar{background:#fffbeb;border-bottom:1px solid #fde68a;padding:10px 24px;display:flex;align-items:center;justify-content:center;gap:12px;font-size:13px;color:#92400e;flex-wrap:wrap}
-.api-bar label{font-weight:700}
-.api-bar input{border:1px solid #fcd34d;border-radius:6px;padding:7px 14px;font-size:13px;width:310px;background:#fff;outline:none;color:var(--text);font-family:monospace}
+.api-bar{background:#fffbeb;border-bottom:1px solid #fde68a;padding:12px 24px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:12px;color:#92400e;flex-wrap:wrap}
+.api-bar label{font-weight:700;white-space:nowrap}
+.api-bar input{border:1px solid #fcd34d;border-radius:6px;padding:7px 12px;font-size:12px;background:#fff;outline:none;color:var(--text);font-family:monospace}
 .api-bar input:focus{border-color:var(--orange)}
+.api-bar input.wide{width:240px}
+.api-bar input.narrow{width:150px}
+.api-field{display:flex;align-items:center;gap:6px}
+.api-sep{color:#fcd34d;font-size:16px;font-weight:300}
+.api-hint{font-size:10px;color:#b45309;background:#fef3c7;border:1px solid #fcd34d;border-radius:4px;padding:3px 8px;cursor:pointer;white-space:nowrap}
+.api-hint:hover{background:#fde68a}
 
 /* HERO */
 .hero{background:linear-gradient(135deg,var(--blue) 0%,#1a4ebd 100%);padding:38px 24px 28px;text-align:center;position:relative;overflow:hidden}
@@ -168,7 +174,7 @@ footer strong{color:var(--orange)}
 </head>
 <body>
 
-<div class="demo-bar">🤖 <strong>Yango Tech Smart Search Demo</strong> — 100 Real Products · GPT-4o Semantic AI · Built for Sharaf DG</div>
+<div class="demo-bar">🤖 <strong>Yango Tech Smart Search Demo</strong> — 100 Real Products · YandexGPT Pro Semantic AI · Built for Sharaf DG</div>
 <div class="topbar">Free delivery on orders over <strong>AED 199</strong> &nbsp;·&nbsp; 0% installments via Tabby &amp; Tamara &nbsp;·&nbsp; Sharaf DG Helpline: <strong>600 502 034</strong></div>
 
 <header>
@@ -186,14 +192,50 @@ footer strong{color:var(--orange)}
   </div>
 </header>
 
-<div class="api-bar">
-  <label>🔑 OpenAI API Key:</label>
-  <input id="apiKey" type="password" placeholder="sk-proj-… (never stored)"/>
-  <span style="font-size:11px;opacity:.75">Required to activate Smart Search</span>
+<div class="api-bar" id="apiBar">
+  <span>🔑 <strong>Yandex AI Studio</strong></span>
+  <div class="api-field">
+    <label>API Key:</label>
+    <input class="wide" id="apiKey" type="password" placeholder="AQVN…"/>
+  </div>
+  <span class="api-sep">·</span>
+  <div class="api-field">
+    <label>Folder ID:</label>
+    <input class="narrow" id="folderId" type="text" placeholder="b1g…"/>
+  </div>
+  <span class="api-sep">·</span>
+  <div class="api-field">
+    <label>Agent ID <em style="font-weight:400;opacity:.7">(optional)</em>:</label>
+    <input class="narrow" id="agentId" type="text" placeholder="fvt…"/>
+  </div>
+  <button class="api-hint" onclick="showHelp()">📖 Where to find these?</button>
+</div>
+
+<!-- Help modal -->
+<div id="helpModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:16px;padding:28px 32px;max-width:500px;width:90%;position:relative;box-shadow:0 24px 64px rgba(0,0,0,.25)">
+    <button onclick="hideHelp()" style="position:absolute;top:14px;right:18px;background:none;border:none;font-size:20px;cursor:pointer;color:#6b7280">✕</button>
+    <div style="font-family:'Nunito',sans-serif;font-size:19px;font-weight:900;color:#002F86;margin-bottom:18px">📖 Where to find your credentials</div>
+    <div style="display:flex;flex-direction:column;gap:14px;font-size:13px;line-height:1.6;color:#374151">
+      <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px 16px">
+        <div style="font-weight:700;color:#1d4ed8;margin-bottom:4px">🔑 API Key</div>
+        Go to <strong>console.yandex.cloud</strong> → Your folder → <strong>Service Accounts</strong> → Select or create an account → <strong>API Keys</strong> → Create API Key. Copy the secret key value.
+      </div>
+      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px">
+        <div style="font-weight:700;color:#15803d;margin-bottom:4px">📁 Folder ID</div>
+        Go to <strong>console.yandex.cloud</strong> → Click your folder name at the top → The Folder ID is shown on the folder overview page (starts with <code>b1g...</code> or <code>b2g...</code>).
+      </div>
+      <div style="background:#fefce8;border:1px solid #fde047;border-radius:8px;padding:12px 16px">
+        <div style="font-weight:700;color:#a16207;margin-bottom:4px">🤖 Agent ID <span style="font-weight:400;opacity:.7">(optional)</span></div>
+        Go to <strong>aistudio.yandex.cloud</strong> → <strong>Agent Atelier</strong> → Open your agent → The Agent ID appears in the URL bar or the agent settings panel. If left blank, the search will use <strong>YandexGPT Pro</strong> directly.
+      </div>
+    </div>
+    <button onclick="hideHelp()" style="margin-top:20px;width:100%;background:#002F86;color:#fff;border:none;border-radius:8px;padding:12px;font-family:'Nunito',sans-serif;font-weight:700;font-size:14px;cursor:pointer">Got it ✓</button>
+  </div>
 </div>
 
 <section class="hero">
-  <div class="hero-pill">✦ Yango Tech Smart Search × GPT-4o</div>
+  <div class="hero-pill">✦ Yango Tech Smart Search × YandexGPT Pro</div>
   <h1>Find It Fast.<br>Find It <span>Smart.</span></h1>
   <p>Describe what you need — not just keywords. Our AI understands your real intent.</p>
   <div class="hero-sw">
@@ -225,7 +267,7 @@ footer strong{color:var(--orange)}
 </nav>
 
 <div class="main">
-  <div class="loading" id="loader"><div class="spinner"></div><p>Yango Tech AI is analysing your query with <strong>GPT-4o</strong>…</p></div>
+  <div class="loading" id="loader"><div class="spinner"></div><p>Yango Tech AI is analysing your query with <strong>YandexGPT Pro</strong>…</p></div>
   <div class="err" id="errBox"></div>
 
   <div class="ai-panel" id="aiPanel">
@@ -251,7 +293,7 @@ footer strong{color:var(--orange)}
 
 <footer>
   <div class="footer-logo">Sharaf <span>DG</span></div>
-  <div style="margin-bottom:6px">Smart Search powered by <strong>Yango Tech AI</strong> &amp; GPT-4o · Semantic Intent Recognition · Natural Language Processing</div>
+  <div style="margin-bottom:6px">Smart Search powered by <strong>Yango Tech AI</strong> &amp; YandexGPT Pro · Semantic Intent Recognition · Natural Language Processing</div>
   <div style="font-size:11px;opacity:.4">Presales demonstration. All products are representative. © 2025 Yango Tech / Sharaf DG.</div>
 </footer>
 
@@ -529,6 +571,10 @@ function fc(cat,btn){
   render(cat);
 }
 
+/* ─── HELP MODAL ─── */
+function showHelp(){const m=document.getElementById('helpModal');m.style.display='flex';}
+function hideHelp(){const m=document.getElementById('helpModal');m.style.display='none';}
+
 /* ─── SEARCH ─── */
 function qs(t){document.getElementById('heroIn').value=t;document.getElementById('hdrIn').value=t;doSearch(t);}
 function go(src){
@@ -537,8 +583,12 @@ function go(src){
 }
 
 async function doSearch(q){
-  const key=document.getElementById('apiKey').value.trim();
-  if(!key){showErr('Please enter your OpenAI API key in the yellow bar above to activate Smart Search.');return;}
+  const key    = document.getElementById('apiKey').value.trim();
+  const folder = document.getElementById('folderId').value.trim();
+  const agentId= document.getElementById('agentId').value.trim();
+
+  if(!key)  {showErr('Please enter your Yandex AI Studio API Key in the bar above.');return;}
+  if(!folder){showErr('Please enter your Folder ID — it\'s required for YandexGPT. Click "Where to find these?" for help.');return;}
 
   aiTier={};aiWhy={};
   const $=id=>document.getElementById(id);
@@ -551,7 +601,7 @@ async function doSearch(q){
 
   const catalog=P.map(p=>({id:p.id,category:p.c,brand:p.b,name:p.n,specs:p.s,tags:p.tags,price_aed:p.p,energy:p.e||null,description:p.d}));
 
-  const sys=`You are an intelligent semantic search engine for Sharaf DG, a UAE electronics retailer.
+  const systemPrompt=`You are an intelligent semantic search engine for Sharaf DG, a UAE electronics retailer.
 Analyse the customer's query to understand TRUE intent, lifestyle context and constraints. Think beyond keywords:
 - "quiet" → low noise, sleep/bedroom context
 - "small apartment/studio" → compact size, slim footprint
@@ -570,24 +620,48 @@ Respond ONLY with valid JSON, no extra text:
     ...
   ]
 }
-Rules: "best" = top 2-3, "good" = 2-3 supporting alternatives. Total 4-6 matches. Keep "why" specific to the query.`;
+Rules: "best" = top 2-3, "good" = 2-3 supporting alternatives. Total 4-6 matches.`;
+
+  /* ── Yandex AI Studio is OpenAI-compatible ──
+     Base URL : https://llm.api.cloud.yandex.net/v1
+     Model    : gpt://<folder_id>/yandexgpt-pro/latest  (or agent URI if agent ID provided)
+     Auth     : Bearer <API_KEY>
+  */
+  const YANDEX_BASE = 'https://llm.api.cloud.yandex.net/v1';
+  const modelURI = agentId
+    ? `gpt://${folder}/${agentId}/latest`          // Use their specific Agent Atelier agent
+    : `gpt://${folder}/yandexgpt-pro/latest`;       // Fall back to YandexGPT Pro
 
   try{
-    const r=await fetch('https://api.openai.com/v1/chat/completions',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},
-      body:JSON.stringify({
-        model:'gpt-4o',temperature:.15,max_tokens:900,
-        messages:[{role:'system',content:sys},{role:'user',content:`Query: "${q}"\n\nCatalog:\n${JSON.stringify(catalog)}`}]
+    const r = await fetch(`${YANDEX_BASE}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${key}`,
+        'x-folder-id': folder                       // Yandex requires this header
+      },
+      body: JSON.stringify({
+        model: modelURI,
+        temperature: 0.1,
+        max_tokens: 1000,
+        messages: [
+          {role:'system', content: systemPrompt},
+          {role:'user',   content: `Query: "${q}"\n\nCatalog:\n${JSON.stringify(catalog)}`}
+        ]
       })
     });
-    if(!r.ok){const e=await r.json();throw new Error(e.error?.message||`OpenAI error ${r.status}`);}
-    const data=await r.json();
-    const raw=(data.choices?.[0]?.message?.content||'').replace(/```json|```/g,'').trim();
-    const res=JSON.parse(raw);
+
+    if(!r.ok){
+      const e = await r.json();
+      throw new Error(e.error?.message || e.message || `Yandex AI Studio error ${r.status}`);
+    }
+
+    const data = await r.json();
+    const raw  = (data.choices?.[0]?.message?.content || '').replace(/```json|```/g,'').trim();
+    const res  = JSON.parse(raw);
 
     res.matches.forEach(m=>{aiTier[m.id]=m.tier;aiWhy[m.id]=m.why;});
-    $('aiSum').textContent=res.summary;
+    $('aiSum').textContent = res.summary;
     const b=res.matches.filter(m=>m.tier==='best').length;
     const g=res.matches.filter(m=>m.tier==='good').length;
     $('resCnt').textContent=`${b} best match${b!==1?'es':''} · ${g} good match${g!==1?'es':''} for your search`;
@@ -600,9 +674,10 @@ Rules: "best" = top 2-3, "good" = 2-3 supporting alternatives. Total 4-6 matches
     $('aiPanel').classList.add('on');
     $('aiPanel').scrollIntoView({behavior:'smooth',block:'start'});
     render(curCat);
+
   }catch(e){
     $('loader').classList.remove('on');
-    showErr('Smart Search error: '+e.message);
+    showErr('Yandex AI Studio error: '+e.message+'. Check your API Key and Folder ID.');
   }finally{
     $('heroBtn').disabled=false;
   }
