@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sharaf DG — Smart Search | Powered by Yango Tech AI × YandexGPT</title>
+<title>Sharaf DG2 — Smart Search | Powered by Yango Tech AI × YandexGPT</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -619,8 +619,8 @@ async function doSearch(q){
   render(curCat);
   $('loader').scrollIntoView({behavior:'smooth',block:'center'});
 
-  // Slim catalog — only essential fields to keep Yandex request small
-  const catalog=P.map(p=>({id:p.id,cat:p.c,brand:p.b,name:p.n,specs:p.s,tags:p.tags.slice(0,3),price:p.p}));
+  // Ultra-compact catalog — minimise tokens sent to Yandex
+  const catalog=P.map(p=>p.b+' '+p.n+' ('+p.c+') tags:'+p.tags.slice(0,2).join(',')+'[id:'+p.id+']').join('\n');
 
   const systemPrompt=`You are a smart product search engine for an electronics store. Match customer queries to products using semantic understanding, not just keywords. Return ONLY valid JSON, no other text:
 {"summary":"2 sentences about what customer needs","matches":[{"id":1,"tier":"best","why":"reason"},{"id":2,"tier":"good","why":"reason"}]}
@@ -643,7 +643,7 @@ Use tier "best" for top 2-3 matches, "good" for 2-3 alternatives. Understand int
         max_tokens: 1000,
         messages: [
           {role:'system', content: systemPrompt},
-          {role:'user',   content: `Query: "${q}"\n\nCatalog:\n${JSON.stringify(catalog)}`}
+          {role:'user',   content: `Query: "${q}"\n\nProducts:\n${catalog}`}
         ]
       })
     });
