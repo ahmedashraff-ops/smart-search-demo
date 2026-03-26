@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sharaf DG — Smart Search new | Powered by Yango Tech AI × YandexGPT</title>
+<title>Sharaf DG — Smart Search | Powered by Yango Tech AI × YandexGPT</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -174,7 +174,7 @@ footer strong{color:var(--orange)}
 </head>
 <body>
 
-<div class="demo-bar">🤖 <strong>Yango Tech Smart Search Demo</strong> — 100 Real Products · YandexGPT Pro Semantic AI · Built for Sharaf DG</div>
+<div class="demo-bar">🤖 <strong>Yango Tech Smart Search Demo</strong> — Powered by Yandex AI Studio · Built for Sharaf DG &nbsp;·&nbsp; ⚙️ Click Settings to configure</div>
 <div class="topbar">Free delivery on orders over <strong>AED 199</strong> &nbsp;·&nbsp; 0% installments via Tabby &amp; Tamara &nbsp;·&nbsp; Sharaf DG Helpline: <strong>600 502 034</strong></div>
 
 <header>
@@ -189,31 +189,46 @@ footer strong{color:var(--orange)}
       <button class="hdr-go" id="hdrBtn" onclick="go('h')">🔍</button>
     </div>
     <div class="ai-badge"><span class="pulse"></span>Yango AI Active</div>
+    <button onclick="toggleSettings()" id="settingsBtn" style="background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:8px 14px;font-family:'Roboto',sans-serif;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;flex-shrink:0" onmouseover="this.style.borderColor='var(--orange)';this.style.color='var(--blue)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
+      ⚙️ Settings
+    </button>
   </div>
 </header>
 
-<div class="api-bar" id="apiBar">
-  <span>🔑 <strong>Yandex AI Studio</strong></span>
-  <div class="api-field">
-    <label>API Key:</label>
-    <input class="wide" id="apiKey" type="password" placeholder="AQVN…"/>
+<!-- Settings Panel -->
+<div id="settingsPanel" style="display:none;background:#fff;border-bottom:2px solid var(--orange);box-shadow:0 8px 32px rgba(0,47,134,.1);position:sticky;top:70px;z-index:99">
+  <div style="max-width:1200px;margin:0 auto;padding:20px 24px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+      <div style="font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;color:var(--blue)">⚙️ Yandex AI Studio Settings</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div id="settingsSavedMsg" style="display:none;font-size:12px;color:var(--success);font-weight:600">✓ Saved</div>
+        <button onclick="saveSettings()" style="background:var(--orange);border:none;border-radius:7px;padding:9px 20px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;color:var(--blue);cursor:pointer">Save Settings</button>
+        <button onclick="toggleSettings()" style="background:none;border:1.5px solid var(--border);border-radius:7px;padding:9px 14px;font-family:'Roboto',sans-serif;font-size:13px;color:var(--muted);cursor:pointer">Close</button>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px">
+      <div>
+        <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:6px">🔑 API Key</label>
+        <input id="apiKey" type="password" placeholder="AQVN…" style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;font-family:monospace;font-size:13px;color:var(--text);outline:none;background:var(--bg);transition:border-color .2s" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">console.yandex.cloud → Service Accounts → API Keys</div>
+      </div>
+      <div>
+        <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:6px">📁 Folder ID</label>
+        <input id="folderId" type="text" placeholder="b1g…" style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;font-family:monospace;font-size:13px;color:var(--text);outline:none;background:var(--bg);transition:border-color .2s" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Your Yandex Cloud folder overview page</div>
+      </div>
+      <div>
+        <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:6px">🤖 Agent ID <span style="color:var(--red)">*required</span></label>
+        <input id="agentId" type="text" placeholder="fvt…" style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;font-family:monospace;font-size:13px;color:var(--text);outline:none;background:var(--bg);transition:border-color .2s" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">aistudio.yandex.cloud → Agent Atelier → your agent URL</div>
+      </div>
+      <div>
+        <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:6px">🌐 Proxy URL</label>
+        <input id="proxyUrl" type="text" placeholder="https://your-project.vercel.app/api/proxy" style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;font-family:monospace;font-size:13px;color:var(--text);outline:none;background:var(--bg);transition:border-color .2s" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Your Vercel deployment URL + /api/proxy</div>
+      </div>
+    </div>
   </div>
-  <span class="api-sep">·</span>
-  <div class="api-field">
-    <label>Folder ID:</label>
-    <input class="narrow" id="folderId" type="text" placeholder="b1g…"/>
-  </div>
-  <span class="api-sep">·</span>
-  <div class="api-field">
-    <label>Agent ID <em style="font-weight:400;color:#e05a00">required</em>:</label>
-    <input class="narrow" id="agentId" type="text" placeholder="fvt…"/>
-  </div>
-  <span class="api-sep">·</span>
-  <div class="api-field">
-    <label>Proxy URL:</label>
-    <input class="wide" id="proxyUrl" type="text" placeholder="https://your-project.vercel.app/api/proxy"/>
-  </div>
-  <button class="api-hint" onclick="showHelp()">📖 Setup guide</button>
 </div>
 
 <!-- Help modal -->
@@ -593,6 +608,33 @@ function fc(cat,btn){
   render(cat);
 }
 
+/* ─── SETTINGS PANEL ─── */
+function toggleSettings(){
+  const p = document.getElementById('settingsPanel');
+  p.style.display = p.style.display === 'none' ? 'block' : 'none';
+}
+
+function saveSettings(){
+  localStorage.setItem('sdg_apiKey',   document.getElementById('apiKey').value);
+  localStorage.setItem('sdg_folderId', document.getElementById('folderId').value);
+  localStorage.setItem('sdg_agentId',  document.getElementById('agentId').value);
+  localStorage.setItem('sdg_proxyUrl', document.getElementById('proxyUrl').value);
+  const msg = document.getElementById('settingsSavedMsg');
+  msg.style.display = 'block';
+  setTimeout(function(){ msg.style.display = 'none'; }, 2500);
+}
+
+function loadSettings(){
+  const k = localStorage.getItem('sdg_apiKey');
+  const f = localStorage.getItem('sdg_folderId');
+  const a = localStorage.getItem('sdg_agentId');
+  const p = localStorage.getItem('sdg_proxyUrl');
+  if(k) document.getElementById('apiKey').value   = k;
+  if(f) document.getElementById('folderId').value = f;
+  if(a) document.getElementById('agentId').value  = a;
+  if(p) document.getElementById('proxyUrl').value = p;
+}
+
 /* ─── HELP MODAL ─── */
 function showHelp(){const m=document.getElementById('helpModal');m.style.display='flex';}
 function hideHelp(){const m=document.getElementById('helpModal');m.style.display='none';}
@@ -658,6 +700,7 @@ function showErr(m){const b=document.getElementById('errBox');b.textContent=m;b.
 
 document.getElementById('heroIn').addEventListener('keypress',e=>{if(e.key==='Enter')go('v');});
 document.getElementById('hdrIn').addEventListener('keypress',e=>{if(e.key==='Enter')go('h');});
+loadSettings();
 render('all');
 </script>
 </body>
