@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sharaf DG — Smart Search | Powered by Yango Tech AI × YandexGPT</title>
+<title>Sharaf DG — Smart Search new | Powered by Yango Tech AI × YandexGPT</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -205,7 +205,7 @@ footer strong{color:var(--orange)}
   </div>
   <span class="api-sep">·</span>
   <div class="api-field">
-    <label>Agent ID <em style="font-weight:400;opacity:.7">(optional)</em>:</label>
+    <label>Agent ID <em style="font-weight:400;color:#e05a00">required</em>:</label>
     <input class="narrow" id="agentId" type="text" placeholder="fvt…"/>
   </div>
   <span class="api-sep">·</span>
@@ -253,7 +253,7 @@ footer strong{color:var(--orange)}
 </div>
 
 <section class="hero">
-  <div class="hero-pill">✦ Yango Tech Smart Search × YandexGPT Pro</div>
+  <div class="hero-pill">✦ Yango Tech Smart Search × Your Sharaf DG Agent</div>
   <h1>Find It Fast.<br>Find It <span>Smart.</span></h1>
   <p>Describe what you need — not just keywords. Our AI understands your real intent.</p>
   <div class="hero-sw">
@@ -285,16 +285,20 @@ footer strong{color:var(--orange)}
 </nav>
 
 <div class="main">
-  <div class="loading" id="loader"><div class="spinner"></div><p>Yango Tech AI is analysing your query with <strong>YandexGPT Pro</strong>…</p></div>
+  <div class="loading" id="loader"><div class="spinner"></div><p>Your <strong>Sharaf DG Agent</strong> is searching sharafdg.com for real products…</p></div>
   <div class="err" id="errBox"></div>
 
   <div class="ai-panel" id="aiPanel">
-    <div class="ai-card">
-      <div class="ai-ico">✨</div>
-      <div><div class="ai-lbl">Yango Tech Smart Search · AI Result</div><div class="ai-text" id="aiSum"></div></div>
+    <div class="ai-card" style="flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="ai-ico">🛒</div>
+        <div>
+          <div class="ai-lbl">Sharaf DG Agent · Live Search Results</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.5);margin-top:2px">Searched sharafdg.com in real-time</div>
+        </div>
+      </div>
+      <div id="agentResponse" style="font-size:14px;color:rgba(255,255,255,.9);line-height:1.8;white-space:pre-wrap;border-top:1px solid rgba(255,255,255,.1);padding-top:14px"></div>
     </div>
-    <div class="res-row"><strong id="resCnt"></strong><div class="divider"></div></div>
-    <div class="grid" id="aiGrid"></div>
   </div>
 
   <div class="promo" id="promo">
@@ -311,7 +315,7 @@ footer strong{color:var(--orange)}
 
 <footer>
   <div class="footer-logo">Sharaf <span>DG</span></div>
-  <div style="margin-bottom:6px">Smart Search powered by <strong>Yango Tech AI</strong> &amp; YandexGPT Pro · Semantic Intent Recognition · Natural Language Processing</div>
+  <div style="margin-bottom:6px">Smart Search powered by <strong>Yango Tech AI</strong> &amp; Yandex Agent Atelier · Real-time Sharaf DG Product Search</div>
   <div style="font-size:11px;opacity:.4">Presales demonstration. All products are representative. © 2025 Yango Tech / Sharaf DG.</div>
 </footer>
 
@@ -606,77 +610,45 @@ async function doSearch(q){
   const agentId = document.getElementById('agentId').value.trim();
   const proxy   = document.getElementById('proxyUrl').value.trim();
 
-  if(!key)   {showErr('Please enter your Yandex AI Studio API Key.');return;}
-  if(!folder){showErr('Please enter your Folder ID.');return;}
-  if(!proxy) {showErr('Please enter your Vercel Proxy URL (e.g. https://your-project.vercel.app/api/proxy). Click "Setup guide" for help.');return;}
+  if(!key)    {showErr('Please enter your Yandex AI Studio API Key.');return;}
+  if(!folder) {showErr('Please enter your Folder ID.');return;}
+  if(!agentId){showErr('Please enter your Agent ID — open Agent Atelier and copy it from the URL or settings panel.');return;}
+  if(!proxy)  {showErr('Please enter your Vercel Proxy URL.');return;}
 
-  aiTier={};aiWhy={};
   const $=id=>document.getElementById(id);
   $('aiPanel').classList.remove('on');
   $('errBox').classList.remove('on');
   $('loader').classList.add('on');
   $('heroBtn').disabled=true;
-  render(curCat);
   $('loader').scrollIntoView({behavior:'smooth',block:'center'});
-
-  // Ultra-compact catalog — minimise tokens sent to Yandex
-  const catalog=P.map(p=>p.b+' '+p.n+' ('+p.c+') tags:'+p.tags.slice(0,2).join(',')+'[id:'+p.id+']').join('\n');
-
-  const systemPrompt=`You are a smart product search engine for an electronics store. Match customer queries to products using semantic understanding, not just keywords. Return ONLY valid JSON, no other text:
-{"summary":"2 sentences about what customer needs","matches":[{"id":1,"tier":"best","why":"reason"},{"id":2,"tier":"good","why":"reason"}]}
-Use tier "best" for top 2-3 matches, "good" for 2-3 alternatives. Understand intent: quiet=low noise, small apartment=compact, energy saving=high rating, delicates=gentle wash, cook meals=convection microwave, big/family=largest size.`;
-
-  /* ── Calls your Vercel proxy, which forwards to Yandex AI Studio ── */
-  const modelURI = agentId
-    ? `gpt://${folder}/${agentId}/latest`
-    : `gpt://${folder}/yandexgpt/latest`;
 
   try{
     const r = await fetch(proxy, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        apiKey: key,
+        apiKey:   key,
         folderId: folder,
-        model: modelURI,
-        temperature: 0.1,
-        max_tokens: 1000,
-        messages: [
-          {role:'system', content: systemPrompt},
-          {role:'user',   content: `Query: "${q}"\n\nProducts:\n${catalog}`}
-        ]
+        agentId:  agentId,
+        query:    q
       })
     });
 
+    const data = await r.json();
+
     if(!r.ok){
-      let e = {};
-      try { e = await r.json(); } catch(_) {}
-      const detail = e.error?.message || e.message || e.raw || JSON.stringify(e);
-      throw new Error(`Yandex ${r.status}: ${detail}`);
+      throw new Error(data.error || 'Agent error ' + r.status);
     }
 
-    const data = await r.json();
-    const raw  = (data.choices?.[0]?.message?.content || '').replace(/```json|```/g,'').trim();
-    const res  = JSON.parse(raw);
-
-    res.matches.forEach(m=>{aiTier[m.id]=m.tier;aiWhy[m.id]=m.why;});
-    $('aiSum').textContent = res.summary;
-    const b=res.matches.filter(m=>m.tier==='best').length;
-    const g=res.matches.filter(m=>m.tier==='good').length;
-    $('resCnt').textContent=`${b} best match${b!==1?'es':''} · ${g} good match${g!==1?'es':''} for your search`;
-
-    const matched=res.matches.map(m=>P.find(x=>x.id===m.id)).filter(Boolean);
-    $('aiGrid').innerHTML=matched.map((p,i)=>cardHTML(p,i*.07)).join('');
-
+    $('agentResponse').textContent = data.answer || 'No response from agent.';
     $('loader').classList.remove('on');
-    $('promo').style.display='none';
+    $('promo').style.display = 'none';
     $('aiPanel').classList.add('on');
-    $('aiPanel').scrollIntoView({behavior:'smooth',block:'start'});
-    render(curCat);
+    $('aiPanel').scrollIntoView({behavior:'smooth', block:'start'});
 
   }catch(e){
     $('loader').classList.remove('on');
-    showErr('Error: '+e.message+'. Check your Proxy URL is correct and deployed on Vercel.');
+    showErr('Error: ' + e.message);
   }finally{
     $('heroBtn').disabled=false;
   }
