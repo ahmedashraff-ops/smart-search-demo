@@ -645,7 +645,7 @@ Rules: "best" = top 2-3, "good" = 2-3 supporting alternatives. Total 4-6 matches
   /* ── Calls your Vercel proxy, which forwards to Yandex AI Studio ── */
   const modelURI = agentId
     ? `gpt://${folder}/${agentId}/latest`
-    : `gpt://${folder}/yandexgpt-pro/latest`;
+    : `gpt://${folder}/yandexgpt/latest`;
 
   try{
     const r = await fetch(proxy, {
