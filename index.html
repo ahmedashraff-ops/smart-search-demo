@@ -619,28 +619,12 @@ async function doSearch(q){
   render(curCat);
   $('loader').scrollIntoView({behavior:'smooth',block:'center'});
 
-  const catalog=P.map(p=>({id:p.id,category:p.c,brand:p.b,name:p.n,specs:p.s,tags:p.tags,price_aed:p.p,energy:p.e||null,description:p.d}));
+  // Slim catalog — only essential fields to keep Yandex request small
+  const catalog=P.map(p=>({id:p.id,cat:p.c,brand:p.b,name:p.n,specs:p.s,tags:p.tags.slice(0,3),price:p.p}));
 
-  const systemPrompt=`You are an intelligent semantic search engine for Sharaf DG, a UAE electronics retailer.
-Analyse the customer's query to understand TRUE intent, lifestyle context and constraints. Think beyond keywords:
-- "quiet" → low noise, sleep/bedroom context
-- "small apartment/studio" → compact size, slim footprint
-- "energy saving/efficient" → high energy star rating
-- "gentle/delicates/silk" → special fabric care, hand-wash simulation
-- "cook" / "full meals" → combination/convection microwave
-- "big/large/family" → largest screen or capacity in category
-- "budget/cheap/under X AED" → price-sensitive match
-- "washer dryer combo" → single machine that does both
-
-Respond ONLY with valid JSON, no extra text:
-{
-  "summary": "2 sentences: what the customer truly needs and why these products were selected",
-  "matches": [
-    {"id": <number>, "tier": "best", "why": "<one sentence: specific reason referencing product features that match the query>"},
-    ...
-  ]
-}
-Rules: "best" = top 2-3, "good" = 2-3 supporting alternatives. Total 4-6 matches.`;
+  const systemPrompt=`You are a smart product search engine for an electronics store. Match customer queries to products using semantic understanding, not just keywords. Return ONLY valid JSON, no other text:
+{"summary":"2 sentences about what customer needs","matches":[{"id":1,"tier":"best","why":"reason"},{"id":2,"tier":"good","why":"reason"}]}
+Use tier "best" for top 2-3 matches, "good" for 2-3 alternatives. Understand intent: quiet=low noise, small apartment=compact, energy saving=high rating, delicates=gentle wash, cook meals=convection microwave, big/family=largest size.`;
 
   /* ── Calls your Vercel proxy, which forwards to Yandex AI Studio ── */
   const modelURI = agentId
@@ -665,8 +649,10 @@ Rules: "best" = top 2-3, "good" = 2-3 supporting alternatives. Total 4-6 matches
     });
 
     if(!r.ok){
-      const e = await r.json();
-      throw new Error(e.error?.message || e.message || `Yandex AI Studio error ${r.status}`);
+      let e = {};
+      try { e = await r.json(); } catch(_) {}
+      const detail = e.error?.message || e.message || e.raw || JSON.stringify(e);
+      throw new Error(`Yandex ${r.status}: ${detail}`);
     }
 
     const data = await r.json();
