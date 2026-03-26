@@ -208,26 +208,44 @@ footer strong{color:var(--orange)}
     <label>Agent ID <em style="font-weight:400;opacity:.7">(optional)</em>:</label>
     <input class="narrow" id="agentId" type="text" placeholder="fvt…"/>
   </div>
-  <button class="api-hint" onclick="showHelp()">📖 Where to find these?</button>
+  <span class="api-sep">·</span>
+  <div class="api-field">
+    <label>Proxy URL:</label>
+    <input class="wide" id="proxyUrl" type="text" placeholder="https://your-project.vercel.app/api/proxy"/>
+  </div>
+  <button class="api-hint" onclick="showHelp()">📖 Setup guide</button>
 </div>
 
 <!-- Help modal -->
 <div id="helpModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;align-items:center;justify-content:center">
-  <div style="background:#fff;border-radius:16px;padding:28px 32px;max-width:500px;width:90%;position:relative;box-shadow:0 24px 64px rgba(0,0,0,.25)">
+  <div style="background:#fff;border-radius:16px;padding:28px 32px;max-width:540px;width:90%;position:relative;box-shadow:0 24px 64px rgba(0,0,0,.25);max-height:90vh;overflow-y:auto">
     <button onclick="hideHelp()" style="position:absolute;top:14px;right:18px;background:none;border:none;font-size:20px;cursor:pointer;color:#6b7280">✕</button>
-    <div style="font-family:'Nunito',sans-serif;font-size:19px;font-weight:900;color:#002F86;margin-bottom:18px">📖 Where to find your credentials</div>
-    <div style="display:flex;flex-direction:column;gap:14px;font-size:13px;line-height:1.6;color:#374151">
+    <div style="font-family:'Nunito',sans-serif;font-size:19px;font-weight:900;color:#002F86;margin-bottom:18px">📖 Setup Guide</div>
+    <div style="display:flex;flex-direction:column;gap:12px;font-size:13px;line-height:1.6;color:#374151">
       <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px 16px">
         <div style="font-weight:700;color:#1d4ed8;margin-bottom:4px">🔑 API Key</div>
-        Go to <strong>console.yandex.cloud</strong> → Your folder → <strong>Service Accounts</strong> → Select or create an account → <strong>API Keys</strong> → Create API Key. Copy the secret key value.
+        <strong>console.yandex.cloud</strong> → Your folder → <strong>Service Accounts</strong> → Select account → <strong>API Keys</strong> → Create API Key → Copy the secret value.
       </div>
       <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px">
         <div style="font-weight:700;color:#15803d;margin-bottom:4px">📁 Folder ID</div>
-        Go to <strong>console.yandex.cloud</strong> → Click your folder name at the top → The Folder ID is shown on the folder overview page (starts with <code>b1g...</code> or <code>b2g...</code>).
+        <strong>console.yandex.cloud</strong> → Click your folder name at the top → The Folder ID is on the overview page (starts with <code style="background:#e5e7eb;padding:1px 5px;border-radius:3px">b1g...</code>).
       </div>
       <div style="background:#fefce8;border:1px solid #fde047;border-radius:8px;padding:12px 16px">
-        <div style="font-weight:700;color:#a16207;margin-bottom:4px">🤖 Agent ID <span style="font-weight:400;opacity:.7">(optional)</span></div>
-        Go to <strong>aistudio.yandex.cloud</strong> → <strong>Agent Atelier</strong> → Open your agent → The Agent ID appears in the URL bar or the agent settings panel. If left blank, the search will use <strong>YandexGPT Pro</strong> directly.
+        <div style="font-weight:700;color:#a16207;margin-bottom:4px">🤖 Agent ID <span style="font-weight:400">(optional)</span></div>
+        <strong>aistudio.yandex.cloud</strong> → Agent Atelier → Open your agent → Copy the ID from the URL or settings panel. Leave blank to use YandexGPT Pro directly.
+      </div>
+      <div style="background:#fdf4ff;border:1px solid #e9d5ff;border-radius:8px;padding:12px 16px">
+        <div style="font-weight:700;color:#7e22ce;margin-bottom:6px">🌐 Proxy URL — deploy once in 5 minutes</div>
+        <div style="margin-bottom:6px">This is needed because browsers block direct Yandex API calls (CORS). The proxy you deploy on Vercel handles it.</div>
+        <div style="font-weight:600;margin-bottom:4px">Steps:</div>
+        <ol style="padding-left:18px;display:flex;flex-direction:column;gap:4px">
+          <li>Go to <strong>github.com</strong> → New repository → name it <code style="background:#e5e7eb;padding:1px 5px;border-radius:3px">smart-search-proxy</code> → Create</li>
+          <li>Upload the <strong>api/proxy.js</strong> and <strong>vercel.json</strong> files (from the ZIP you downloaded) to that repo</li>
+          <li>Go to <strong>vercel.com</strong> → Sign up free → New Project → Import your GitHub repo</li>
+          <li>Click <strong>Deploy</strong> — no settings to change</li>
+          <li>Vercel gives you a URL like <code style="background:#e5e7eb;padding:1px 5px;border-radius:3px">smart-search-proxy.vercel.app</code></li>
+          <li>Paste <code style="background:#e5e7eb;padding:1px 5px;border-radius:3px">https://smart-search-proxy.vercel.app/api/proxy</code> into the Proxy URL field above</li>
+        </ol>
       </div>
     </div>
     <button onclick="hideHelp()" style="margin-top:20px;width:100%;background:#002F86;color:#fff;border:none;border-radius:8px;padding:12px;font-family:'Nunito',sans-serif;font-weight:700;font-size:14px;cursor:pointer">Got it ✓</button>
@@ -583,12 +601,14 @@ function go(src){
 }
 
 async function doSearch(q){
-  const key    = document.getElementById('apiKey').value.trim();
-  const folder = document.getElementById('folderId').value.trim();
-  const agentId= document.getElementById('agentId').value.trim();
+  const key     = document.getElementById('apiKey').value.trim();
+  const folder  = document.getElementById('folderId').value.trim();
+  const agentId = document.getElementById('agentId').value.trim();
+  const proxy   = document.getElementById('proxyUrl').value.trim();
 
-  if(!key)  {showErr('Please enter your Yandex AI Studio API Key in the bar above.');return;}
-  if(!folder){showErr('Please enter your Folder ID — it\'s required for YandexGPT. Click "Where to find these?" for help.');return;}
+  if(!key)   {showErr('Please enter your Yandex AI Studio API Key.');return;}
+  if(!folder){showErr('Please enter your Folder ID.');return;}
+  if(!proxy) {showErr('Please enter your Vercel Proxy URL (e.g. https://your-project.vercel.app/api/proxy). Click "Setup guide" for help.');return;}
 
   aiTier={};aiWhy={};
   const $=id=>document.getElementById(id);
@@ -622,25 +642,18 @@ Respond ONLY with valid JSON, no extra text:
 }
 Rules: "best" = top 2-3, "good" = 2-3 supporting alternatives. Total 4-6 matches.`;
 
-  /* ── Yandex AI Studio is OpenAI-compatible ──
-     Base URL : https://llm.api.cloud.yandex.net/v1
-     Model    : gpt://<folder_id>/yandexgpt-pro/latest  (or agent URI if agent ID provided)
-     Auth     : Bearer <API_KEY>
-  */
-  const YANDEX_BASE = 'https://llm.api.cloud.yandex.net/v1';
+  /* ── Calls your Vercel proxy, which forwards to Yandex AI Studio ── */
   const modelURI = agentId
-    ? `gpt://${folder}/${agentId}/latest`          // Use their specific Agent Atelier agent
-    : `gpt://${folder}/yandexgpt-pro/latest`;       // Fall back to YandexGPT Pro
+    ? `gpt://${folder}/${agentId}/latest`
+    : `gpt://${folder}/yandexgpt-pro/latest`;
 
   try{
-    const r = await fetch(`${YANDEX_BASE}/chat/completions`, {
+    const r = await fetch(proxy, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${key}`,
-        'x-folder-id': folder                       // Yandex requires this header
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        apiKey,
+        folderId: folder,
         model: modelURI,
         temperature: 0.1,
         max_tokens: 1000,
@@ -677,7 +690,7 @@ Rules: "best" = top 2-3, "good" = 2-3 supporting alternatives. Total 4-6 matches
 
   }catch(e){
     $('loader').classList.remove('on');
-    showErr('Yandex AI Studio error: '+e.message+'. Check your API Key and Folder ID.');
+    showErr('Error: '+e.message+'. Check your Proxy URL is correct and deployed on Vercel.');
   }finally{
     $('heroBtn').disabled=false;
   }
