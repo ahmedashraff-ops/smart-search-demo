@@ -302,7 +302,7 @@ function cardHTML(p, i) {
   const bg    = CAT_BG[cat];
   const clr   = CAT_CLR[cat];
   const best  = i < 2;
-  const feats = (p.features||[]).slice(0,3).map(f=`<span class="card-feat">${f}</span>`).join('');
+  const feats = (p.features||[]).slice(0,3).map(f => `<span class="card-feat">${f}</span>`).join('');
   return `
   <div class="prod-card${best?' best':''} fu" style="animation-delay:${i*.07}s">
     <div class="card-img" style="background:${bg};display:flex;align-items:center;justify-content:center">
