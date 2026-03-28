@@ -21,7 +21,6 @@ header{background:var(--white);border-bottom:3px solid var(--orange);position:st
 .logo{flex-shrink:0;text-decoration:none}
 .logo-top{font-family:'Nunito',sans-serif;font-size:20px;font-weight:900;color:var(--blue);letter-spacing:-.5px;line-height:1}
 .logo-bot{font-family:'Nunito',sans-serif;font-size:25px;font-weight:900;color:var(--orange);letter-spacing:2px;line-height:.9}
-.logo-tag{font-size:8px;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;font-weight:600}
 .hdr-search{flex:1;position:relative}
 .hdr-search input{width:100%;border:2px solid var(--border);border-radius:8px;padding:10px 46px 10px 14px;font-family:'Roboto',sans-serif;font-size:14px;color:var(--text);outline:none;background:var(--bg);transition:border-color .2s}
 .hdr-search input:focus{border-color:var(--orange);background:var(--white)}
@@ -59,9 +58,6 @@ header{background:var(--white);border-bottom:3px solid var(--orange);position:st
 .hero-btn{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:var(--orange);border:none;border-radius:7px;padding:12px 22px;color:var(--blue);font-family:'Nunito',sans-serif;font-size:14px;font-weight:900;cursor:pointer;transition:all .2s;white-space:nowrap}
 .hero-btn:hover{background:var(--orange-dk);transform:translateY(-50%) scale(1.02)}
 .hero-btn:disabled{opacity:.6;cursor:not-allowed;transform:translateY(-50%)}
-.chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;max-width:680px;margin:0 auto}
-.chip{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.82);padding:7px 15px;border-radius:20px;font-size:13px;cursor:pointer;transition:all .2s;white-space:nowrap}
-.chip:hover{background:rgba(255,255,255,.2);color:#fff;border-color:var(--orange)}
 .main{max-width:1200px;margin:0 auto;padding:32px 24px}
 .loading{display:none;text-align:center;padding:56px 20px}
 .loading.on{display:block}
@@ -133,7 +129,7 @@ footer strong{color:var(--orange)}
     <a class="logo" href="#">
       <div class="logo-top">Sharaf</div>
       <div class="logo-bot">DG</div>
-      <div class="logo-tag">Yes, Your Electronics Destination!</div>
+      
     </a>
     <div class="hdr-search">
       <input id="hdrIn" type="text" placeholder="Search products, brands, models…"/>
@@ -175,21 +171,14 @@ footer strong{color:var(--orange)}
 </div>
 
 <section class="hero">
-  <div class="hero-pill">✦ Yango Tech Smart Search × YandexGPT</div>
+  <div class="hero-pill">✦ Powered by Yango Tech AI</div>
   <h1>Find It Fast.<br>Find It <span>Smart.</span></h1>
   <p>Describe what you need — our AI finds real Sharaf DG products instantly.</p>
   <div class="hero-sw">
     <input id="heroIn" type="text" placeholder="e.g. quiet AC for a small bedroom, large 4K TV for movie nights…"/>
     <button class="hero-btn" id="heroBtn" onclick="go('v')">Search with AI →</button>
   </div>
-  <div class="chips">
-    <div class="chip" onclick="qs('quiet split AC for a small bedroom')">❄️ Quiet bedroom AC</div>
-    <div class="chip" onclick="qs('large 4K TV for family movie nights')">📺 Big family TV</div>
-    <div class="chip" onclick="qs('energy efficient fridge for small apartment')">🧊 Efficient fridge</div>
-    <div class="chip" onclick="qs('washing machine gentle on delicate clothes')">🫧 Gentle on delicates</div>
-    <div class="chip" onclick="qs('powerful microwave for cooking full meals')">🌀 Cooking microwave</div>
-    <div class="chip" onclick="qs('compact quiet dishwasher for a small kitchen')">🍽️ Compact dishwasher</div>
-  </div>
+
 </section>
 
 <div class="main">
@@ -202,7 +191,7 @@ footer strong{color:var(--orange)}
     <div class="ai-summary">
       <div class="ai-ico">🛒</div>
       <div>
-        <div class="ai-lbl">Sharaf DG Smart Search · Live Results</div>
+        <div class="ai-lbl">AI Response</div>
         <div class="ai-sum-text" id="aiSummary"></div>
       </div>
     </div>
@@ -225,7 +214,7 @@ footer strong{color:var(--orange)}
 
 <footer>
   <div class="footer-logo">Sharaf <span>DG</span></div>
-  <div style="margin-bottom:6px">Smart Search powered by <strong>Yango Tech AI</strong> &amp; YandexGPT · Real-time Sharaf DG product search</div>
+  <div style="margin-bottom:6px">Smart Search powered by <strong>Yango Tech AI</strong> · Real-time Sharaf DG product search</div>
   <div style="font-size:11px;opacity:.4">Presales demonstration · © 2025 Yango Tech / Sharaf DG</div>
 </footer>
 
