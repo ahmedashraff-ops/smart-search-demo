@@ -218,11 +218,6 @@ footer strong{color:var(--orange)}
         <div style="font-size:11px;color:var(--muted);margin-top:4px">Your Yandex Cloud folder overview page</div>
       </div>
       <div>
-        <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:6px">🤖 Agent ID <span style="color:var(--red)">*required</span></label>
-        <input id="agentId" type="text" placeholder="fvt…" style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;font-family:monospace;font-size:13px;color:var(--text);outline:none;background:var(--bg);transition:border-color .2s" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
-        <div style="font-size:11px;color:var(--muted);margin-top:4px">aistudio.yandex.cloud → Agent Atelier → your agent URL</div>
-      </div>
-      <div>
         <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:6px">🌐 Proxy URL</label>
         <input id="proxyUrl" type="text" placeholder="https://your-project.vercel.app/api/proxy" style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;font-family:monospace;font-size:13px;color:var(--text);outline:none;background:var(--bg);transition:border-color .2s" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
         <div style="font-size:11px;color:var(--muted);margin-top:4px">Your Vercel deployment URL + /api/proxy</div>
@@ -617,7 +612,6 @@ function toggleSettings(){
 function saveSettings(){
   localStorage.setItem('sdg_apiKey',   document.getElementById('apiKey').value);
   localStorage.setItem('sdg_folderId', document.getElementById('folderId').value);
-  localStorage.setItem('sdg_agentId',  document.getElementById('agentId').value);
   localStorage.setItem('sdg_proxyUrl', document.getElementById('proxyUrl').value);
   const msg = document.getElementById('settingsSavedMsg');
   msg.style.display = 'block';
@@ -627,7 +621,6 @@ function saveSettings(){
 function loadSettings(){
   document.getElementById('apiKey').value   = localStorage.getItem('sdg_apiKey')   || '';
   document.getElementById('folderId').value = localStorage.getItem('sdg_folderId') || 'b1g3c22pier4ri4nu7rs';
-  document.getElementById('agentId').value  = localStorage.getItem('sdg_agentId')  || 'fvtap9mhn69o5c4jqjhv';
   document.getElementById('proxyUrl').value = localStorage.getItem('sdg_proxyUrl') || 'https://smart-search-proxy.vercel.app/api/proxy';
 }
 
@@ -645,13 +638,11 @@ function go(src){
 async function doSearch(q){
   const key     = document.getElementById('apiKey').value.trim();
   const folder  = document.getElementById('folderId').value.trim();
-  const agentId = document.getElementById('agentId').value.trim();
   const proxy   = document.getElementById('proxyUrl').value.trim();
 
-  if(!key)    {showErr('Please enter your Yandex AI Studio API Key.');return;}
-  if(!folder) {showErr('Please enter your Folder ID.');return;}
-  if(!agentId){showErr('Please enter your Agent ID — open Agent Atelier and copy it from the URL or settings panel.');return;}
-  if(!proxy)  {showErr('Please enter your Vercel Proxy URL.');return;}
+  if(!key)   {showErr('Please enter your API Key in ⚙️ Settings.');return;}
+  if(!folder){showErr('Please enter your Folder ID in ⚙️ Settings.');return;}
+  if(!proxy) {showErr('Please enter your Proxy URL in ⚙️ Settings.');return;}
 
   const $=id=>document.getElementById(id);
   $('aiPanel').classList.remove('on');
@@ -667,7 +658,6 @@ async function doSearch(q){
       body: JSON.stringify({
         apiKey:   key,
         folderId: folder,
-        agentId:  agentId,
         query:    q
       })
     });
@@ -676,10 +666,10 @@ async function doSearch(q){
 
     if(!r.ok){
       const detail = data.detail ? JSON.stringify(data.detail) : '';
-      throw new Error((data.error || 'Agent error') + ' | status:' + r.status + ' | ' + detail);
+      throw new Error((data.error || 'Error') + (detail ? ' | ' + detail : ''));
     }
 
-    $('agentResponse').textContent = data.answer || 'No response from agent.';
+    $('agentResponse').textContent = data.answer || 'No results found.';
     $('loader').classList.remove('on');
     $('promo').style.display = 'none';
     $('aiPanel').classList.add('on');
