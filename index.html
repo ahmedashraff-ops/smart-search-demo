@@ -389,8 +389,14 @@ async function doSearch(q){
   $('aiPanel').classList.remove('on');
   $('errBox').classList.remove('on');
   $('emptyState').style.display='none';
+
+  // Check cache first — instant result, no spinner needed
+  const cached = getCached(q);
+  if(cached){ renderResults(q, cached, $); return; }
+
   $('loader').classList.add('on');
   $('heroBtn').disabled=true;
+  startProgress();
   $('loader').scrollIntoView({behavior:'smooth',block:'center'});
 
   try{
