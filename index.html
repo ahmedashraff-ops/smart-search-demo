@@ -64,7 +64,6 @@ header{background:var(--white);border-bottom:3px solid var(--orange);position:st
 .spinner{width:44px;height:44px;border:3px solid var(--border);border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading p{color:var(--muted);font-size:14px;transition:opacity .3s}
-.loading strong{color:var(--blue)}
 .err{display:none;background:#fef2f2;border:1px solid #fca5a5;color:var(--red);padding:14px 18px;border-radius:10px;margin-bottom:20px;font-size:14px}
 .err.on{display:block}
 .ai-panel{display:none}
@@ -80,24 +79,18 @@ header{background:var(--white);border-bottom:3px solid var(--orange);position:st
 .prod-card{background:var(--white);border:1.5px solid var(--border);border-radius:14px;overflow:hidden;transition:all .25s;cursor:pointer;display:flex;flex-direction:column}
 .prod-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,47,134,.12);border-color:var(--blue-pale)}
 .prod-card.best{border-color:var(--orange);box-shadow:0 4px 20px rgba(245,168,0,.18)}
-.card-img{height:160px;display:flex;align-items:center;justify-content:center;position:relative;font-size:72px}
+.card-img{height:140px;display:flex;align-items:center;justify-content:center;position:relative}
 .badge-best{position:absolute;top:10px;right:10px;background:var(--orange);color:var(--blue);font-size:10px;font-weight:800;padding:4px 10px;border-radius:20px}
 .badge-cat{position:absolute;top:10px;left:10px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:3px 9px;border-radius:4px}
 .card-body{padding:16px;flex:1;display:flex;flex-direction:column;gap:6px}
 .card-brand{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted)}
 .card-name{font-size:15px;font-weight:700;color:var(--text);line-height:1.3}
-.card-specs{font-size:12px;color:var(--muted)}
-.card-features{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
-.card-feat{background:var(--blue-pale);color:var(--blue);font-size:11px;padding:3px 8px;border-radius:4px;font-weight:500}
+.card-specs{font-size:12px;color:var(--muted);margin-top:2px}
 .card-footer{border-top:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;background:#fafbfd;margin-top:auto}
 .price-lbl{font-size:10px;color:var(--muted);font-weight:500}
 .price-num{font-family:'Nunito',sans-serif;font-size:22px;font-weight:900;color:var(--blue)}
-.price-old{font-size:12px;color:var(--muted);text-decoration:line-through}
 .buy-btn{background:var(--orange);color:var(--blue);border:none;border-radius:7px;padding:8px 16px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;cursor:pointer;transition:background .2s;white-space:nowrap}
 .buy-btn:hover{background:var(--orange-dk)}
-.energy-tag{background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px}
-.card-why{padding:12px 16px;background:#fff8e1;border-top:1px solid #fde68a;font-size:12px;color:#78350f;line-height:1.5}
-.card-why-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#e09600;display:block;margin-bottom:3px}
 .empty{text-align:center;padding:72px 24px;color:var(--muted)}
 .empty-icon{font-size:64px;margin-bottom:16px;opacity:.35}
 .empty h2{font-family:'Nunito',sans-serif;font-size:24px;font-weight:900;color:var(--blue);margin-bottom:10px}
@@ -110,7 +103,7 @@ footer strong{color:var(--orange)}
 .fu{animation:fadeUp .4s ease both}
 @media(max-width:768px){
   .hdr{padding:0 14px;gap:10px}
-  .ai-badge,.logo-tag{display:none}
+  .ai-badge{display:none}
   .hero h1{font-size:30px}
   .main{padding:16px}
 }
@@ -125,7 +118,6 @@ footer strong{color:var(--orange)}
     <a class="logo" href="#">
       <div class="logo-top">Sharaf</div>
       <div class="logo-bot">DG</div>
-      
     </a>
     <div class="hdr-search">
       <input id="hdrIn" type="text" placeholder="Search products, brands, models…" autocomplete="off"/>
@@ -174,13 +166,12 @@ footer strong{color:var(--orange)}
     <input id="heroIn" type="text" placeholder="e.g. quiet AC for a small bedroom, large 4K TV for movie nights…" autocomplete="off"/>
     <button class="hero-btn" id="heroBtn" onclick="go('v')">Search with AI →</button>
   </div>
-
 </section>
 
 <div class="main">
   <div class="loading" id="loader">
     <div class="spinner"></div>
-    <p id="loaderMsg">Connecting to Sharaf DG…</p>
+    <p id="loaderMsg">Searching Sharaf DG…</p>
   </div>
   <div class="err" id="errBox"></div>
   <div class="ai-panel" id="aiPanel">
@@ -194,7 +185,6 @@ footer strong{color:var(--orange)}
     <div class="res-meta"><strong id="resMeta"></strong><div class="divider"></div></div>
     <div class="prod-grid" id="prodGrid"></div>
   </div>
-
   <div class="empty" id="emptyState">
     <div class="empty-icon">🔍</div>
     <h2>What are you looking for today?</h2>
@@ -213,8 +203,8 @@ footer strong{color:var(--orange)}
 </footer>
 
 <script>
-const CAT_BG    = {ac:'#e0f2fe',tv:'#ede9fe',fridge:'#d1fae5',microwave:'#ffedd5',dishwasher:'#cffafe',laundry:'#dbeafe',phone:'#fce7f3',laptop:'#e0e7ff',audio:'#fef3c7',camera:'#f0fdf4',other:'#f1f5f9'};
-const CAT_CLR   = {ac:'#0369a1',tv:'#6d28d9',fridge:'#065f46',microwave:'#c2410c',dishwasher:'#0e7490',laundry:'#1d4ed8',phone:'#be185d',laptop:'#4338ca',audio:'#92400e',camera:'#166534',other:'#475569'};
+const CAT_BG  = {ac:'#e0f2fe',tv:'#ede9fe',fridge:'#d1fae5',microwave:'#ffedd5',dishwasher:'#cffafe',laundry:'#dbeafe',phone:'#fce7f3',laptop:'#e0e7ff',audio:'#fef3c7',camera:'#f0fdf4',other:'#f1f5f9'};
+const CAT_CLR = {ac:'#0369a1',tv:'#6d28d9',fridge:'#065f46',microwave:'#c2410c',dishwasher:'#0e7490',laundry:'#1d4ed8',phone:'#be185d',laptop:'#4338ca',audio:'#92400e',camera:'#166534',other:'#475569'};
 
 function guessCategory(name) {
   const n = (name||'').toLowerCase();
@@ -231,72 +221,57 @@ function guessCategory(name) {
   return 'other';
 }
 
-function proxyImg(url) {
-  if (!url) return '';
-  // Route through Vercel image proxy to avoid CORS issues
-  const proxy = document.getElementById('proxyUrl').value.trim().replace('/api/proxy', '');
-  return proxy + '/api/image?url=' + encodeURIComponent(url);
-}
-
 function getSVG(cat, clr) {
   const svgs = {
-    tv: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="8" y="6" width="104" height="66" rx="6" fill="${clr}" opacity=".12"/><rect x="13" y="11" width="94" height="56" rx="4" fill="${clr}" opacity=".2"/><rect x="16" y="14" width="88" height="50" rx="3" fill="${clr}" opacity=".15"/><rect x="46" y="74" width="28" height="5" rx="2" fill="${clr}" opacity=".25"/><rect x="38" y="79" width="44" height="3" rx="1.5" fill="${clr}" opacity=".2"/><circle cx="107" cy="18" r="3" fill="${clr}" opacity=".4"/><circle cx="107" cy="26" r="3" fill="${clr}" opacity=".3"/><path d="M50 39l12-8v16z" fill="${clr}" opacity=".35"/></svg>`,
-    ac: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="10" y="22" width="100" height="42" rx="8" fill="${clr}" opacity=".15"/><rect x="10" y="22" width="100" height="14" rx="8" fill="${clr}" opacity=".2"/><rect x="18" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="34" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="50" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="66" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="82" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><circle cx="94" cy="29" r="4" fill="${clr}" opacity=".3"/><circle cx="82" cy="29" r="4" fill="${clr}" opacity=".2"/><rect x="10" y="64" width="100" height="5" rx="2.5" fill="${clr}" opacity=".1"/></svg>`,
-    fridge: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="32" y="4" width="56" height="82" rx="7" fill="${clr}" opacity=".15"/><rect x="32" y="4" width="56" height="32" rx="7" fill="${clr}" opacity=".1"/><rect x="32" y="36" width="56" height="50" rx="0" fill="${clr}" opacity=".08"/><line x1="32" y1="36" x2="88" y2="36" stroke="${clr}" stroke-width="1.5" opacity=".2"/><rect x="80" y="17" width="5" height="14" rx="2.5" fill="${clr}" opacity=".3"/><rect x="80" y="50" width="5" height="20" rx="2.5" fill="${clr}" opacity=".25"/><rect x="40" y="46" width="26" height="2" rx="1" fill="${clr}" opacity=".15"/><rect x="40" y="52" width="18" height="2" rx="1" fill="${clr}" opacity=".15"/><rect x="40" y="60" width="26" height="2" rx="1" fill="${clr}" opacity=".15"/></svg>`,
-    microwave: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="8" y="18" width="104" height="58" rx="8" fill="${clr}" opacity=".15"/><rect x="14" y="24" width="68" height="46" rx="5" fill="${clr}" opacity=".12"/><rect x="88" y="24" width="18" height="46" rx="0" fill="${clr}" opacity=".08"/><circle cx="97" cy="38" r="6" fill="${clr}" opacity=".2"/><rect x="91" y="52" width="14" height="4" rx="2" fill="${clr}" opacity=".18"/><rect x="91" y="60" width="14" height="4" rx="2" fill="${clr}" opacity=".18"/><circle cx="48" cy="47" r="18" fill="${clr}" opacity=".08"/><circle cx="48" cy="47" r="11" fill="${clr}" opacity=".08"/></svg>`,
-    dishwasher: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="30" y="4" width="60" height="82" rx="7" fill="${clr}" opacity=".15"/><rect x="30" y="4" width="60" height="16" rx="7" fill="${clr}" opacity=".12"/><rect x="38" y="9" width="24" height="6" rx="3" fill="${clr}" opacity=".2"/><circle cx="81" cy="12" r="3.5" fill="${clr}" opacity=".25"/><rect x="38" y="28" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/><rect x="38" y="38" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/><rect x="38" y="48" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/><rect x="38" y="58" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/><rect x="38" y="68" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/></svg>`,
-    laundry: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="28" y="4" width="64" height="82" rx="8" fill="${clr}" opacity=".15"/><rect x="28" y="4" width="64" height="18" rx="8" fill="${clr}" opacity=".12"/><circle cx="60" cy="55" r="22" fill="${clr}" opacity=".1"/><circle cx="60" cy="55" r="16" fill="${clr}" opacity=".1"/><circle cx="60" cy="55" r="8" fill="${clr}" opacity=".12"/><rect x="36" y="11" width="16" height="5" rx="2.5" fill="${clr}" opacity=".2"/><circle cx="78" cy="13" r="3" fill="${clr}" opacity=".25"/><circle cx="68" cy="13" r="3" fill="${clr}" opacity=".2"/></svg>`,
-    phone: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="40" y="4" width="40" height="82" rx="8" fill="${clr}" opacity=".15"/><rect x="44" y="10" width="32" height="62" rx="4" fill="${clr}" opacity=".1"/><circle cx="60" cy="79" r="3.5" fill="${clr}" opacity=".25"/><rect x="52" y="7" width="16" height="3" rx="1.5" fill="${clr}" opacity=".2"/></svg>`,
-    laptop: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="16" y="14" width="88" height="56" rx="5" fill="${clr}" opacity=".15"/><rect x="20" y="18" width="80" height="48" rx="3" fill="${clr}" opacity=".1"/><rect x="6" y="70" width="108" height="6" rx="3" fill="${clr}" opacity=".15"/><rect x="44" y="70" width="32" height="4" rx="2" fill="${clr}" opacity=".2"/></svg>`,
-    audio: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><circle cx="60" cy="45" r="30" fill="${clr}" opacity=".12"/><circle cx="60" cy="45" r="20" fill="${clr}" opacity=".12"/><circle cx="60" cy="45" r="10" fill="${clr}" opacity=".15"/><path d="M28 45c0-17.7 14.3-32 32-32" stroke="${clr}" stroke-width="2.5" stroke-linecap="round" opacity=".3"/><path d="M92 45c0 17.7-14.3 32-32 32" stroke="${clr}" stroke-width="2.5" stroke-linecap="round" opacity=".3"/></svg>`,
-    camera: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="10" y="26" width="100" height="56" rx="8" fill="${clr}" opacity=".15"/><path d="M42 26l8-14h20l8 14" fill="${clr}" opacity=".12"/><circle cx="60" cy="54" r="18" fill="${clr}" opacity=".12"/><circle cx="60" cy="54" r="11" fill="${clr}" opacity=".12"/><circle cx="60" cy="54" r="5" fill="${clr}" opacity=".2"/><circle cx="88" cy="36" r="4" fill="${clr}" opacity=".2"/></svg>`,
-    other: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="20" y="20" width="80" height="55" rx="7" fill="${clr}" opacity=".15"/><rect x="28" y="28" width="64" height="38" rx="4" fill="${clr}" opacity=".1"/><rect x="48" y="75" width="24" height="5" rx="2" fill="${clr}" opacity=".2"/></svg>`
+    tv:`<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="8" y="6" width="104" height="66" rx="6" fill="${clr}" opacity=".12"/><rect x="13" y="11" width="94" height="56" rx="4" fill="${clr}" opacity=".2"/><rect x="16" y="14" width="88" height="50" rx="3" fill="${clr}" opacity=".15"/><rect x="46" y="74" width="28" height="5" rx="2" fill="${clr}" opacity=".25"/><rect x="38" y="79" width="44" height="3" rx="1.5" fill="${clr}" opacity=".2"/><circle cx="107" cy="18" r="3" fill="${clr}" opacity=".4"/><circle cx="107" cy="26" r="3" fill="${clr}" opacity=".3"/><path d="M50 39l12-8v16z" fill="${clr}" opacity=".35"/></svg>`,
+    ac:`<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="10" y="22" width="100" height="42" rx="8" fill="${clr}" opacity=".15"/><rect x="10" y="22" width="100" height="14" rx="8" fill="${clr}" opacity=".2"/><rect x="18" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="34" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="50" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="66" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="82" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><circle cx="94" cy="29" r="4" fill="${clr}" opacity=".3"/><circle cx="82" cy="29" r="4" fill="${clr}" opacity=".2"/><rect x="10" y="64" width="100" height="5" rx="2.5" fill="${clr}" opacity=".1"/></svg>`,
+    fridge:`<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="32" y="4" width="56" height="82" rx="7" fill="${clr}" opacity=".15"/><rect x="32" y="4" width="56" height="32" rx="7" fill="${clr}" opacity=".1"/><rect x="32" y="36" width="56" height="50" rx="0" fill="${clr}" opacity=".08"/><line x1="32" y1="36" x2="88" y2="36" stroke="${clr}" stroke-width="1.5" opacity=".2"/><rect x="80" y="17" width="5" height="14" rx="2.5" fill="${clr}" opacity=".3"/><rect x="80" y="50" width="5" height="20" rx="2.5" fill="${clr}" opacity=".25"/><rect x="40" y="46" width="26" height="2" rx="1" fill="${clr}" opacity=".15"/><rect x="40" y="52" width="18" height="2" rx="1" fill="${clr}" opacity=".15"/><rect x="40" y="60" width="26" height="2" rx="1" fill="${clr}" opacity=".15"/></svg>`,
+    microwave:`<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="8" y="18" width="104" height="58" rx="8" fill="${clr}" opacity=".15"/><rect x="14" y="24" width="68" height="46" rx="5" fill="${clr}" opacity=".12"/><rect x="88" y="24" width="18" height="46" rx="0" fill="${clr}" opacity=".08"/><circle cx="97" cy="38" r="6" fill="${clr}" opacity=".2"/><rect x="91" y="52" width="14" height="4" rx="2" fill="${clr}" opacity=".18"/><rect x="91" y="60" width="14" height="4" rx="2" fill="${clr}" opacity=".18"/><circle cx="48" cy="47" r="18" fill="${clr}" opacity=".08"/><circle cx="48" cy="47" r="11" fill="${clr}" opacity=".08"/></svg>`,
+    dishwasher:`<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="30" y="4" width="60" height="82" rx="7" fill="${clr}" opacity=".15"/><rect x="30" y="4" width="60" height="16" rx="7" fill="${clr}" opacity=".12"/><rect x="38" y="9" width="24" height="6" rx="3" fill="${clr}" opacity=".2"/><circle cx="81" cy="12" r="3.5" fill="${clr}" opacity=".25"/><rect x="38" y="28" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/><rect x="38" y="38" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/><rect x="38" y="48" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/><rect x="38" y="58" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/><rect x="38" y="68" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/></svg>`,
+    laundry:`<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="28" y="4" width="64" height="82" rx="8" fill="${clr}" opacity=".15"/><rect x="28" y="4" width="64" height="18" rx="8" fill="${clr}" opacity=".12"/><circle cx="60" cy="55" r="22" fill="${clr}" opacity=".1"/><circle cx="60" cy="55" r="16" fill="${clr}" opacity=".1"/><circle cx="60" cy="55" r="8" fill="${clr}" opacity=".12"/><rect x="36" y="11" width="16" height="5" rx="2.5" fill="${clr}" opacity=".2"/><circle cx="78" cy="13" r="3" fill="${clr}" opacity=".25"/><circle cx="68" cy="13" r="3" fill="${clr}" opacity=".2"/></svg>`,
+    phone:`<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="40" y="4" width="40" height="82" rx="8" fill="${clr}" opacity=".15"/><rect x="44" y="10" width="32" height="62" rx="4" fill="${clr}" opacity=".1"/><circle cx="60" cy="79" r="3.5" fill="${clr}" opacity=".25"/><rect x="52" y="7" width="16" height="3" rx="1.5" fill="${clr}" opacity=".2"/></svg>`,
+    laptop:`<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="16" y="14" width="88" height="56" rx="5" fill="${clr}" opacity=".15"/><rect x="20" y="18" width="80" height="48" rx="3" fill="${clr}" opacity=".1"/><rect x="6" y="70" width="108" height="6" rx="3" fill="${clr}" opacity=".15"/><rect x="44" y="70" width="32" height="4" rx="2" fill="${clr}" opacity=".2"/></svg>`,
+    audio:`<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><circle cx="60" cy="45" r="30" fill="${clr}" opacity=".12"/><circle cx="60" cy="45" r="20" fill="${clr}" opacity=".12"/><circle cx="60" cy="45" r="10" fill="${clr}" opacity=".15"/><path d="M28 45c0-17.7 14.3-32 32-32" stroke="${clr}" stroke-width="2.5" stroke-linecap="round" opacity=".3"/><path d="M92 45c0 17.7-14.3 32-32 32" stroke="${clr}" stroke-width="2.5" stroke-linecap="round" opacity=".3"/></svg>`,
+    camera:`<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="10" y="26" width="100" height="56" rx="8" fill="${clr}" opacity=".15"/><path d="M42 26l8-14h20l8 14" fill="${clr}" opacity=".12"/><circle cx="60" cy="54" r="18" fill="${clr}" opacity=".12"/><circle cx="60" cy="54" r="11" fill="${clr}" opacity=".12"/><circle cx="60" cy="54" r="5" fill="${clr}" opacity=".2"/><circle cx="88" cy="36" r="4" fill="${clr}" opacity=".2"/></svg>`,
+    other:`<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="20" y="20" width="80" height="55" rx="7" fill="${clr}" opacity=".15"/><rect x="28" y="28" width="64" height="38" rx="4" fill="${clr}" opacity=".1"/><rect x="48" y="75" width="24" height="5" rx="2" fill="${clr}" opacity=".2"/></svg>`
   };
   return svgs[cat] || svgs.other;
 }
 
 function cardHTML(p, i) {
-  const cat   = guessCategory(p.name);
-  const bg    = CAT_BG[cat];
-  const clr   = CAT_CLR[cat];
-  const best  = i < 2;
-  const feats = (p.features||[]).slice(0,3).map(f => `<span class="card-feat">${f}</span>`).join('');
+  const cat  = guessCategory(p.name);
+  const bg   = CAT_BG[cat];
+  const clr  = CAT_CLR[cat];
+  const best = i < 2;
   return `
   <div class="prod-card${best?' best':''} fu" style="animation-delay:${i*.07}s">
-    <div class="card-img" style="background:${bg};display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative">
-      ${p.image_url
-        ? `<img src="${proxyImg(p.image_url)}" alt="${p.name}" style="width:100%;height:100%;object-fit:contain;padding:12px" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">${getSVG(cat, clr)}`
-        : getSVG(cat, clr)
-      }
-      <div class="badge-cat" style="background:${bg};color:${clr};position:absolute;top:10px;left:10px">${cat.toUpperCase()}</div>
-      ${best?'<div class="badge-best" style="position:absolute;top:10px;right:10px">⭐ Best Match</div>':''}
+    <div class="card-img" style="background:${bg}">
+      ${getSVG(cat, clr)}
+      <div class="badge-cat" style="background:${bg};color:${clr}">${cat.toUpperCase()}</div>
+      ${best?'<div class="badge-best">⭐ Best Match</div>':''}
     </div>
     <div class="card-body">
       <div class="card-brand">${p.brand||''}</div>
       <div class="card-name">${p.name||'Product'}</div>
       ${p.specs?`<div class="card-specs">${p.specs}</div>`:''}
-      <div class="card-features">${feats}</div>
     </div>
     <div class="card-footer">
       <div>
-        <div class="price-lbl">AED</div>
-        <div class="price-num">${p.price?Number(p.price).toLocaleString():'–'}</div>
-        ${p.original_price?`<div class="price-old">AED ${Number(p.original_price).toLocaleString()}</div>`:''}
+        ${p.price
+          ? `<div class="price-lbl">AED</div><div class="price-num">${Number(p.price).toLocaleString()}</div>`
+          : `<div class="price-num" style="font-size:14px;color:var(--muted)">Price N/A</div>`
+        }
       </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
-        ${p.energy_rating?`<div class="energy-tag">${p.energy_rating}</div>`:''}
-        <button class="buy-btn" ${p.url?`onclick="window.open('${p.url}','_blank')"`:''}>
-          ${p.url?'View on Sharaf DG →':'Search on Site'}
-        </button>
-      </div>
+      <button class="buy-btn" ${p.url?`onclick="window.open('${p.url}','_blank')"`:''}>
+        ${p.url?'View on Sharaf DG →':'Search on Site'}
+      </button>
     </div>
-    ${p.why?`<div class="card-why"><span class="card-why-lbl">✨ Why this matches</span>${p.why}</div>`:''}
   </div>`;
 }
 
 function toggleSettings(){
   const p=document.getElementById('settingsPanel');
-  p.style.display=p.style.display==='none'?'block':'none';
+  p.style.display=p.style.display==='none'||p.style.display===''?'block':'none';
 }
 function saveSettings(){
   localStorage.setItem('sdg_key',  document.getElementById('apiKey').value);
@@ -312,41 +287,21 @@ function loadSettings(){
   document.getElementById('proxyUrl').value = localStorage.getItem('sdg_prox') ||'https://smart-search-proxy.vercel.app/api/proxy';
 }
 
-/* ── OPTION 5: PROGRESS ANIMATION ── */
 let progressInterval = null;
-
-function startProgress() {
-  const messages = [
-    'Connecting to Sharaf DG…',
-    'Searching product catalog…',
-    'Analysing your request…',
-    'Finding best matches…',
-    'Fetching prices & details…',
-    'Almost there…'
-  ];
-  let i = 0;
-  const el = document.getElementById('loaderMsg');
-  if (el) el.textContent = messages[0];
-  progressInterval = setInterval(() => {
-    i = Math.min(i + 1, messages.length - 1);
-    if (el) {
-      el.style.opacity = '0';
-      setTimeout(() => {
-        el.textContent = messages[i];
-        el.style.opacity = '1';
-      }, 150);
-    }
-  }, 1800);
+function startProgress(){
+  const messages=['Connecting to Sharaf DG…','Searching product catalog…','Analysing your request…','Finding best matches…','Fetching prices & details…','Almost there…'];
+  let i=0;
+  const el=document.getElementById('loaderMsg');
+  if(el) el.textContent=messages[0];
+  progressInterval=setInterval(()=>{
+    i=Math.min(i+1,messages.length-1);
+    if(el){el.style.opacity='0';setTimeout(()=>{el.textContent=messages[i];el.style.opacity='1';},150);}
+  },1800);
+}
+function stopProgress(){
+  if(progressInterval){clearInterval(progressInterval);progressInterval=null;}
 }
 
-function stopProgress() {
-  if (progressInterval) {
-    clearInterval(progressInterval);
-    progressInterval = null;
-  }
-}
-
-function qs(t){document.getElementById('heroIn').value=t;document.getElementById('hdrIn').value=t;doSearch(t);}
 function go(s){
   const v=s==='v'?document.getElementById('heroIn').value.trim():document.getElementById('hdrIn').value.trim();
   if(v){document.getElementById('heroIn').value=v;document.getElementById('hdrIn').value=v;doSearch(v);}
@@ -364,7 +319,6 @@ async function doSearch(q){
   $('aiPanel').classList.remove('on');
   $('errBox').classList.remove('on');
   $('emptyState').style.display='none';
-
   $('loader').classList.add('on');
   $('heroBtn').disabled=true;
   startProgress();
@@ -382,12 +336,10 @@ async function doSearch(q){
     const raw=data.answer||'';
     let parsed;
     try{
-      let clean = raw.trim();
-      if(clean.startsWith('```')) {
-        clean = clean.replace(/^```[a-z]*\n?/, '').replace(/```\s*$/, '').trim();
-      }
-      const m = clean.match(/(\{[\s\S]*\})/);
-      parsed = JSON.parse(m ? m[1] : clean);
+      let clean=raw.trim();
+      if(clean.startsWith('```')) clean=clean.replace(/^```[a-z]*\n?/,'').replace(/```\s*$/,'').trim();
+      const m=clean.match(/(\{[\s\S]*\})/);
+      parsed=JSON.parse(m?m[1]:clean);
     }catch(e){
       stopProgress();
       $('loader').classList.remove('on');
@@ -400,7 +352,13 @@ async function doSearch(q){
     }
 
     stopProgress();
-    renderResults(q, parsed, $);
+    const products=parsed.products||[];
+    $('aiSummary').textContent=parsed.summary||'Here are the best matches for your search.';
+    $('resMeta').innerHTML=`<strong>${products.length} product${products.length!==1?'s':''} found on Sharaf DG</strong>`;
+    $('prodGrid').innerHTML=products.map((p,i)=>cardHTML(p,i)).join('');
+    $('loader').classList.remove('on');
+    $('aiPanel').classList.add('on');
+    $('aiPanel').scrollIntoView({behavior:'smooth',block:'start'});
 
   }catch(e){
     stopProgress();
@@ -411,21 +369,10 @@ async function doSearch(q){
   }
 }
 
-function renderResults(q, parsed, $) {
-  if (!$) $ = id => document.getElementById(id);
-  const products = parsed.products || [];
-  $('aiSummary').textContent = parsed.summary || 'Here are the best matches for your search.';
-  $('resMeta').innerHTML = `<strong>${products.length} product${products.length!==1?'s':''} found on Sharaf DG</strong>`;
-  $('prodGrid').innerHTML = products.map((p,i) => cardHTML(p,i)).join('');
-  $('loader').classList.remove('on');
-  $('aiPanel').classList.add('on');
-  $('aiPanel').scrollIntoView({behavior:'smooth',block:'start'});
-}
-
 function showErr(m){const b=document.getElementById('errBox');b.textContent=m;b.classList.add('on');b.scrollIntoView({behavior:'smooth',block:'center'});}
 
 document.getElementById('heroIn').addEventListener('keypress',e=>{if(e.key==='Enter')go('v');});
-document.getElementById('hdrIn').addEventListener('keypress', e=>{if(e.key==='Enter')go('h');});
+document.getElementById('hdrIn').addEventListener('keypress',e=>{if(e.key==='Enter')go('h');});
 loadSettings();
 </script>
 </body>
