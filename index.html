@@ -346,8 +346,14 @@ async function doSearch(q){
     const raw=data.answer||'';
     let parsed;
     try{
-      const m=raw.match(/```json\s*([\s\S]*?)```/)||raw.match(/(\{[\s\S]*\})/);
-      parsed=JSON.parse(m?m[1]||m[0]:raw);
+      // Strip markdown code fences if present
+      let clean = raw.trim();
+      if(clean.startsWith('```')) {
+        clean = clean.replace(/^```[a-z]*\n?/, '').replace(/```\s*$/, '').trim();
+      }
+      // Extract JSON object if there's surrounding text
+      const m = clean.match(/(\{[\s\S]*\})/);
+      parsed = JSON.parse(m ? m[1] : clean);
     }catch(e){
       // Graceful fallback: show raw text in a clean card
       $('loader').classList.remove('on');
