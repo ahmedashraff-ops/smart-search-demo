@@ -200,10 +200,6 @@ footer strong{color:var(--orange)}
     <h2>What are you looking for today?</h2>
     <p>Type anything above — a product type, brand, use case, or budget. Our AI will find the best matches from Sharaf DG in real time.</p>
   </div>
-      <div class="promo-s">0% installments via Tabby · Free installation · Delivery in 24hrs across UAE</div>
-    </div>
-    <button class="promo-btn">Shop Deals →</button>
-  </div>
 </div>
 
 <footer>
@@ -260,10 +256,13 @@ function cardHTML(p, i) {
   const feats = (p.features||[]).slice(0,3).map(f => `<span class="card-feat">${f}</span>`).join('');
   return `
   <div class="prod-card${best?' best':''} fu" style="animation-delay:${i*.07}s">
-    <div class="card-img" style="background:${bg};display:flex;align-items:center;justify-content:center">
-      ${getSVG(cat, clr)}
-      <div class="badge-cat" style="background:${bg};color:${clr}">${cat.toUpperCase()}</div>
-      ${best?'<div class="badge-best">⭐ Best Match</div>':''}
+    <div class="card-img" style="background:${bg};display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative">
+      ${p.image_url
+        ? `<img src="${p.image_url}" alt="${p.name}" style="width:100%;height:100%;object-fit:contain;padding:12px" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">${getSVG(cat, clr)}`
+        : getSVG(cat, clr)
+      }
+      <div class="badge-cat" style="background:${bg};color:${clr};position:absolute;top:10px;left:10px">${cat.toUpperCase()}</div>
+      ${best?'<div class="badge-best" style="position:absolute;top:10px;right:10px">⭐ Best Match</div>':''}
     </div>
     <div class="card-body">
       <div class="card-brand">${p.brand||''}</div>
