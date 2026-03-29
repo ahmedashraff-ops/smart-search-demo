@@ -63,7 +63,7 @@ header{background:var(--white);border-bottom:3px solid var(--orange);position:st
 .loading.on{display:block}
 .spinner{width:44px;height:44px;border:3px solid var(--border);border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.loading p{color:var(--muted);font-size:14px}
+.loading p{color:var(--muted);font-size:14px;transition:opacity .3s}
 .loading strong{color:var(--blue)}
 .err{display:none;background:#fef2f2;border:1px solid #fca5a5;color:var(--red);padding:14px 18px;border-radius:10px;margin-bottom:20px;font-size:14px}
 .err.on{display:block}
@@ -180,7 +180,7 @@ footer strong{color:var(--orange)}
 <div class="main">
   <div class="loading" id="loader">
     <div class="spinner"></div>
-    <p>Searching <strong>Sharaf DG</strong> for the best matches…</p>
+    <p id="loaderMsg">Connecting to Sharaf DG…</p>
   </div>
   <div class="err" id="errBox"></div>
   <div class="ai-panel" id="aiPanel">
@@ -312,6 +312,65 @@ function loadSettings(){
   document.getElementById('proxyUrl').value = localStorage.getItem('sdg_prox') ||'https://smart-search-proxy.vercel.app/api/proxy';
 }
 
+/* ── OPTION 6: SEARCH CACHE ── */
+const CACHE_KEY = 'sdg_search_cache';
+const CACHE_MAX = 20;
+
+function getCached(query) {
+  try {
+    const cache = JSON.parse(localStorage.getItem(CACHE_KEY) || '[]');
+    const hit = cache.find(e => e.query.toLowerCase() === query.toLowerCase());
+    return hit ? hit.result : null;
+  } catch(e) { return null; }
+}
+
+function setCache(query, result) {
+  try {
+    let cache = JSON.parse(localStorage.getItem(CACHE_KEY) || '[]');
+    // Remove existing entry for same query
+    cache = cache.filter(e => e.query.toLowerCase() !== query.toLowerCase());
+    // Add to front
+    cache.unshift({ query, result, ts: Date.now() });
+    // Keep only last CACHE_MAX entries
+    if (cache.length > CACHE_MAX) cache = cache.slice(0, CACHE_MAX);
+    localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
+  } catch(e) {}
+}
+
+/* ── OPTION 5: PROGRESS ANIMATION ── */
+let progressInterval = null;
+
+function startProgress() {
+  const messages = [
+    'Connecting to Sharaf DG…',
+    'Searching product catalog…',
+    'Analysing your request…',
+    'Finding best matches…',
+    'Fetching prices & details…',
+    'Almost there…'
+  ];
+  let i = 0;
+  const el = document.getElementById('loaderMsg');
+  if (el) el.textContent = messages[0];
+  progressInterval = setInterval(() => {
+    i = Math.min(i + 1, messages.length - 1);
+    if (el) {
+      el.style.opacity = '0';
+      setTimeout(() => {
+        el.textContent = messages[i];
+        el.style.opacity = '1';
+      }, 150);
+    }
+  }, 1800);
+}
+
+function stopProgress() {
+  if (progressInterval) {
+    clearInterval(progressInterval);
+    progressInterval = null;
+  }
+}
+
 function qs(t){document.getElementById('heroIn').value=t;document.getElementById('hdrIn').value=t;doSearch(t);}
 function go(s){
   const v=s==='v'?document.getElementById('heroIn').value.trim():document.getElementById('hdrIn').value.trim();
@@ -346,16 +405,14 @@ async function doSearch(q){
     const raw=data.answer||'';
     let parsed;
     try{
-      // Strip markdown code fences if present
       let clean = raw.trim();
       if(clean.startsWith('```')) {
         clean = clean.replace(/^```[a-z]*\n?/, '').replace(/```\s*$/, '').trim();
       }
-      // Extract JSON object if there's surrounding text
       const m = clean.match(/(\{[\s\S]*\})/);
       parsed = JSON.parse(m ? m[1] : clean);
     }catch(e){
-      // Graceful fallback: show raw text in a clean card
+      stopProgress();
       $('loader').classList.remove('on');
       $('aiSummary').textContent='Results for: '+q;
       $('resMeta').innerHTML='';
@@ -365,20 +422,29 @@ async function doSearch(q){
       return;
     }
 
-    const products=parsed.products||[];
-    $('aiSummary').textContent=parsed.summary||'Here are the best matches for your search.';
-    $('resMeta').innerHTML=`<strong>${products.length} product${products.length!==1?'s':''} found on Sharaf DG</strong>`;
-    $('prodGrid').innerHTML=products.map((p,i)=>cardHTML(p,i)).join('');
-    $('loader').classList.remove('on');
-    $('aiPanel').classList.add('on');
-    $('aiPanel').scrollIntoView({behavior:'smooth',block:'start'});
+    // Cache the result
+    setCache(q, parsed);
+    stopProgress();
+    renderResults(q, parsed, $);
 
   }catch(e){
+    stopProgress();
     $('loader').classList.remove('on');
     showErr('Error: '+e.message);
   }finally{
     $('heroBtn').disabled=false;
   }
+}
+
+function renderResults(q, parsed, $) {
+  if (!$) $ = id => document.getElementById(id);
+  const products = parsed.products || [];
+  $('aiSummary').textContent = parsed.summary || 'Here are the best matches for your search.';
+  $('resMeta').innerHTML = `<strong>${products.length} product${products.length!==1?'s':''} found on Sharaf DG</strong>`;
+  $('prodGrid').innerHTML = products.map((p,i) => cardHTML(p,i)).join('');
+  $('loader').classList.remove('on');
+  $('aiPanel').classList.add('on');
+  $('aiPanel').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
 function showErr(m){const b=document.getElementById('errBox');b.textContent=m;b.classList.add('on');b.scrollIntoView({behavior:'smooth',block:'center'});}
