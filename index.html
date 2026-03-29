@@ -200,9 +200,6 @@ footer strong{color:var(--orange)}
     <h2>What are you looking for today?</h2>
     <p>Type anything above — a product type, brand, use case, or budget. Our AI will find the best matches from Sharaf DG in real time.</p>
   </div>
-  <div class="promo" id="promo">
-    <div>
-      <div class="promo-t">🎉 DG Smart Deals — Up to 40% Off Selected Appliances</div>
       <div class="promo-s">0% installments via Tabby · Free installation · Delivery in 24hrs across UAE</div>
     </div>
     <button class="promo-btn">Shop Deals →</button>
@@ -327,7 +324,6 @@ async function doSearch(q){
   $('aiPanel').classList.remove('on');
   $('errBox').classList.remove('on');
   $('emptyState').style.display='none';
-  $('promo').style.display='none';
   $('loader').classList.add('on');
   $('heroBtn').disabled=true;
   $('loader').scrollIntoView({behavior:'smooth',block:'center'});
