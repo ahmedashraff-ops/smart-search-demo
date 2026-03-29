@@ -312,31 +312,6 @@ function loadSettings(){
   document.getElementById('proxyUrl').value = localStorage.getItem('sdg_prox') ||'https://smart-search-proxy.vercel.app/api/proxy';
 }
 
-/* ── OPTION 6: SEARCH CACHE ── */
-const CACHE_KEY = 'sdg_search_cache';
-const CACHE_MAX = 20;
-
-function getCached(query) {
-  try {
-    const cache = JSON.parse(localStorage.getItem(CACHE_KEY) || '[]');
-    const hit = cache.find(e => e.query.toLowerCase() === query.toLowerCase());
-    return hit ? hit.result : null;
-  } catch(e) { return null; }
-}
-
-function setCache(query, result) {
-  try {
-    let cache = JSON.parse(localStorage.getItem(CACHE_KEY) || '[]');
-    // Remove existing entry for same query
-    cache = cache.filter(e => e.query.toLowerCase() !== query.toLowerCase());
-    // Add to front
-    cache.unshift({ query, result, ts: Date.now() });
-    // Keep only last CACHE_MAX entries
-    if (cache.length > CACHE_MAX) cache = cache.slice(0, CACHE_MAX);
-    localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
-  } catch(e) {}
-}
-
 /* ── OPTION 5: PROGRESS ANIMATION ── */
 let progressInterval = null;
 
@@ -390,10 +365,6 @@ async function doSearch(q){
   $('errBox').classList.remove('on');
   $('emptyState').style.display='none';
 
-  // Check cache first — instant result, no spinner needed
-  const cached = getCached(q);
-  if(cached){ renderResults(q, cached, $); return; }
-
   $('loader').classList.add('on');
   $('heroBtn').disabled=true;
   startProgress();
@@ -428,8 +399,6 @@ async function doSearch(q){
       return;
     }
 
-    // Cache the result
-    setCache(q, parsed);
     stopProgress();
     renderResults(q, parsed, $);
 
