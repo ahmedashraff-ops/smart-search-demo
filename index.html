@@ -157,6 +157,11 @@ footer strong{color:var(--orange)}
         <div class="hint">Your Yandex Cloud folder overview page</div>
       </div>
       <div class="sfield">
+        <label>🤖 Agent Prompt ID</label>
+        <input id="promptId" type="text" placeholder="fvtap9mhn69o5c4jqjhv" autocomplete="off"/>
+        <div class="hint">Yandex AI Studio → Your Agent → Prompt ID</div>
+      </div>
+      <div class="sfield">
         <label>🌐 Proxy URL</label>
         <input id="proxyUrl" type="text" placeholder="https://your-project.vercel.app/api/proxy" autocomplete="off"/>
         <div class="hint">Your Vercel deployment URL + /api/proxy</div>
@@ -192,6 +197,7 @@ footer strong{color:var(--orange)}
     <div class="res-meta"><strong id="resMeta"></strong><div class="divider"></div></div>
     <div class="prod-grid" id="prodGrid"></div>
   </div>
+
   <div class="empty" id="emptyState">
     <div class="empty-icon">🔍</div>
     <h2>What are you looking for today?</h2>
@@ -210,94 +216,51 @@ footer strong{color:var(--orange)}
 </footer>
 
 <script>
-const CAT_BG  = {ac:'#e0f2fe',tv:'#ede9fe',fridge:'#d1fae5',microwave:'#ffedd5',dishwasher:'#cffafe',laundry:'#dbeafe',phone:'#fce7f3',laptop:'#e0e7ff',tablet:'#f0fdf4',audio:'#fef3c7',camera:'#f0fdf4',other:'#f1f5f9'};
-const CAT_CLR = {ac:'#0369a1',tv:'#6d28d9',fridge:'#065f46',microwave:'#c2410c',dishwasher:'#0e7490',laundry:'#1d4ed8',phone:'#be185d',laptop:'#4338ca',tablet:'#166534',audio:'#92400e',camera:'#166534',other:'#475569'};
+const CAT_BG  = {ac:'#e0f2fe',tv:'#ede9fe',fridge:'#d1fae5',microwave:'#ffedd5',dishwasher:'#cffafe',laundry:'#dbeafe',phone:'#fce7f3',laptop:'#e0e7ff',audio:'#fef3c7',camera:'#f0fdf4',other:'#f1f5f9'};
+const CAT_CLR = {ac:'#0369a1',tv:'#6d28d9',fridge:'#065f46',microwave:'#c2410c',dishwasher:'#0e7490',laundry:'#1d4ed8',phone:'#be185d',laptop:'#4338ca',audio:'#92400e',camera:'#166534',other:'#475569'};
 
-// ── Category detection ────────────────────────────────────────────────────
-// Rules use \b word boundaries so short tokens like "ac" only match as whole
-// words — not as substrings in "Active HDR", "capacity", "MacBook" etc.
-// TV is checked FIRST so "Active HDR" never hits the AC branch.
-function guessCategory(name, brand) {
-  const s = ((name || '') + ' ' + (brand || '')).toLowerCase();
-
-  // TV — before AC to prevent "Active HDR" false-positive
-  if (/\b(tv|television|oled|qled|qned|nanocell|miniled|neo[\s-]qled|smart[\s-]tv|4k[\s-]tv|8k[\s-]tv)\b/.test(s)) return 'tv';
-  if (/\b\d{2}["″]?\s*(inch|4k|uhd|fhd)\b/.test(s) && /\b(samsung|lg|sony|tcl|hisense|panasonic|philips)\b/.test(s)) return 'tv';
-
-  // AC — \bac\b matches only the standalone abbreviation
-  if (/\b(ac|air[\s-]conditioner|air[\s-]con|split[\s-]ac|inverter[\s-]ac|window[\s-]ac)\b/.test(s)) return 'ac';
-  if (/\b\d+(\.\d+)?\s*ton\b/.test(s)) return 'ac';
-
-  // Fridge
-  if (/\b(fridge|refrigerator|freezer|french[\s-]door|side[\s-]by[\s-]side)\b/.test(s)) return 'fridge';
-
-  // Laundry — before microwave
-  if (/\b(washing[\s-]machine|washer|laundry|front[\s-]load|top[\s-]load|tumble[\s-]dryer)\b/.test(s)) return 'laundry';
-
-  // Dishwasher
-  if (/\bdishwash/.test(s)) return 'dishwasher';
-
-  // Microwave
-  if (/\b(microwave|convection[\s-]oven|built[\s-]in[\s-]oven)\b/.test(s)) return 'microwave';
-
-  // Tablet — before phone so "Galaxy Tab" doesn't match phone
-  if (/\b(ipad|tablet|galaxy[\s-]tab|tab[\s-]s\d)\b/.test(s)) return 'tablet';
-
-  // Phone
-  if (/\b(smartphone|mobile[\s-]phone|iphone|galaxy[\s-][sazf]\d|5g[\s-]phone)\b/.test(s)) return 'phone';
-
-  // Laptop
-  if (/\b(laptop|macbook|notebook|chromebook|ultrabook)\b/.test(s)) return 'laptop';
-
-  // Audio — "speaker" only if no TV keyword present
-  if (/\b(earphone|headphone|earbuds|airpods|soundbar|subwoofer|wireless[\s-]speaker)\b/.test(s)) return 'audio';
-  if (/\bspeaker\b/.test(s) && !/\b(tv|television|oled|qled)\b/.test(s)) return 'audio';
-
-  // Camera
-  if (/\b(camera|dslr|mirrorless|gopro|action[\s-]cam|webcam)\b/.test(s)) return 'camera';
-
+function guessCategory(name) {
+  const n = (name||'').toLowerCase();
+  if(/ac|air.?con|split|inverter.*(ton|btu)/.test(n)) return 'ac';
+  if(/tv|television|oled|qled|screen|inch.*smart/.test(n)) return 'tv';
+  if(/fridge|refrigerator|freezer/.test(n)) return 'fridge';
+  if(/microwave|oven/.test(n)) return 'microwave';
+  if(/dishwash/.test(n)) return 'dishwasher';
+  if(/wash|laundry|dryer/.test(n)) return 'laundry';
+  if(/phone|iphone|galaxy|mobile|smartphone/.test(n)) return 'phone';
+  if(/laptop|macbook|notebook/.test(n)) return 'laptop';
+  if(/earphone|headphone|speaker|buds|audio/.test(n)) return 'audio';
+  if(/camera|gopro/.test(n)) return 'camera';
   return 'other';
-}
-// ─────────────────────────────────────────────────────────────────────────
-
-function proxyImg(url) {
-  if (!url) return '';
-  const proxy = document.getElementById('proxyUrl').value.trim().replace('/api/proxy', '');
-  return proxy + '/api/image?url=' + encodeURIComponent(url);
 }
 
 function getSVG(cat, clr) {
   const svgs = {
-    tv:`<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="8" y="6" width="104" height="66" rx="6" fill="${clr}" opacity=".12"/><rect x="13" y="11" width="94" height="56" rx="4" fill="${clr}" opacity=".2"/><rect x="16" y="14" width="88" height="50" rx="3" fill="${clr}" opacity=".15"/><rect x="46" y="74" width="28" height="5" rx="2" fill="${clr}" opacity=".25"/><rect x="38" y="79" width="44" height="3" rx="1.5" fill="${clr}" opacity=".2"/><circle cx="107" cy="18" r="3" fill="${clr}" opacity=".4"/><circle cx="107" cy="26" r="3" fill="${clr}" opacity=".3"/><path d="M50 39l12-8v16z" fill="${clr}" opacity=".35"/></svg>`,
-    ac:`<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="10" y="22" width="100" height="42" rx="8" fill="${clr}" opacity=".15"/><rect x="10" y="22" width="100" height="14" rx="8" fill="${clr}" opacity=".2"/><rect x="18" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="34" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="50" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="66" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="82" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><circle cx="94" cy="29" r="4" fill="${clr}" opacity=".3"/><circle cx="82" cy="29" r="4" fill="${clr}" opacity=".2"/><rect x="10" y="64" width="100" height="5" rx="2.5" fill="${clr}" opacity=".1"/></svg>`,
-    fridge:`<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="32" y="4" width="56" height="82" rx="7" fill="${clr}" opacity=".15"/><rect x="32" y="4" width="56" height="32" rx="7" fill="${clr}" opacity=".1"/><rect x="32" y="36" width="56" height="50" rx="0" fill="${clr}" opacity=".08"/><line x1="32" y1="36" x2="88" y2="36" stroke="${clr}" stroke-width="1.5" opacity=".2"/><rect x="80" y="17" width="5" height="14" rx="2.5" fill="${clr}" opacity=".3"/><rect x="80" y="50" width="5" height="20" rx="2.5" fill="${clr}" opacity=".25"/></svg>`,
-    microwave:`<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="8" y="18" width="104" height="58" rx="8" fill="${clr}" opacity=".15"/><rect x="14" y="24" width="68" height="46" rx="5" fill="${clr}" opacity=".12"/><rect x="88" y="24" width="18" height="46" rx="0" fill="${clr}" opacity=".08"/><circle cx="97" cy="38" r="6" fill="${clr}" opacity=".2"/><circle cx="48" cy="47" r="18" fill="${clr}" opacity=".08"/><circle cx="48" cy="47" r="11" fill="${clr}" opacity=".08"/></svg>`,
-    dishwasher:`<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="30" y="4" width="60" height="82" rx="7" fill="${clr}" opacity=".15"/><rect x="30" y="4" width="60" height="16" rx="7" fill="${clr}" opacity=".12"/><rect x="38" y="9" width="24" height="6" rx="3" fill="${clr}" opacity=".2"/><circle cx="81" cy="12" r="3.5" fill="${clr}" opacity=".25"/></svg>`,
-    laundry:`<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="28" y="4" width="64" height="82" rx="8" fill="${clr}" opacity=".15"/><rect x="28" y="4" width="64" height="18" rx="8" fill="${clr}" opacity=".12"/><circle cx="60" cy="55" r="22" fill="${clr}" opacity=".1"/><circle cx="60" cy="55" r="16" fill="${clr}" opacity=".1"/><circle cx="60" cy="55" r="8" fill="${clr}" opacity=".12"/></svg>`,
-    phone:`<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="40" y="4" width="40" height="82" rx="8" fill="${clr}" opacity=".15"/><rect x="44" y="10" width="32" height="62" rx="4" fill="${clr}" opacity=".1"/><circle cx="60" cy="79" r="3.5" fill="${clr}" opacity=".25"/><rect x="52" y="7" width="16" height="3" rx="1.5" fill="${clr}" opacity=".2"/></svg>`,
-    tablet:`<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="28" y="4" width="64" height="82" rx="8" fill="${clr}" opacity=".15"/><rect x="33" y="10" width="54" height="66" rx="4" fill="${clr}" opacity=".1"/><circle cx="60" cy="81" r="3" fill="${clr}" opacity=".25"/></svg>`,
-    laptop:`<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="16" y="14" width="88" height="56" rx="5" fill="${clr}" opacity=".15"/><rect x="20" y="18" width="80" height="48" rx="3" fill="${clr}" opacity=".1"/><rect x="6" y="70" width="108" height="6" rx="3" fill="${clr}" opacity=".15"/><rect x="44" y="70" width="32" height="4" rx="2" fill="${clr}" opacity=".2"/></svg>`,
-    audio:`<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><circle cx="60" cy="45" r="30" fill="${clr}" opacity=".12"/><circle cx="60" cy="45" r="20" fill="${clr}" opacity=".12"/><circle cx="60" cy="45" r="10" fill="${clr}" opacity=".15"/><path d="M28 45c0-17.7 14.3-32 32-32" stroke="${clr}" stroke-width="2.5" stroke-linecap="round" opacity=".3"/><path d="M92 45c0 17.7-14.3 32-32 32" stroke="${clr}" stroke-width="2.5" stroke-linecap="round" opacity=".3"/></svg>`,
-    camera:`<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="10" y="26" width="100" height="56" rx="8" fill="${clr}" opacity=".15"/><path d="M42 26l8-14h20l8 14" fill="${clr}" opacity=".12"/><circle cx="60" cy="54" r="18" fill="${clr}" opacity=".12"/><circle cx="60" cy="54" r="11" fill="${clr}" opacity=".12"/><circle cx="60" cy="54" r="5" fill="${clr}" opacity=".2"/></svg>`,
-    other:`<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="20" y="20" width="80" height="55" rx="7" fill="${clr}" opacity=".15"/><rect x="28" y="28" width="64" height="38" rx="4" fill="${clr}" opacity=".1"/><rect x="48" y="75" width="24" height="5" rx="2" fill="${clr}" opacity=".2"/></svg>`
+    tv: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="8" y="6" width="104" height="66" rx="6" fill="${clr}" opacity=".12"/><rect x="13" y="11" width="94" height="56" rx="4" fill="${clr}" opacity=".2"/><rect x="16" y="14" width="88" height="50" rx="3" fill="${clr}" opacity=".15"/><rect x="46" y="74" width="28" height="5" rx="2" fill="${clr}" opacity=".25"/><rect x="38" y="79" width="44" height="3" rx="1.5" fill="${clr}" opacity=".2"/><circle cx="107" cy="18" r="3" fill="${clr}" opacity=".4"/><circle cx="107" cy="26" r="3" fill="${clr}" opacity=".3"/><path d="M50 39l12-8v16z" fill="${clr}" opacity=".35"/></svg>`,
+    ac: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="10" y="22" width="100" height="42" rx="8" fill="${clr}" opacity=".15"/><rect x="10" y="22" width="100" height="14" rx="8" fill="${clr}" opacity=".2"/><rect x="18" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="34" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="50" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="66" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="82" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><circle cx="94" cy="29" r="4" fill="${clr}" opacity=".3"/><circle cx="82" cy="29" r="4" fill="${clr}" opacity=".2"/><rect x="10" y="64" width="100" height="5" rx="2.5" fill="${clr}" opacity=".1"/></svg>`,
+    fridge: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="32" y="4" width="56" height="82" rx="7" fill="${clr}" opacity=".15"/><rect x="32" y="4" width="56" height="32" rx="7" fill="${clr}" opacity=".1"/><rect x="32" y="36" width="56" height="50" rx="0" fill="${clr}" opacity=".08"/><line x1="32" y1="36" x2="88" y2="36" stroke="${clr}" stroke-width="1.5" opacity=".2"/><rect x="80" y="17" width="5" height="14" rx="2.5" fill="${clr}" opacity=".3"/><rect x="80" y="50" width="5" height="20" rx="2.5" fill="${clr}" opacity=".25"/><rect x="40" y="46" width="26" height="2" rx="1" fill="${clr}" opacity=".15"/><rect x="40" y="52" width="18" height="2" rx="1" fill="${clr}" opacity=".15"/><rect x="40" y="60" width="26" height="2" rx="1" fill="${clr}" opacity=".15"/></svg>`,
+    microwave: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="8" y="18" width="104" height="58" rx="8" fill="${clr}" opacity=".15"/><rect x="14" y="24" width="68" height="46" rx="5" fill="${clr}" opacity=".12"/><rect x="88" y="24" width="18" height="46" rx="0" fill="${clr}" opacity=".08"/><circle cx="97" cy="38" r="6" fill="${clr}" opacity=".2"/><rect x="91" y="52" width="14" height="4" rx="2" fill="${clr}" opacity=".18"/><rect x="91" y="60" width="14" height="4" rx="2" fill="${clr}" opacity=".18"/><circle cx="48" cy="47" r="18" fill="${clr}" opacity=".08"/><circle cx="48" cy="47" r="11" fill="${clr}" opacity=".08"/></svg>`,
+    dishwasher: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="30" y="4" width="60" height="82" rx="7" fill="${clr}" opacity=".15"/><rect x="30" y="4" width="60" height="16" rx="7" fill="${clr}" opacity=".12"/><rect x="38" y="9" width="24" height="6" rx="3" fill="${clr}" opacity=".2"/><circle cx="81" cy="12" r="3.5" fill="${clr}" opacity=".25"/><rect x="38" y="28" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/><rect x="38" y="38" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/><rect x="38" y="48" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/><rect x="38" y="58" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/><rect x="38" y="68" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/></svg>`,
+    laundry: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="28" y="4" width="64" height="82" rx="8" fill="${clr}" opacity=".15"/><rect x="28" y="4" width="64" height="18" rx="8" fill="${clr}" opacity=".12"/><circle cx="60" cy="55" r="22" fill="${clr}" opacity=".1"/><circle cx="60" cy="55" r="16" fill="${clr}" opacity=".1"/><circle cx="60" cy="55" r="8" fill="${clr}" opacity=".12"/><rect x="36" y="11" width="16" height="5" rx="2.5" fill="${clr}" opacity=".2"/><circle cx="78" cy="13" r="3" fill="${clr}" opacity=".25"/><circle cx="68" cy="13" r="3" fill="${clr}" opacity=".2"/></svg>`,
+    phone: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="40" y="4" width="40" height="82" rx="8" fill="${clr}" opacity=".15"/><rect x="44" y="10" width="32" height="62" rx="4" fill="${clr}" opacity=".1"/><circle cx="60" cy="79" r="3.5" fill="${clr}" opacity=".25"/><rect x="52" y="7" width="16" height="3" rx="1.5" fill="${clr}" opacity=".2"/></svg>`,
+    laptop: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="16" y="14" width="88" height="56" rx="5" fill="${clr}" opacity=".15"/><rect x="20" y="18" width="80" height="48" rx="3" fill="${clr}" opacity=".1"/><rect x="6" y="70" width="108" height="6" rx="3" fill="${clr}" opacity=".15"/><rect x="44" y="70" width="32" height="4" rx="2" fill="${clr}" opacity=".2"/></svg>`,
+    audio: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><circle cx="60" cy="45" r="30" fill="${clr}" opacity=".12"/><circle cx="60" cy="45" r="20" fill="${clr}" opacity=".12"/><circle cx="60" cy="45" r="10" fill="${clr}" opacity=".15"/><path d="M28 45c0-17.7 14.3-32 32-32" stroke="${clr}" stroke-width="2.5" stroke-linecap="round" opacity=".3"/><path d="M92 45c0 17.7-14.3 32-32 32" stroke="${clr}" stroke-width="2.5" stroke-linecap="round" opacity=".3"/></svg>`,
+    camera: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="10" y="26" width="100" height="56" rx="8" fill="${clr}" opacity=".15"/><path d="M42 26l8-14h20l8 14" fill="${clr}" opacity=".12"/><circle cx="60" cy="54" r="18" fill="${clr}" opacity=".12"/><circle cx="60" cy="54" r="11" fill="${clr}" opacity=".12"/><circle cx="60" cy="54" r="5" fill="${clr}" opacity=".2"/><circle cx="88" cy="36" r="4" fill="${clr}" opacity=".2"/></svg>`,
+    other: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="20" y="20" width="80" height="55" rx="7" fill="${clr}" opacity=".15"/><rect x="28" y="28" width="64" height="38" rx="4" fill="${clr}" opacity=".1"/><rect x="48" y="75" width="24" height="5" rx="2" fill="${clr}" opacity=".2"/></svg>`
   };
   return svgs[cat] || svgs.other;
 }
 
 function cardHTML(p, i) {
-  // Pass both name AND brand for accurate categorisation
-  const cat  = guessCategory(p.name, p.brand);
+  const cat  = guessCategory(p.name);
   const bg   = CAT_BG[cat];
   const clr  = CAT_CLR[cat];
   const best = i < 2;
-  const feats = (p.features||[]).slice(0,3).map(f=>`<span class="card-feat">${f}</span>`).join('');
+  const feats = (p.features||[]).slice(0,3).map(f => `<span class="card-feat">${f}</span>`).join('');
   return `
   <div class="prod-card${best?' best':''} fu" style="animation-delay:${i*.07}s">
     <div class="card-img" style="background:${bg};display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative">
-      ${p.image_url
-        ?`<img src="${proxyImg(p.image_url)}" alt="${p.name}" style="width:100%;height:100%;object-fit:contain;padding:12px" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">${getSVG(cat,clr)}`
-        :getSVG(cat,clr)
-      }
+      ${getSVG(cat, clr)}
       <div class="badge-cat" style="background:${bg};color:${clr};position:absolute;top:10px;left:10px">${cat.toUpperCase()}</div>
       ${best?'<div class="badge-best" style="position:absolute;top:10px;right:10px">⭐ Best Match</div>':''}
     </div>
@@ -324,113 +287,149 @@ function cardHTML(p, i) {
   </div>`;
 }
 
-function toggleSettings(){
-  const p=document.getElementById('settingsPanel');
-  p.style.display=p.style.display==='none'?'block':'none';
-}
-function saveSettings(){
-  localStorage.setItem('sdg_key',  document.getElementById('apiKey').value);
-  localStorage.setItem('sdg_fold', document.getElementById('folderId').value);
-  localStorage.setItem('sdg_prox', document.getElementById('proxyUrl').value);
-  const m=document.getElementById('savedMsg');
-  m.style.display='block';
-  setTimeout(()=>m.style.display='none',2500);
-}
-function loadSettings(){
-  document.getElementById('apiKey').value   = localStorage.getItem('sdg_key')  ||'';
-  document.getElementById('folderId').value = localStorage.getItem('sdg_fold') ||'b1g3c22pier4ri4nu7rs';
-  document.getElementById('proxyUrl').value = localStorage.getItem('sdg_prox') ||'https://smart-search-proxy.vercel.app/api/proxy';
+function toggleSettings() {
+  const p = document.getElementById('settingsPanel');
+  p.style.display = p.style.display === 'none' ? 'block' : 'none';
 }
 
-/* ── Progress animation ── */
+function saveSettings() {
+  localStorage.setItem('sdg_key',      document.getElementById('apiKey').value);
+  localStorage.setItem('sdg_fold',     document.getElementById('folderId').value);
+  localStorage.setItem('sdg_prompt',   document.getElementById('promptId').value);
+  localStorage.setItem('sdg_prox',     document.getElementById('proxyUrl').value);
+  const m = document.getElementById('savedMsg');
+  m.style.display = 'block';
+  setTimeout(() => m.style.display = 'none', 2500);
+}
+
+function loadSettings() {
+  document.getElementById('apiKey').value   = localStorage.getItem('sdg_key')    || '';
+  document.getElementById('folderId').value = localStorage.getItem('sdg_fold')   || 'b1g3c22pier4ri4nu7rs';
+  document.getElementById('promptId').value = localStorage.getItem('sdg_prompt') || '';
+  document.getElementById('proxyUrl').value = localStorage.getItem('sdg_prox')   || 'https://smart-search-proxy.vercel.app/api/proxy';
+}
+
+/* ── PROGRESS ANIMATION ── */
 let progressInterval = null;
-function startProgress(){
-  const messages=['Connecting to Sharaf DG…','Searching product catalog…','Analysing your request…','Finding best matches…','Fetching prices & details…','Almost there…'];
-  let i=0;
-  const el=document.getElementById('loaderMsg');
-  if(el) el.textContent=messages[0];
-  progressInterval=setInterval(()=>{
-    i=Math.min(i+1,messages.length-1);
-    if(el){el.style.opacity='0';setTimeout(()=>{el.textContent=messages[i];el.style.opacity='1';},150);}
-  },1800);
-}
-function stopProgress(){
-  if(progressInterval){clearInterval(progressInterval);progressInterval=null;}
+
+function startProgress() {
+  const messages = [
+    'Connecting to Sharaf DG…',
+    'Searching product catalog…',
+    'Analysing your request…',
+    'Finding best matches…',
+    'Fetching prices & details…',
+    'Almost there…'
+  ];
+  let i = 0;
+  const el = document.getElementById('loaderMsg');
+  if (el) el.textContent = messages[0];
+  progressInterval = setInterval(() => {
+    i = Math.min(i + 1, messages.length - 1);
+    if (el) {
+      el.style.opacity = '0';
+      setTimeout(() => { el.textContent = messages[i]; el.style.opacity = '1'; }, 150);
+    }
+  }, 1800);
 }
 
-function qs(t){document.getElementById('heroIn').value=t;document.getElementById('hdrIn').value=t;doSearch(t);}
-function go(s){
-  const v=s==='v'?document.getElementById('heroIn').value.trim():document.getElementById('hdrIn').value.trim();
-  if(v){document.getElementById('heroIn').value=v;document.getElementById('hdrIn').value=v;doSearch(v);}
+function stopProgress() {
+  if (progressInterval) { clearInterval(progressInterval); progressInterval = null; }
 }
 
-async function doSearch(q){
-  const key  =document.getElementById('apiKey').value.trim();
-  const fold =document.getElementById('folderId').value.trim();
-  const proxy=document.getElementById('proxyUrl').value.trim();
-  if(!key)  {showErr('Please enter your API Key in ⚙️ Settings.');return;}
-  if(!fold) {showErr('Please enter your Folder ID in ⚙️ Settings.');return;}
-  if(!proxy){showErr('Please enter your Proxy URL in ⚙️ Settings.');return;}
+function go(s) {
+  const v = s === 'v'
+    ? document.getElementById('heroIn').value.trim()
+    : document.getElementById('hdrIn').value.trim();
+  if (v) {
+    document.getElementById('heroIn').value = v;
+    document.getElementById('hdrIn').value  = v;
+    doSearch(v);
+  }
+}
 
-  const $=id=>document.getElementById(id);
+async function doSearch(q) {
+  const key      = document.getElementById('apiKey').value.trim();
+  const fold     = document.getElementById('folderId').value.trim();
+  const promptId = document.getElementById('promptId').value.trim();
+  const proxy    = document.getElementById('proxyUrl').value.trim();
+
+  if (!key)      { showErr('Please enter your API Key in ⚙️ Settings.');      return; }
+  if (!fold)     { showErr('Please enter your Folder ID in ⚙️ Settings.');    return; }
+  if (!promptId) { showErr('Please enter your Agent Prompt ID in ⚙️ Settings.'); return; }
+  if (!proxy)    { showErr('Please enter your Proxy URL in ⚙️ Settings.');    return; }
+
+  const $ = id => document.getElementById(id);
   $('aiPanel').classList.remove('on');
   $('errBox').classList.remove('on');
-  $('emptyState').style.display='none';
+  $('emptyState').style.display = 'none';
   $('loader').classList.add('on');
-  $('heroBtn').disabled=true;
+  $('heroBtn').disabled = true;
   startProgress();
-  $('loader').scrollIntoView({behavior:'smooth',block:'center'});
+  $('loader').scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-  try{
-    const r=await fetch(proxy,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({apiKey:key,folderId:fold,query:q})});
-    const data=await r.json();
-    if(!r.ok) throw new Error(data.error||'Search error '+r.status);
+  try {
+    const r = await fetch(proxy, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ apiKey: key, folderId: fold, promptId, query: q })
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || 'Search error ' + r.status);
 
-    const raw=data.answer||'';
+    const raw = data.answer || '';
     let parsed;
-    try{
-      let clean=raw.trim();
-      if(clean.startsWith('```')) clean=clean.replace(/^```[a-z]*\n?/,'').replace(/```\s*$/,'').trim();
-      const m=clean.match(/(\{[\s\S]*\})/);
-      parsed=JSON.parse(m?m[1]:clean);
-    }catch(e){
+    try {
+      let clean = raw.trim();
+      if (clean.startsWith('```')) {
+        clean = clean.replace(/^```[a-z]*\n?/, '').replace(/```\s*$/, '').trim();
+      }
+      const m = clean.match(/(\{[\s\S]*\})/);
+      parsed = JSON.parse(m ? m[1] : clean);
+    } catch(e) {
       stopProgress();
       $('loader').classList.remove('on');
-      $('aiSummary').textContent='Results for: '+q;
-      $('resMeta').innerHTML='';
-      $('prodGrid').innerHTML=`<div style="grid-column:1/-1;background:var(--white);border-radius:12px;padding:24px;line-height:1.8;color:var(--text);font-size:14px;border:1.5px solid var(--border);white-space:pre-wrap">${raw}</div>`;
+      $('aiSummary').textContent = 'Results for: ' + q;
+      $('resMeta').innerHTML = '';
+      $('prodGrid').innerHTML = `<div style="grid-column:1/-1;background:var(--white);border-radius:12px;padding:24px;line-height:1.8;color:var(--text);font-size:14px;border:1.5px solid var(--border);white-space:pre-wrap">${raw}</div>`;
       $('aiPanel').classList.add('on');
-      $('aiPanel').scrollIntoView({behavior:'smooth',block:'start'});
+      $('aiPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
       return;
     }
 
     stopProgress();
-    renderResults(q,parsed,$);
+    renderResults(q, parsed, $);
 
-  }catch(e){
+  } catch(e) {
     stopProgress();
     $('loader').classList.remove('on');
-    showErr('Error: '+e.message);
-  }finally{
-    $('heroBtn').disabled=false;
+    showErr('Error: ' + e.message);
+  } finally {
+    $('heroBtn').disabled = false;
   }
 }
 
-function renderResults(q,parsed,$){
-  if(!$) $=id=>document.getElementById(id);
-  const products=parsed.products||[];
-  $('aiSummary').textContent=parsed.summary||'Here are the best matches for your search.';
-  $('resMeta').innerHTML=`<strong>${products.length} product${products.length!==1?'s':''} found on Sharaf DG</strong>`;
-  $('prodGrid').innerHTML=products.map((p,i)=>cardHTML(p,i)).join('');
+function renderResults(q, parsed, $) {
+  if (!$) $ = id => document.getElementById(id);
+  const products = parsed.products || [];
+  $('aiSummary').textContent = parsed.summary || 'Here are the best matches for your search.';
+  $('resMeta').innerHTML = `<strong>${products.length} product${products.length !== 1 ? 's' : ''} found on Sharaf DG</strong>`;
+  $('prodGrid').innerHTML = products.map((p, i) => cardHTML(p, i)).join('');
   $('loader').classList.remove('on');
   $('aiPanel').classList.add('on');
-  $('aiPanel').scrollIntoView({behavior:'smooth',block:'start'});
+  $('aiPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-function showErr(m){const b=document.getElementById('errBox');b.textContent=m;b.classList.add('on');b.scrollIntoView({behavior:'smooth',block:'center'});}
+function showErr(m) {
+  const b = document.getElementById('errBox');
+  b.textContent = m;
+  b.classList.add('on');
+  b.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
 
-document.getElementById('heroIn').addEventListener('keypress',e=>{if(e.key==='Enter')go('v');});
-document.getElementById('hdrIn').addEventListener('keypress', e=>{if(e.key==='Enter')go('h');});
+document.getElementById('heroIn').addEventListener('keypress', e => { if (e.key === 'Enter') go('v'); });
+document.getElementById('hdrIn').addEventListener('keypress',  e => { if (e.key === 'Enter') go('h'); });
+
 loadSettings();
 </script>
 </body>
