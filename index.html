@@ -449,6 +449,18 @@ function parseAgentText(raw, query) {
         name = cleanName(name);
         if (!name) continue;
 
+        // ── Product quality gate ────────────────────────────────────
+        // Reject rows that look like description sentences, not product names.
+        // A real product name: starts with a brand/number, has no verb phrases,
+        // doesn't read like a sentence (ends with period, contains "where/which/that/for").
+        const looksLikeSentence =
+          name.length > 60 ||                                      // too long to be a product name
+          /\.$/.test(name) ||                                       // ends with a period
+          /(where|which|that|rooms|viewing|better|matter|vs\.?|choose|ideal|suitable)/i.test(name) ||
+          /^(best|good|great|ideal|perfect|use|for |if )/i.test(name) || // starts like a recommendation
+          (name.split(' ').length > 7 && !/\d/.test(name));        // 7+ words and no numbers = sentence
+        if (looksLikeSentence) continue;
+
         // Specs: size + any specs col
         const specs = [size, get('specs')].filter(Boolean).join(' · ');
 
