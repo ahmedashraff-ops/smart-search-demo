@@ -27,7 +27,6 @@ header{background:var(--white);border-bottom:3px solid var(--orange);position:st
 .hdr-search input::placeholder{color:#9ca3af}
 .hdr-go{position:absolute;right:0;top:0;bottom:0;width:44px;background:var(--orange);border:none;border-radius:0 8px 8px 0;cursor:pointer;font-size:17px;display:flex;align-items:center;justify-content:center}
 .hdr-go:hover{background:var(--orange-dk)}
-.hdr-go:disabled{opacity:.5;cursor:not-allowed}
 .ai-badge{background:var(--blue);color:#fff;padding:8px 14px;border-radius:7px;font-size:11px;font-weight:700;display:flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0}
 .pulse{width:7px;height:7px;border-radius:50%;background:var(--orange);animation:blink 2s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
@@ -76,7 +75,7 @@ header{background:var(--white);border-bottom:3px solid var(--orange);position:st
 .res-meta strong{color:var(--blue)}
 .divider{height:1px;background:var(--border);flex:1}
 .prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
-.prod-card{background:var(--white);border:1.5px solid var(--border);border-radius:14px;overflow:hidden;transition:all .25s;cursor:pointer;display:flex;flex-direction:column}
+.prod-card{background:var(--white);border:1.5px solid var(--border);border-radius:14px;overflow:hidden;transition:all .25s;display:flex;flex-direction:column}
 .prod-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,47,134,.12);border-color:var(--blue-pale)}
 .prod-card.best{border-color:var(--orange);box-shadow:0 4px 20px rgba(245,168,0,.18)}
 .card-img{height:160px;display:flex;align-items:center;justify-content:center;position:relative}
@@ -92,35 +91,19 @@ header{background:var(--white);border-bottom:3px solid var(--orange);position:st
 .price-lbl{font-size:10px;color:var(--muted);font-weight:500}
 .price-num{font-family:'Nunito',sans-serif;font-size:22px;font-weight:900;color:var(--blue)}
 .price-old{font-size:12px;color:var(--muted);text-decoration:line-through}
-.buy-btn{background:var(--orange);color:var(--blue);border:none;border-radius:7px;padding:8px 16px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;cursor:pointer;transition:background .2s;white-space:nowrap;text-decoration:none;display:inline-block}
+.buy-btn{background:var(--orange);color:var(--blue);border:none;border-radius:7px;padding:8px 16px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-block;transition:background .2s;white-space:nowrap}
 .buy-btn:hover{background:var(--orange-dk)}
-.buy-btn.disabled{background:#d1d5db;color:#6b7280;cursor:default}
+.buy-btn.no-url{background:#e5e7eb;color:#9ca3af;cursor:default}
 .energy-tag{background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px}
 .card-why{padding:12px 16px;background:#fff8e1;border-top:1px solid #fde68a;font-size:12px;color:#78350f;line-height:1.5}
 .card-why-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#e09600;display:block;margin-bottom:3px}
-/* ── AI Insights panel ── */
-.extra-info{margin-top:32px}
-.extra-info-hdr{display:flex;align-items:center;gap:10px;margin-bottom:16px;cursor:pointer;user-select:none}
-.extra-info-hdr-line{height:1px;background:var(--border);flex:1}
-.extra-info-pill{background:var(--blue-pale);color:var(--blue);font-size:11px;font-weight:700;padding:5px 14px;border-radius:20px;display:flex;align-items:center;gap:6px;white-space:nowrap}
-.extra-info-body{display:none}
-.extra-info-body.open{display:block}
-.extra-section{background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:16px}
-.extra-title{font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;color:var(--blue);margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--blue-pale)}
-.extra-table{width:100%;border-collapse:collapse;font-size:13px}
-.extra-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.5}
-.extra-table tr:first-child td{font-weight:700;color:var(--blue);background:var(--blue-pale);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
-.extra-table tr:last-child td{border-bottom:none}
-.extra-table tr:nth-child(even) td{background:#fafbfd}
-.extra-list{list-style:none;display:flex;flex-direction:column;gap:8px}
-.extra-list li{font-size:13px;color:var(--text);line-height:1.6;padding-left:16px;position:relative}
-.extra-list li::before{content:'→';position:absolute;left:0;color:var(--orange);font-weight:700}
-.extra-para{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:8px}
-.extra-kv{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:13px}
-.extra-kv-key{font-weight:700;color:var(--blue);white-space:nowrap}
-.extra-kv-val{color:var(--text)}
-.extra-link{display:inline-flex;align-items:center;gap:6px;background:var(--blue-pale);color:var(--blue);padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none;margin:3px 4px 3px 0;transition:background .2s}
-.extra-link:hover{background:#c7d6f5}
+/* AI Insights */
+.insights-wrap{margin-top:32px}
+.insights-hdr{display:flex;align-items:center;gap:10px;margin-bottom:16px;cursor:pointer;user-select:none}
+.insights-pill{background:var(--blue-pale);color:var(--blue);font-size:11px;font-weight:700;padding:5px 14px;border-radius:20px;display:flex;align-items:center;gap:6px}
+.insights-line{height:1px;background:var(--border);flex:1}
+.insights-body{background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:20px 24px;display:none;white-space:pre-wrap;font-size:13px;color:var(--text);line-height:1.8}
+.insights-body.open{display:block}
 .empty{text-align:center;padding:72px 24px;color:var(--muted)}
 .empty-icon{font-size:64px;margin-bottom:16px;opacity:.35}
 .empty h2{font-family:'Nunito',sans-serif;font-size:24px;font-weight:900;color:var(--blue);margin-bottom:10px}
@@ -132,10 +115,8 @@ footer strong{color:var(--orange)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 .fu{animation:fadeUp .4s ease both}
 @media(max-width:768px){
-  .hdr{padding:0 14px;gap:10px}
-  .ai-badge{display:none}
-  .hero h1{font-size:30px}
-  .main{padding:16px}
+  .hdr{padding:0 14px;gap:10px}.ai-badge{display:none}
+  .hero h1{font-size:30px}.main{padding:16px}
 }
 </style>
 </head>
@@ -145,13 +126,10 @@ footer strong{color:var(--orange)}
 
 <header>
   <div class="hdr">
-    <a class="logo" href="#">
-      <div class="logo-top">Sharaf</div>
-      <div class="logo-bot">DG</div>
-    </a>
+    <a class="logo" href="#"><div class="logo-top">Sharaf</div><div class="logo-bot">DG</div></a>
     <div class="hdr-search">
       <input id="hdrIn" type="text" placeholder="Search products, brands, models…" autocomplete="off"/>
-      <button class="hdr-go" id="hdrBtn" onclick="go('h')">🔍</button>
+      <button class="hdr-go" onclick="go('h')">🔍</button>
     </div>
     <div class="ai-badge"><span class="pulse"></span>Yango AI Active</div>
     <button class="settings-btn" onclick="toggleSettings()">⚙️ Settings</button>
@@ -219,12 +197,12 @@ footer strong{color:var(--orange)}
     </div>
     <div class="res-meta"><strong id="resMeta"></strong><div class="divider"></div></div>
     <div class="prod-grid" id="prodGrid"></div>
-    <div class="extra-info" id="extraInfo" style="display:none">
-      <div class="extra-info-hdr" onclick="toggleExtra()">
-        <div class="extra-info-pill">💡 AI Insights <span id="extraChevron">▼</span></div>
-        <div class="extra-info-hdr-line"></div>
+    <div class="insights-wrap" id="insightsWrap" style="display:none">
+      <div class="insights-hdr" onclick="toggleInsights()">
+        <div class="insights-pill">💡 AI Insights <span id="insightsChevron">▼</span></div>
+        <div class="insights-line"></div>
       </div>
-      <div class="extra-info-body" id="extraBody"></div>
+      <div class="insights-body" id="insightsBody"></div>
     </div>
   </div>
   <div class="empty" id="emptyState">
@@ -245,333 +223,274 @@ footer strong{color:var(--orange)}
 </footer>
 
 <script>
-// ─── CATEGORY MAPS ────────────────────────────────────────────────
-const CAT_BG  = {ac:'#e0f2fe',tv:'#ede9fe',fridge:'#d1fae5',microwave:'#ffedd5',dishwasher:'#cffafe',laundry:'#dbeafe',phone:'#fce7f3',laptop:'#e0e7ff',audio:'#fef3c7',camera:'#f0fdf4',kettle:'#fff7ed',small:'#fdf4ff',other:'#f1f5f9'};
-const CAT_CLR = {ac:'#0369a1',tv:'#6d28d9',fridge:'#065f46',microwave:'#c2410c',dishwasher:'#0e7490',laundry:'#1d4ed8',phone:'#be185d',laptop:'#4338ca',audio:'#92400e',camera:'#166534',kettle:'#c2410c',small:'#7c3aed',other:'#475569'};
+// ─── CATEGORIES ───────────────────────────────────────────────────
+const CAT_BG  = {tv:'#ede9fe',ac:'#e0f2fe',fridge:'#d1fae5',phone:'#fce7f3',laptop:'#e0e7ff',audio:'#fef3c7',camera:'#f0fdf4',microwave:'#ffedd5',dishwasher:'#cffafe',laundry:'#dbeafe',kettle:'#fff7ed',small:'#fdf4ff',other:'#f1f5f9'};
+const CAT_CLR = {tv:'#6d28d9',ac:'#0369a1',fridge:'#065f46',phone:'#be185d',laptop:'#4338ca',audio:'#92400e',camera:'#166534',microwave:'#c2410c',dishwasher:'#0e7490',laundry:'#1d4ed8',kettle:'#c2410c',small:'#7c3aed',other:'#475569'};
 
-function guessCategory(name) {
-  const n = (name||'').toLowerCase();
-  if (/ac|air.?con|split|inverter.*(ton|btu)/.test(n)) return 'ac';
-  if (/tv|television|oled|qled|screen|inch.*smart/.test(n)) return 'tv';
-  if (/fridge|refrigerator|freezer/.test(n)) return 'fridge';
-  if (/microwave|oven/.test(n)) return 'microwave';
-  if (/dishwash/.test(n)) return 'dishwasher';
-  if (/wash|laundry|dryer/.test(n)) return 'laundry';
-  if (/phone|iphone|galaxy|mobile|smartphone/.test(n)) return 'phone';
-  if (/laptop|macbook|notebook/.test(n)) return 'laptop';
-  if (/earphone|headphone|speaker|buds|audio/.test(n)) return 'audio';
-  if (/camera|gopro/.test(n)) return 'camera';
-  if (/kettle|jug|boil/.test(n)) return 'kettle';
-  if (/toaster|iron|blender|mixer|juicer|vacuum|fan|heater|coffee|grind/.test(n)) return 'small';
+function guessCategory(n) {
+  n = (n||'').toLowerCase();
+  if (/tv|oled|qled|television/.test(n))         return 'tv';
+  if (/ac|air.?con|split|inverter/.test(n))       return 'ac';
+  if (/fridge|refrigerator|freezer/.test(n))      return 'fridge';
+  if (/phone|iphone|galaxy|mobile/.test(n))       return 'phone';
+  if (/laptop|macbook|notebook/.test(n))          return 'laptop';
+  if (/earphone|headphone|speaker|buds/.test(n))  return 'audio';
+  if (/camera|gopro/.test(n))                     return 'camera';
+  if (/microwave|oven/.test(n))                   return 'microwave';
+  if (/dishwash/.test(n))                         return 'dishwasher';
+  if (/wash|dryer|laundry/.test(n))               return 'laundry';
+  if (/kettle|boil/.test(n))                      return 'kettle';
+  if (/toaster|iron|blender|mixer|coffee/.test(n))return 'small';
   return 'other';
 }
 
-// ─── SVG ILLUSTRATIONS ────────────────────────────────────────────
-function getSVG(cat, clr) {
+function getSVG(cat, c) {
   const s = {
-    tv:         `<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="8" y="6" width="104" height="66" rx="6" fill="${clr}" opacity=".12"/><rect x="13" y="11" width="94" height="56" rx="4" fill="${clr}" opacity=".2"/><rect x="16" y="14" width="88" height="50" rx="3" fill="${clr}" opacity=".15"/><rect x="46" y="74" width="28" height="5" rx="2" fill="${clr}" opacity=".25"/><path d="M50 39l12-8v16z" fill="${clr}" opacity=".35"/></svg>`,
-    ac:         `<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="10" y="22" width="100" height="42" rx="8" fill="${clr}" opacity=".15"/><rect x="10" y="22" width="100" height="14" rx="8" fill="${clr}" opacity=".2"/><rect x="18" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="34" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="50" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="66" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="82" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/></svg>`,
-    fridge:     `<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="32" y="4" width="56" height="82" rx="7" fill="${clr}" opacity=".15"/><rect x="32" y="4" width="56" height="32" rx="7" fill="${clr}" opacity=".1"/><line x1="32" y1="36" x2="88" y2="36" stroke="${clr}" stroke-width="1.5" opacity=".2"/><rect x="80" y="17" width="5" height="14" rx="2.5" fill="${clr}" opacity=".3"/><rect x="80" y="50" width="5" height="20" rx="2.5" fill="${clr}" opacity=".25"/></svg>`,
-    microwave:  `<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="8" y="18" width="104" height="58" rx="8" fill="${clr}" opacity=".15"/><rect x="14" y="24" width="68" height="46" rx="5" fill="${clr}" opacity=".12"/><circle cx="97" cy="38" r="6" fill="${clr}" opacity=".2"/><circle cx="48" cy="47" r="18" fill="${clr}" opacity=".08"/></svg>`,
-    dishwasher: `<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="30" y="4" width="60" height="82" rx="7" fill="${clr}" opacity=".15"/><rect x="30" y="4" width="60" height="16" rx="7" fill="${clr}" opacity=".12"/><rect x="38" y="28" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/><rect x="38" y="40" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/><rect x="38" y="52" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/></svg>`,
-    laundry:    `<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="28" y="4" width="64" height="82" rx="8" fill="${clr}" opacity=".15"/><rect x="28" y="4" width="64" height="18" rx="8" fill="${clr}" opacity=".12"/><circle cx="60" cy="55" r="22" fill="${clr}" opacity=".1"/><circle cx="60" cy="55" r="10" fill="${clr}" opacity=".12"/></svg>`,
-    phone:      `<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="40" y="4" width="40" height="82" rx="8" fill="${clr}" opacity=".15"/><rect x="44" y="10" width="32" height="62" rx="4" fill="${clr}" opacity=".1"/><circle cx="60" cy="79" r="3.5" fill="${clr}" opacity=".25"/></svg>`,
-    laptop:     `<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="16" y="14" width="88" height="56" rx="5" fill="${clr}" opacity=".15"/><rect x="20" y="18" width="80" height="48" rx="3" fill="${clr}" opacity=".1"/><rect x="6" y="70" width="108" height="6" rx="3" fill="${clr}" opacity=".15"/></svg>`,
-    audio:      `<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><circle cx="60" cy="45" r="30" fill="${clr}" opacity=".12"/><circle cx="60" cy="45" r="18" fill="${clr}" opacity=".12"/><circle cx="60" cy="45" r="8" fill="${clr}" opacity=".18"/></svg>`,
-    camera:     `<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="10" y="26" width="100" height="56" rx="8" fill="${clr}" opacity=".15"/><path d="M42 26l8-14h20l8 14" fill="${clr}" opacity=".12"/><circle cx="60" cy="54" r="18" fill="${clr}" opacity=".12"/><circle cx="60" cy="54" r="9" fill="${clr}" opacity=".18"/></svg>`,
-    kettle:     `<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><path d="M38 20 Q34 45 38 68 Q52 76 68 72 Q84 68 86 45 Q88 22 72 18 Z" fill="${clr}" opacity=".15"/><path d="M72 18 Q82 16 86 28" stroke="${clr}" stroke-width="3" stroke-linecap="round" fill="none" opacity=".3"/><path d="M34 36 Q24 38 26 50 Q28 60 36 58" stroke="${clr}" stroke-width="3" stroke-linecap="round" fill="none" opacity=".25"/><rect x="38" y="68" width="34" height="5" rx="2.5" fill="${clr}" opacity=".2"/></svg>`,
-    small:      `<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="30" y="20" width="60" height="52" rx="8" fill="${clr}" opacity=".15"/><rect x="38" y="28" width="44" height="28" rx="4" fill="${clr}" opacity=".1"/><circle cx="60" cy="74" r="6" fill="${clr}" opacity=".2"/></svg>`,
-    other:      `<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="20" y="20" width="80" height="55" rx="7" fill="${clr}" opacity=".15"/><rect x="28" y="28" width="64" height="38" rx="4" fill="${clr}" opacity=".1"/></svg>`
+    tv:`<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="8" y="6" width="104" height="66" rx="6" fill="${c}" opacity=".12"/><rect x="13" y="11" width="94" height="56" rx="4" fill="${c}" opacity=".2"/><path d="M50 39l12-8v16z" fill="${c}" opacity=".35"/></svg>`,
+    ac:`<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="10" y="22" width="100" height="42" rx="8" fill="${c}" opacity=".15"/><rect x="10" y="22" width="100" height="14" rx="8" fill="${c}" opacity=".2"/><rect x="18" y="42" width="12" height="18" rx="2" fill="${c}" opacity=".12"/><rect x="34" y="42" width="12" height="18" rx="2" fill="${c}" opacity=".12"/><rect x="50" y="42" width="12" height="18" rx="2" fill="${c}" opacity=".12"/><rect x="66" y="42" width="12" height="18" rx="2" fill="${c}" opacity=".12"/><rect x="82" y="42" width="12" height="18" rx="2" fill="${c}" opacity=".12"/></svg>`,
+    fridge:`<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="32" y="4" width="56" height="82" rx="7" fill="${c}" opacity=".15"/><line x1="32" y1="36" x2="88" y2="36" stroke="${c}" stroke-width="1.5" opacity=".2"/><rect x="80" y="17" width="5" height="14" rx="2.5" fill="${c}" opacity=".3"/></svg>`,
+    phone:`<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="40" y="4" width="40" height="82" rx="8" fill="${c}" opacity=".15"/><rect x="44" y="10" width="32" height="62" rx="4" fill="${c}" opacity=".1"/><circle cx="60" cy="79" r="3.5" fill="${c}" opacity=".25"/></svg>`,
+    laptop:`<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="16" y="14" width="88" height="56" rx="5" fill="${c}" opacity=".15"/><rect x="20" y="18" width="80" height="48" rx="3" fill="${c}" opacity=".1"/><rect x="6" y="70" width="108" height="6" rx="3" fill="${c}" opacity=".15"/></svg>`,
+    audio:`<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><circle cx="60" cy="45" r="30" fill="${c}" opacity=".12"/><circle cx="60" cy="45" r="16" fill="${c}" opacity=".14"/><circle cx="60" cy="45" r="7" fill="${c}" opacity=".18"/></svg>`,
+    camera:`<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="10" y="26" width="100" height="56" rx="8" fill="${c}" opacity=".15"/><path d="M42 26l8-14h20l8 14" fill="${c}" opacity=".12"/><circle cx="60" cy="54" r="18" fill="${c}" opacity=".12"/></svg>`,
+    kettle:`<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><path d="M38 20 Q34 45 38 68 Q52 76 68 72 Q84 68 86 45 Q88 22 72 18 Z" fill="${c}" opacity=".15"/><path d="M34 36 Q24 38 26 50 Q28 60 36 58" stroke="${c}" stroke-width="3" fill="none" opacity=".25"/></svg>`,
+    other:`<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="20" y="20" width="80" height="55" rx="7" fill="${c}" opacity=".15"/><rect x="28" y="28" width="64" height="38" rx="4" fill="${c}" opacity=".1"/></svg>`
   };
-  return s[cat] || s.other;
+  return s[cat]||s.other;
 }
 
-// ─── CARD HTML ────────────────────────────────────────────────────
+// ─── CARD ─────────────────────────────────────────────────────────
 function cardHTML(p, i) {
-  const cat  = guessCategory(p.name);
-  const bg   = CAT_BG[cat], clr = CAT_CLR[cat], best = i < 2;
-  const feats = (p.features || []).slice(0, 5).map(f =>
-    `<span class="card-feat">${escHtml(f)}</span>`).join('');
-
-  // URL: use whatever the agent provides directly
-  const url = (p.url && p.url !== 'null' && p.url.startsWith('http')) ? p.url : null;
-  const btnHtml = url
-    ? `<a class="buy-btn" href="${url}" target="_blank" rel="noopener">View on Sharaf DG →</a>`
-    : `<button class="buy-btn disabled" disabled>Not available online</button>`;
-
+  const cat = guessCategory(p.name);
+  const bg  = CAT_BG[cat], clr = CAT_CLR[cat], best = i < 2;
+  const feats = (p.features||[]).slice(0,5).map(f=>`<span class="card-feat">${esc(f)}</span>`).join('');
+  const hasUrl = p.url && p.url.startsWith('http');
+  const btn = hasUrl
+    ? `<a class="buy-btn" href="${p.url}" target="_blank" rel="noopener">View on Sharaf DG →</a>`
+    : `<span class="buy-btn no-url">Not available online</span>`;
   return `
-  <div class="prod-card${best ? ' best' : ''} fu" style="animation-delay:${i * .07}s">
+  <div class="prod-card${best?' best':''} fu" style="animation-delay:${i*.07}s">
     <div class="card-img" style="background:${bg};position:relative;display:flex;align-items:center;justify-content:center">
-      ${getSVG(cat, clr)}
+      ${getSVG(cat,clr)}
       <div class="badge-cat" style="background:${bg};color:${clr}">${cat.toUpperCase()}</div>
-      ${best ? '<div class="badge-best">⭐ Best Match</div>' : ''}
+      ${best?'<div class="badge-best">⭐ Best Match</div>':''}
     </div>
     <div class="card-body">
-      <div class="card-brand">${escHtml(p.brand || '')}</div>
-      <div class="card-name">${escHtml(p.name || 'Product')}</div>
-      ${p.specs ? `<div class="card-specs">${escHtml(p.specs)}</div>` : ''}
-      ${feats ? `<div class="card-features">${feats}</div>` : ''}
+      <div class="card-brand">${esc(p.brand||'')}</div>
+      <div class="card-name">${esc(p.name||'Product')}</div>
+      ${p.specs?`<div class="card-specs">${esc(p.specs)}</div>`:''}
+      ${feats?`<div class="card-features">${feats}</div>`:''}
     </div>
     <div class="card-footer">
       <div>
         <div class="price-lbl">AED</div>
-        <div class="price-num">${p.price ? Number(p.price).toLocaleString() : '–'}</div>
-        ${p.original_price ? `<div class="price-old">AED ${Number(p.original_price).toLocaleString()}</div>` : ''}
+        <div class="price-num">${p.price?Number(p.price).toLocaleString():'–'}</div>
+        ${p.original_price?`<div class="price-old">AED ${Number(p.original_price).toLocaleString()}</div>`:''}
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
-        ${p.energy_rating ? `<div class="energy-tag">${escHtml(p.energy_rating)}</div>` : ''}
-        ${btnHtml}
+        ${p.energy_rating?`<div class="energy-tag">${esc(p.energy_rating)}</div>`:''}
+        ${btn}
       </div>
     </div>
-    ${p.why ? `<div class="card-why"><span class="card-why-lbl">✨ Why this matches</span>${escHtml(p.why)}</div>` : ''}
+    ${p.why?`<div class="card-why"><span class="card-why-lbl">✨ Why this matches</span>${esc(p.why)}</div>`:''}
   </div>`;
 }
 
-// ─── EXTRA CONTENT BUILDER ────────────────────────────────────────
-// Fix 5: skip any string field that contains "|" (markdown table) or is > 500 chars
-const SKIP_KEYS = new Set(['summary','products','error']);
+// ─── TEXT / MARKDOWN PARSER ───────────────────────────────────────
+// Handles whatever the agent returns: markdown tables, bullet lists,
+// plain paragraphs, mixed content. Extracts product rows into cards
+// and routes everything else to the AI Insights panel.
+function parseAgentText(raw, query) {
 
-function buildExtraHtml(obj) {
-  let html = '';
-  for (const [key, val] of Object.entries(obj)) {
-    if (SKIP_KEYS.has(key) || val === null || val === undefined) continue;
-    if (Array.isArray(val) && val.length === 0) continue;
-    if (typeof val === 'object' && !Array.isArray(val) && Object.keys(val).length === 0) continue;
-    // Skip string blobs that are markdown tables or just the full response text
-    if (typeof val === 'string' && (val.includes('|') || val.length > 500)) continue;
-    const title = key.replace(/_/g,' ').replace(/\b\w/g, c => c.toUpperCase());
-    html += `<div class="extra-section"><div class="extra-title">${escHtml(title)}</div>`;
-    html += renderValue(val);
-    html += `</div>`;
-  }
-  return html;
-}
+  // Step 1: normalise
+  // Replace <br> with newline, strip bold/italic markers
+  let text = raw
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/\*\*/g, '')
+    .replace(/\*/g, '');
 
-function renderValue(val) {
-  if (typeof val === 'string') {
-    if (isUrl(val)) return `<a class="extra-link" href="${val}" target="_blank" rel="noopener">🔗 ${escHtml(val)}</a>`;
-    return `<p class="extra-para">${escHtml(val)}</p>`;
-  }
-  if (Array.isArray(val)) {
-    if (val.length && typeof val[0] === 'object' && val[0] !== null) {
-      const headers = Object.keys(val[0]);
-      let t = `<table class="extra-table"><tr>${headers.map(h => `<td>${escHtml(h.replace(/_/g,' '))}</td>`).join('')}</tr>`;
-      val.forEach(row => {
-        t += `<tr>${headers.map(h => {
-          const cell = row[h];
-          if (isUrl(String(cell||''))) return `<td><a class="extra-link" href="${cell}" target="_blank" rel="noopener">🔗 Link</a></td>`;
-          return `<td>${escHtml(String(cell??''))}</td>`;
-        }).join('')}</tr>`;
-      });
-      return t + `</table>`;
-    }
-    return `<ul class="extra-list">${val.map(item =>
-      `<li>${isUrl(String(item)) ? `<a class="extra-link" href="${item}" target="_blank" rel="noopener">🔗 ${escHtml(String(item))}</a>` : escHtml(String(item))}</li>`
-    ).join('')}</ul>`;
-  }
-  if (typeof val === 'object') {
-    let kv = `<div class="extra-kv">`;
-    for (const [k, v] of Object.entries(val)) {
-      const vStr = String(v??'');
-      kv += `<span class="extra-kv-key">${escHtml(k.replace(/_/g,' '))}:</span>`;
-      kv += `<span class="extra-kv-val">${isUrl(vStr) ? `<a class="extra-link" href="${vStr}" target="_blank" rel="noopener">🔗 ${escHtml(vStr)}</a>` : escHtml(vStr)}</span>`;
-    }
-    return kv + `</div>`;
-  }
-  return `<p class="extra-para">${escHtml(String(val))}</p>`;
-}
+  const lines = text.split(/\r?\n/);
 
-function isUrl(s) { return /^https?:\/\//.test(s.trim()); }
-function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+  // ── Helpers ──
+  const strip  = s => s.replace(/^#+\s*/,'').trim();
+  const isUrl  = s => /^https?:\/\//.test(s.trim());
 
-// ─── SETTINGS ─────────────────────────────────────────────────────
-function toggleSettings() {
-  const p = document.getElementById('settingsPanel');
-  p.style.display = p.style.display === 'none' ? 'block' : 'none';
-}
-function toggleExtra() {
-  const body = document.getElementById('extraBody');
-  const chevron = document.getElementById('extraChevron');
-  body.classList.toggle('open');
-  chevron.textContent = body.classList.contains('open') ? '▲' : '▼';
-}
-function saveSettings() {
-  localStorage.setItem('sdg_key',    document.getElementById('apiKey').value);
-  localStorage.setItem('sdg_fold',   document.getElementById('folderId').value);
-  localStorage.setItem('sdg_prompt', document.getElementById('promptId').value);
-  localStorage.setItem('sdg_prox',   document.getElementById('proxyUrl').value);
-  const m = document.getElementById('savedMsg');
-  m.style.display = 'block';
-  setTimeout(() => m.style.display = 'none', 2500);
-}
-function loadSettings() {
-  document.getElementById('apiKey').value   = localStorage.getItem('sdg_key')    || '';
-  document.getElementById('folderId').value = localStorage.getItem('sdg_fold')   || 'b1g3c22pier4ri4nu7rs';
-  document.getElementById('promptId').value = localStorage.getItem('sdg_prompt') || '';
-  document.getElementById('proxyUrl').value = localStorage.getItem('sdg_prox')   || 'https://smart-search-proxy.vercel.app/api/proxy';
-}
-
-// ─── PROGRESS ─────────────────────────────────────────────────────
-let progressInterval = null;
-function startProgress() {
-  const msgs = ['Connecting to Sharaf DG…','Searching product catalog…','Analysing your request…','Finding best matches…','Fetching prices & details…','Almost there…'];
-  let i = 0;
-  const el = document.getElementById('loaderMsg');
-  if (el) el.textContent = msgs[0];
-  progressInterval = setInterval(() => {
-    i = Math.min(i+1, msgs.length-1);
-    if (el) { el.style.opacity='0'; setTimeout(()=>{ el.textContent=msgs[i]; el.style.opacity='1'; },150); }
-  }, 1800);
-}
-function stopProgress() {
-  if (progressInterval) { clearInterval(progressInterval); progressInterval = null; }
-}
-
-// ─── MARKDOWN PARSER ──────────────────────────────────────────────
-function parseMarkdownTable(text, query) {
-  // ── Normalise ──────────────────────────────────────────────────
-  let norm = text
-    .replace(/<br\s*\/?>/gi, ', ')   // <br> → comma
-    .replace(/\*\*/g, '')            // strip bold
-    .replace(/\*/g, '');             // strip italic
-
-  // Fix 1: handle single-line tables — agent puts entire table on one line.
-  // A row boundary in a single-line table looks like "| |" (pipe + only whitespace + pipe).
-  // Cell boundaries look like "| content |" (pipe + non-whitespace content + pipe).
-  // So replace "pipe + whitespace-only + pipe" with "pipe + newline + pipe".
-  norm = norm.replace(/\|\s+\|/g, '|\n|');
-
-  const lines   = norm.split(/\r?\n/);
-  const stripMd = s => s.replace(/^#+\s*/, '').trim();
-
-  function detectRole(h) {
-    const s = h.toLowerCase().replace(/[^a-z0-9 ]/g, ' ').trim();
-    if (/^#$|^no$|^s\.?n|^num/.test(s))                           return 'skip';
+  // Detect what role a table header cell plays
+  function role(h) {
+    const s = h.toLowerCase().replace(/[^a-z0-9]/g,' ').trim();
+    if (/^#$|^no$|^s ?n|^num/.test(s))                            return 'skip';
     if (/brand/.test(s))                                            return 'brand';
     if (/model|product|name|item/.test(s))                          return 'model';
-    if (/price|aed|cost/.test(s))                                   return 'price';
-    if (/size|capacit|litre|liter|inch|screen/.test(s))             return 'specs';
+    if (/\bprice\b|aed|cost/.test(s))                               return 'price';
+    if (/size|capacit|inch|screen|litre/.test(s))                   return 'specs';
     if (/power|watt/.test(s))                                       return 'power';
-    if (/feature|selling|highlight|key|benefit/.test(s))            return 'features';
-    if (/timer|keep.?warm|program|function|note/.test(s))           return 'features2';
-    if (/connect|wifi|wi.fi|bluetooth|smart|os|platform/.test(s))   return 'features3';
-    if (/where|availab|buy|store|retail/.test(s))                   return 'avail';
-    if (/energy|star|rating/.test(s))                               return 'energy';
-    if (/why|reason|suit|fit|match/.test(s))                        return 'why';
-    if (/url|link|href/.test(s))                                    return 'url';
+    if (/feature|key|highlight|selling|benefit/.test(s))            return 'feat';
+    if (/note|timer|keep warm|program|function/.test(s))            return 'feat2';
+    if (/connect|wifi|smart|platform|os/.test(s))                   return 'feat3';
+    if (/avail|where|buy|store|retail/.test(s))                     return 'avail';
+    if (/energy|star/.test(s))                                      return 'energy';
+    if (/why|reason|suit|match/.test(s))                            return 'why';
+    if (/url|link|http/.test(s))                                    return 'url';
     return null;
   }
 
-  // Fix 2: clean SKU codes — strips "(QA65S90F)", "– QA65S90F", "- QA65S90F"
+  // Clean SKU codes out of a name string
   function cleanName(s) {
     return s
-      .replace(/\s*[–\-]\s*[A-Z0-9]{6,}/g, '')   // "– QA65S85FAEXZN"
-      .replace(/\([A-Z0-9\-]{5,}\)/g, '')          // "(QA65S85FAEXZN)"
-      .replace(/\s+/g, ' ')
-      .trim();
+      .replace(/\s*[–\-—]\s*[A-Z0-9]{5,}/g,'')  // – QA65S85FAEXZN
+      .replace(/\([A-Z0-9\-]{5,}\)/g,'')          // (QA65S85FAEXZN)
+      .replace(/\s+/g,' ').trim();
+  }
+
+  // Parse a price string robustly
+  function parsePrice(s) {
+    const n = parseFloat(s.replace(/,/g,'').match(/[\d.]+/)?.[0]||'0');
+    return n > 9 ? n : null;
+  }
+
+  // Extract all URLs from a string
+  function extractUrls(s) {
+    return (s.match(/https?:\/\/[^\s\])"'>]+/g)||[]);
   }
 
   let colRoles = [], inTable = false, tableDone = false;
-  const products = [], sumParts = [];
+  const products    = [];
+  const summaryLines= [];
+  const extraLines  = [];
 
-  for (const line of lines) {
-    const t = line.trim();
+  for (let li = 0; li < lines.length; li++) {
+    const t = lines[li].trim();
     if (!t) continue;
 
+    // ── TABLE LINE ──
     if (t.startsWith('|')) {
-      const cells = t.replace(/^\||\|$/g, '').split('|').map(c => c.trim());
-      if (cells.every(c => /^[-: ]+$/.test(c))) continue; // separator row
+      const cells = t.replace(/^\||\|$/g,'').split('|').map(c=>c.trim());
 
-      const roles    = cells.map(c => detectRole(c));
-      const hasPrice = roles.includes('price');
-      const hasName  = roles.some(r => r === 'model' || r === 'brand');
+      // Skip separator rows
+      if (cells.every(c=>/^[-: ]+$/.test(c))) continue;
 
-      // Header row
-      if (!tableDone && !inTable && hasPrice && hasName) {
-        colRoles = roles; inTable = true; continue;
+      // Detect header: must have a price col AND a name/model col
+      const cellRoles = cells.map(c=>role(c));
+      if (!tableDone && !inTable &&
+          cellRoles.includes('price') &&
+          cellRoles.some(r=>r==='model'||r==='brand')) {
+        colRoles = cellRoles;
+        inTable  = true;
+        continue;
       }
 
       // Data row
       if (inTable && !tableDone) {
-        const get = role => {
-          const idx = colRoles.indexOf(role);
-          return idx >= 0 ? (cells[idx] || '') : '';
-        };
+        const get = r => { const i=colRoles.indexOf(r); return i>=0?(cells[i]||''):''};
 
-        // Collect features from all feature columns
-        const featParts = ['features','features2','features3']
-          .map(r => get(r)).filter(Boolean).join(', ');
-        const features = featParts
-          .split(/[,;·•]/)
-          .map(f => f.trim())
-          .filter(f => f.length > 2 && f.length < 80)
-          .slice(0, 5);
+        // Collect features from all feature columns + extract any embedded URLs
+        const featRaw = ['feat','feat2','feat3'].map(r=>get(r)).filter(Boolean).join(' | ');
+        // Features: split on bullet chars or semicolons but NOT on pipe (pipe = col separator already handled)
+        const features = featRaw
+          .split(/[;·•\n]/)
+          .map(f=>f.replace(/^[-–]\s*/,'').trim())
+          .filter(f=>f.length>2&&f.length<90&&!/^https?/.test(f))
+          .slice(0,5);
 
         const brand = cleanName(get('brand'));
         const model = cleanName(get('model'));
-        const name  = brand && model && !model.toLowerCase().startsWith(brand.toLowerCase())
-          ? `${brand} ${model}` : model || brand || '';
+        const name  = (brand && model && !model.toLowerCase().startsWith(brand.toLowerCase()))
+          ? `${brand} ${model}` : model||brand||'';
         if (!name) continue;
 
-        // Fix 3: robust price extraction — handle "AED 3,699" and "3,699 AED"
-        const priceStr   = get('price').replace(/,/g, '');
-        const priceMatch = priceStr.match(/\d+(\.\d+)?/);
-        const priceNum   = priceMatch ? parseFloat(priceMatch[0]) : 0;
-        const price      = priceNum > 9 ? priceNum : null;
+        const price = parsePrice(get('price'));
+        const specs = [get('specs'),get('power')].filter(Boolean).join(' · ');
+        const avail = get('avail');
 
-        const specs = [get('specs'), get('power')].filter(Boolean).join(' · ');
-
-        // Fix 4: URL — use agent url if valid, else build Sharaf DG search URL.
-        // Default to Sharaf DG unless avail explicitly names another retailer.
-        const agentUrl  = get('url');
-        const avail     = get('avail');
-        const otherStore = /amazon|noon|carrefour|lulu|jumbo|plug/i.test(avail);
-        const validUrl  = agentUrl && agentUrl.startsWith('http');
-        const url = validUrl ? agentUrl
-          : !otherStore
-            ? `https://uae.sharafdg.com/search/?q=${encodeURIComponent(name)}`
-            : null;
+        // URL: prefer explicit url col → search the entire row for any http link
+        let url = get('url');
+        if (!url || !isUrl(url)) {
+          // scan all cells for a URL
+          const allUrls = cells.flatMap(c=>extractUrls(c));
+          url = allUrls.find(u=>u.includes('sharafdg'))||allUrls[0]||'';
+        }
+        // If still no URL, generate a Sharaf DG search URL unless competitor mentioned
+        if (!url || !isUrl(url)) {
+          const competitor = /amazon|noon|carrefour|lulu|jumbo|plug/i.test(avail);
+          url = competitor ? null : `https://uae.sharafdg.com/search/?q=${encodeURIComponent(name)}`;
+        }
 
         const agentWhy = get('why');
-        const onSDG    = !otherStore;
-        const why = agentWhy && agentWhy.length > 5 ? agentWhy
-          : [onSDG ? 'Available at Sharaf DG UAE' : avail, specs, features[0]]
-              .filter(Boolean).join(' · ');
+        const why = agentWhy && agentWhy.length>5 ? agentWhy
+          : ['Available at Sharaf DG UAE', specs, features[0]].filter(Boolean).join(' · ');
 
-        products.push({
-          name, brand, specs, price, original_price: null,
-          features, energy_rating: get('energy') || null, why, url
-        });
+        products.push({name, brand, specs, price, original_price:null,
+                       features, energy_rating:get('energy')||null, why, url});
         continue;
       }
+
+      // Post-table: route to extra
+      if (tableDone) { extraLines.push(t); continue; }
     }
 
+    // ── NON-TABLE LINE ──
     if (inTable && !tableDone) { tableDone = true; inTable = false; }
-    const clean = stripMd(t);
-    if (clean && !tableDone) sumParts.push(clean);
+
+    const clean = strip(t);
+    if (!clean) continue;
+
+    if (!tableDone) {
+      summaryLines.push(clean);
+    } else {
+      extraLines.push(clean);
+    }
   }
 
-  const summary = sumParts
-    .filter(s => s.length > 4 && !s.includes('|'))
-    .slice(0, 2).join(' — ')
-    .substring(0, 300)
-    || (products.length ? `Found ${products.length} products for "${query}".` : '');
+  // Build summary: first non-table paragraph, skip lines that look like table remnants
+  const summary = summaryLines
+    .filter(l=>l.length>5&&!l.startsWith('|')&&!/^[-–]/.test(l))
+    .slice(0,3).join(' ')
+    .substring(0,400)
+    || (products.length
+      ? `Found ${products.length} products matching your search.`
+      : raw.replace(/[|*#]/g,'').trim().substring(0,300));
 
-  return { products, summary };
+  // Build extra text: lines after the product table
+  const extra = extraLines
+    .filter(l=>l.length>3&&!l.startsWith('|'))
+    .join('\n')
+    .trim();
+
+  return { products, summary, extra };
 }
 
+// ─── UTILITIES ────────────────────────────────────────────────────
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function toggleSettings(){const p=document.getElementById('settingsPanel');p.style.display=p.style.display==='none'?'block':'none';}
+function toggleInsights(){const b=document.getElementById('insightsBody');const c=document.getElementById('insightsChevron');b.classList.toggle('open');c.textContent=b.classList.contains('open')?'▲':'▼';}
+function saveSettings(){
+  localStorage.setItem('sdg_key',   document.getElementById('apiKey').value);
+  localStorage.setItem('sdg_fold',  document.getElementById('folderId').value);
+  localStorage.setItem('sdg_prompt',document.getElementById('promptId').value);
+  localStorage.setItem('sdg_prox',  document.getElementById('proxyUrl').value);
+  const m=document.getElementById('savedMsg');m.style.display='block';setTimeout(()=>m.style.display='none',2500);
+}
+function loadSettings(){
+  document.getElementById('apiKey').value   =localStorage.getItem('sdg_key')   ||'';
+  document.getElementById('folderId').value =localStorage.getItem('sdg_fold')  ||'b1g3c22pier4ri4nu7rs';
+  document.getElementById('promptId').value =localStorage.getItem('sdg_prompt')||'';
+  document.getElementById('proxyUrl').value =localStorage.getItem('sdg_prox')  ||'https://smart-search-proxy.vercel.app/api/proxy';
+}
+
+// ─── PROGRESS ─────────────────────────────────────────────────────
+let prog=null;
+function startProgress(){
+  const msgs=['Connecting to Sharaf DG…','Searching product catalog…','Analysing your request…','Finding best matches…','Fetching prices & details…','Almost there…'];
+  let i=0;const el=document.getElementById('loaderMsg');
+  if(el)el.textContent=msgs[0];
+  prog=setInterval(()=>{i=Math.min(i+1,msgs.length-1);if(el){el.style.opacity='0';setTimeout(()=>{el.textContent=msgs[i];el.style.opacity='1';},150);}},1800);
+}
+function stopProgress(){if(prog){clearInterval(prog);prog=null;}}
+
 // ─── SEARCH ───────────────────────────────────────────────────────
-function go(s) {
-  const v = s === 'v'
-    ? document.getElementById('heroIn').value.trim()
-    : document.getElementById('hdrIn').value.trim();
-  if (v) {
-    document.getElementById('heroIn').value = v;
-    document.getElementById('hdrIn').value  = v;
-    doSearch(v);
-  }
+function go(s){
+  const v=s==='v'?document.getElementById('heroIn').value.trim():document.getElementById('hdrIn').value.trim();
+  if(v){document.getElementById('heroIn').value=v;document.getElementById('hdrIn').value=v;doSearch(v);}
 }
 
 async function doSearch(q) {
@@ -580,159 +499,72 @@ async function doSearch(q) {
   const promptId = document.getElementById('promptId').value.trim();
   const proxy    = document.getElementById('proxyUrl').value.trim();
 
-  if (!key)      { showErr('Please enter your API Key in ⚙️ Settings.');         return; }
-  if (!fold)     { showErr('Please enter your Folder ID in ⚙️ Settings.');       return; }
-  if (!promptId) { showErr('Please enter your Agent Prompt ID in ⚙️ Settings.'); return; }
-  if (!proxy)    { showErr('Please enter your Proxy URL in ⚙️ Settings.');       return; }
+  if(!key)     {showErr('Please enter your API Key in ⚙️ Settings.');return;}
+  if(!fold)    {showErr('Please enter your Folder ID in ⚙️ Settings.');return;}
+  if(!promptId){showErr('Please enter your Agent Prompt ID in ⚙️ Settings.');return;}
+  if(!proxy)   {showErr('Please enter your Proxy URL in ⚙️ Settings.');return;}
 
-  const $ = id => document.getElementById(id);
+  const $=id=>document.getElementById(id);
   $('aiPanel').classList.remove('on');
   $('errBox').classList.remove('on');
-  $('emptyState').style.display = 'none';
+  $('emptyState').style.display='none';
   $('loader').classList.add('on');
-  $('heroBtn').disabled = true;
+  $('heroBtn').disabled=true;
   startProgress();
-  $('loader').scrollIntoView({ behavior:'smooth', block:'center' });
+  $('loader').scrollIntoView({behavior:'smooth',block:'center'});
 
   try {
-    const r = await fetch(proxy, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ apiKey: key, folderId: fold, promptId, query: q })
+    const r = await fetch(proxy,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({apiKey:key,folderId:fold,promptId,query:q})
     });
     const data = await r.json();
-    if (!r.ok) throw new Error(data.error || 'Search error ' + r.status);
+    if(!r.ok) throw new Error(data.error||'Search error '+r.status);
 
-    const raw = (data.answer || '').trim();
-    let parsed = null;
-
-    // ── STAGE 1: Proper JSON with products array ───────────────────
-    try {
-      let clean = raw;
-      if (clean.startsWith('```'))
-        clean = clean.replace(/^```[a-z]*\n?/,'').replace(/```\s*$/,'').trim();
-      const m   = clean.match(/(\{[\s\S]*\})/);
-      const obj = JSON.parse(m ? m[1] : clean);
-
-      if (obj && typeof obj === 'object') {
-        const products = Array.isArray(obj.products) ? obj.products : [];
-        if (products.length > 0) {
-          // ✅ Correct schema
-          parsed = {
-            products,
-            summary:   obj.summary || `Here are the best matches for "${q}".`,
-            extraHtml: buildExtraHtml(obj)
-          };
-        } else {
-          // ── STAGE 2: JSON ok but no products — find markdown in string values ──
-          // Sort string values longest-first (the big response blob is longest)
-          const textValues = Object.values(obj)
-            .filter(v => typeof v === 'string')
-            .sort((a, b) => b.length - a.length);
-
-          for (const txt of textValues) {
-            if (!txt.includes('|')) continue;
-            const md = parseMarkdownTable(txt, q);
-            if (md.products.length > 0) {
-              // Pull a clean summary from the text before the table
-              const beforeTable = txt.split(/\|[-| :]+\|/)[0]
-                .replace(/[|*#]/g,'').trim().split(/[.!?]/)[0].trim();
-              parsed = {
-                products:  md.products,
-                summary:   obj.summary || (beforeTable.length > 10 && beforeTable.length < 300 ? beforeTable : `Here are the best matches for "${q}".`),
-                extraHtml: buildExtraHtml(obj)
-              };
-              break;
-            }
-          }
-          // No table found in any string — show longest text in summary
-          if (!parsed) {
-            const mainText = Object.values(obj)
-              .filter(v => typeof v === 'string')
-              .sort((a,b) => b.length - a.length)[0] || '';
-            parsed = {
-              products:  [],
-              summary:   mainText.replace(/[|*#]/g,'').trim().substring(0, 400) || raw.substring(0, 400),
-              extraHtml: ''
-            };
-          }
-        }
-      }
-    } catch(_) { /* JSON parse failed */ }
-
-    // ── STAGE 3: Raw markdown (agent ignored JSON format entirely) ─
-    if (!parsed || parsed.products.length === 0) {
-      const md = parseMarkdownTable(raw, q);
-      if (md.products.length > 0) {
-        parsed = {
-          products:  md.products,
-          summary:   md.summary,
-          extraHtml: parsed?.extraHtml || ''
-        };
-      }
-    }
-
-    // ── STAGE 4: Last resort ───────────────────────────────────────
-    if (!parsed) {
-      parsed = {
-        products:  [],
-        summary:   raw.replace(/[|*#]/g,'').trim().substring(0, 400),
-        extraHtml: ''
-      };
-    }
+    const raw = (data.answer||'').trim();
+    const {products, summary, extra} = parseAgentText(raw, q);
 
     stopProgress();
-    renderResults(q, parsed, $);
+
+    $('aiSummary').textContent = summary;
+    $('resMeta').innerHTML = `<strong>${products.length} product${products.length!==1?'s':''} found on Sharaf DG</strong>`;
+    $('prodGrid').innerHTML = products.length
+      ? products.map((p,i)=>cardHTML(p,i)).join('')
+      : `<p style="grid-column:1/-1;text-align:center;color:var(--muted);padding:32px;font-size:14px">No product cards could be extracted. See the AI Response above.</p>`;
+
+    // AI Insights: show extra content from agent (tips, notes, etc.)
+    const wrap = $('insightsWrap');
+    const body = $('insightsBody');
+    if (extra) {
+      body.textContent = extra;
+      wrap.style.display='block';
+      body.classList.add('open');
+      $('insightsChevron').textContent='▲';
+    } else {
+      wrap.style.display='none';
+    }
+
+    $('loader').classList.remove('on');
+    $('aiPanel').classList.add('on');
+    $('aiPanel').scrollIntoView({behavior:'smooth',block:'start'});
 
   } catch(e) {
     stopProgress();
     $('loader').classList.remove('on');
-    if (e.name === 'TypeError' || e.message.toLowerCase().includes('fetch')) {
+    if(e.name==='TypeError'||e.message.toLowerCase().includes('fetch'))
       showErr('Connection error — the search timed out or the server is unreachable. Please try again.');
-    } else {
-      showErr('Error: ' + e.message);
-    }
+    else
+      showErr('Error: '+e.message);
   } finally {
-    $('heroBtn').disabled = false;
+    $('heroBtn').disabled=false;
   }
 }
 
-function renderResults(q, parsed, $) {
-  if (!$) $ = id => document.getElementById(id);
-  const products = parsed.products || [];
-  $('aiSummary').textContent = parsed.summary || `Here are the best matches for "${q}".`;
-  $('resMeta').innerHTML = `<strong>${products.length} product${products.length !== 1 ? 's' : ''} found on Sharaf DG</strong>`;
-  $('prodGrid').innerHTML = products.length
-    ? products.map((p, i) => cardHTML(p, i)).join('')
-    : `<p style="grid-column:1/-1;text-align:center;color:var(--muted);padding:32px;font-size:14px">No products were returned. The AI response is shown above.</p>`;
+function showErr(m){const b=document.getElementById('errBox');b.textContent=m;b.classList.add('on');b.scrollIntoView({behavior:'smooth',block:'center'});}
 
-  const extraInfo = $('extraInfo');
-  const extraBody = $('extraBody');
-  if (parsed.extraHtml) {
-    extraBody.innerHTML = parsed.extraHtml;
-    extraInfo.style.display = 'block';
-    extraBody.classList.add('open');
-    document.getElementById('extraChevron').textContent = '▲';
-  } else {
-    extraInfo.style.display = 'none';
-    extraBody.innerHTML = '';
-  }
-
-  $('loader').classList.remove('on');
-  $('aiPanel').classList.add('on');
-  $('aiPanel').scrollIntoView({ behavior:'smooth', block:'start' });
-}
-
-function showErr(m) {
-  const b = document.getElementById('errBox');
-  b.textContent = m;
-  b.classList.add('on');
-  b.scrollIntoView({ behavior:'smooth', block:'center' });
-}
-
-document.getElementById('heroIn').addEventListener('keypress', e => { if (e.key === 'Enter') go('v'); });
-document.getElementById('hdrIn').addEventListener('keypress',  e => { if (e.key === 'Enter') go('h'); });
-
+document.getElementById('heroIn').addEventListener('keypress',e=>{if(e.key==='Enter')go('v');});
+document.getElementById('hdrIn').addEventListener('keypress', e=>{if(e.key==='Enter')go('h');});
 loadSettings();
 </script>
 </body>
