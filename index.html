@@ -102,7 +102,7 @@ header{background:var(--white);border-bottom:3px solid var(--orange);position:st
 .insights-hdr{display:flex;align-items:center;gap:10px;margin-bottom:16px;cursor:pointer;user-select:none}
 .insights-pill{background:var(--blue-pale);color:var(--blue);font-size:11px;font-weight:700;padding:5px 14px;border-radius:20px;display:flex;align-items:center;gap:6px}
 .insights-line{height:1px;background:var(--border);flex:1}
-.insights-body{background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:20px 24px;display:none;white-space:pre-wrap;font-size:13px;color:var(--text);line-height:1.8}
+.insights-body{background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:20px 24px;display:none;font-size:13px;color:var(--text);line-height:1.8}
 .insights-body.open{display:block}
 .empty{text-align:center;padding:72px 24px;color:var(--muted)}
 .empty-icon{font-size:64px;margin-bottom:16px;opacity:.35}
@@ -519,19 +519,93 @@ function parseAgentText(raw, query) {
       : raw.replace(/[|*#<>]/g,'').trim().substring(0, 300));
 
   // ── Build insights (everything after the table) ──────────────────
-  // Strip pipe characters and clean up for readability
-  const extra = extraLines
+  // Returns the raw extraLines array so renderInsightsHtml() can format them properly
+  const extraRaw = extraLines
     .filter(l => l.length > 2 && !l.match(/^[\|\-\s]+$/))
-    .map(l => l.replace(/^\||\|$/g, '').replace(/\|/g,' · ').trim())
-    .join('\n')
-    .trim();
+    .map(l => l.replace(/^\\+/, '').trim())   // strip leading backslashes
+    .filter(l => l.length > 2);
 
-  return { products, summary, extra };
+  return { products, summary, extraRaw };
 }
 
 // ─── UTILITIES ────────────────────────────────────────────────────
 function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Converts raw insight lines into formatted HTML.
+// Detects: section headings, table rows (pipe-separated), bullet lists, plain paragraphs.
+function buildInsightsHtml(lines) {
+  let html = '';
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i].trim();
+
+    // ── Blank — skip
+    if (!line) { i++; continue; }
+
+    // ── Section heading (short line, no pipe, often bold or all-caps style)
+    if (line.length < 80 && !line.startsWith('|') && !line.startsWith('-') && !line.startsWith('•') && !/\d/.test(line.substring(0,3))) {
+      // Check if it reads like a heading (ends without period, not too long)
+      const looksLikeHeading = line.length < 60 && !line.endsWith('.');
+      if (looksLikeHeading) {
+        html += `<div style="font-family:'Nunito',sans-serif;font-size:14px;font-weight:900;color:var(--blue);margin:18px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--blue-pale)">${esc(line)}</div>`;
+        i++; continue;
+      }
+    }
+
+    // ── Table rows: lines containing | — collect the whole table block
+    if (line.startsWith('|') || (line.includes(' | ') && line.includes('·') === false)) {
+      // Collect all consecutive pipe-containing lines
+      const tableLines = [];
+      while (i < lines.length && (lines[i].trim().startsWith('|') || lines[i].trim().includes(' | '))) {
+        const tl = lines[i].trim();
+        if (!tl.match(/^[\-\|\s:]+$/)) tableLines.push(tl); // skip separator rows
+        i++;
+      }
+      if (tableLines.length > 0) {
+        html += '<table style="width:100%;border-collapse:collapse;margin:10px 0;font-size:12px">';
+        tableLines.forEach((tl, ti) => {
+          const cells = tl.replace(/^\||\|$/g,'').split('|').map(c => c.trim());
+          const tag   = ti === 0 ? 'th' : 'td';
+          const rowBg = ti === 0 ? 'background:var(--blue-pale);color:var(--blue);font-weight:700;text-transform:uppercase;letter-spacing:.4px'
+                                 : (ti%2===0?'background:#fafbfd':'');
+          html += `<tr>${cells.map(c => `<${tag} style="padding:8px 10px;border-bottom:1px solid var(--border);${rowBg}">${esc(c)}</${tag}>`).join('')}</tr>`;
+        });
+        html += '</table>';
+      }
+      continue;
+    }
+
+    // ── Dot-separated lines from flattened tables (contain " · ")
+    if (line.includes(' · ')) {
+      const parts = line.split(' · ').map(p => p.trim()).filter(Boolean);
+      if (parts.length >= 2) {
+        html += '<table style="width:100%;border-collapse:collapse;margin:4px 0;font-size:12px">';
+        html += `<tr>${parts.map(p => `<td style="padding:7px 10px;border-bottom:1px solid var(--border);vertical-align:top">${esc(p)}</td>`).join('')}</tr>`;
+        html += '</table>';
+        i++; continue;
+      }
+    }
+
+    // ── Bullet point (-, •, *)
+    if (/^[-•*]\s/.test(line)) {
+      // Collect all consecutive bullet lines
+      let bullets = '';
+      while (i < lines.length && /^[-•*]\s/.test(lines[i].trim())) {
+        bullets += `<li style="padding:4px 0;color:var(--text)">${esc(lines[i].trim().replace(/^[-•*]\s*/,''))}</li>`;
+        i++;
+      }
+      html += `<ul style="list-style:none;margin:8px 0;padding:0">${bullets}</ul>`;
+      continue;
+    }
+
+    // ── Plain paragraph
+    html += `<p style="margin:6px 0;color:var(--text);line-height:1.7">${esc(line)}</p>`;
+    i++;
+  }
+  return html;
 }
 function toggleSettings() {
   const p = document.getElementById('settingsPanel');
@@ -615,7 +689,7 @@ async function doSearch(q) {
     if (!r.ok) throw new Error(data.error || 'Search error ' + r.status);
 
     const raw = (data.answer || '').trim();
-    const { products, summary, extra } = parseAgentText(raw, q);
+    const { products, summary, extraRaw } = parseAgentText(raw, q);
 
     stopProgress();
 
@@ -631,8 +705,8 @@ async function doSearch(q) {
     // 3 — AI Insights (rest of agent output: tips, why section etc.)
     const wrap = $('insightsWrap');
     const body = $('insightsBody');
-    if (extra) {
-      body.textContent = extra;
+    if (extraRaw && extraRaw.length > 0) {
+      body.innerHTML = buildInsightsHtml(extraRaw);
       wrap.style.display = 'block';
       body.classList.add('open');
       $('insightsChevron').textContent = '▲';
