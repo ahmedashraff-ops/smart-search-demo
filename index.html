@@ -375,7 +375,7 @@ function parseAgentText(raw, query) {
     if (/^#$|^no$|^s ?n|^num/.test(s))                          return 'skip';
     if (/^size$|^screen|^inch/.test(s))                          return 'size';
     if (/brand/.test(s))                                          return 'brand';
-    if (/model|product|name|item/.test(s))                        return 'model';
+    if (/model|product|name|item|tv|television|device|kettle|appliance/.test(s)) return 'model';
     if (/price|aed|cost/.test(s))                                 return 'price';
     if (/capacit|litre|watt|power/.test(s))                       return 'specs';
     if (/feature|key|highlight|selling|benefit/.test(s))          return 'feat';
@@ -384,7 +384,7 @@ function parseAgentText(raw, query) {
     if (/store|avail|where|buy|retail|location/.test(s))          return 'avail';
     if (/energy|star/.test(s))                                    return 'energy';
     if (/why|reason|suit|match/.test(s))                          return 'why';
-    if (/url|link/.test(s))                                       return 'url';
+    if (/url|link|sharaf|shop now|buy now|product page/.test(s))  return 'url';
     return null;
   }
 
@@ -410,9 +410,21 @@ function parseAgentText(raw, query) {
       const cellRoles = cells.map(c => detectRole(c));
       const hasPrice  = cellRoles.includes('price');
       const hasName   = cellRoles.some(r => r === 'model' || r === 'brand' || r === 'size');
+      const hasUrl    = cellRoles.includes('url');
+      // Also catch tables where the "link" column header name varies
+      const hasLinkCol = cells.some(c => /link|url|sharaf|shop|buy/i.test(c));
 
-      // Header row detection
-      if (!tableDone && !inTable && hasPrice && hasName) {
+      // Header row detection:
+      // Primary: has price + name column (original check)
+      // Fallback: has price + URL/link column (agent added a link column)
+      // Last resort: 4+ column table with a price col (very permissive for edge cases)
+      const isProductHeader = !tableDone && !inTable && (
+        (hasPrice && hasName) ||
+        (hasPrice && (hasUrl || hasLinkCol)) ||
+        (hasPrice && cells.length >= 4)
+      );
+
+      if (isProductHeader) {
         colRoles = cellRoles;
         inTable  = true;
         continue;
@@ -523,12 +535,16 @@ function parseAgentText(raw, query) {
 
   // ── Build summary ──────────────────────────────────────────────
   // Primary: lines before the table. Fallback: auto-generate from results.
-  let summary = summaryLines
-    .filter(l => l.length > 5 && !l.startsWith('|'))
+  // Only use lines before the first table as summary.
+  // Cap at first 2 sentences (split on ". ") to avoid dumping entire response.
+  const summaryText = summaryLines
+    .filter(l => l.length > 5 && !l.startsWith('|') && !l.includes(' | '))
     .join(' ')
     .replace(/[|*#]/g, '')
-    .trim()
-    .substring(0, 400);
+    .trim();
+  // Take first 2 sentences max
+  const sentences = summaryText.match(/[^.!?]+[.!?]+/g) || [summaryText];
+  let summary = sentences.slice(0, 2).join(' ').trim().substring(0, 400);
 
   if (!summary) {
     // No intro lines — agent started straight with the table.
