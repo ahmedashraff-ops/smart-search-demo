@@ -450,6 +450,108 @@ function stopProgress() {
 }
 
 // ─── SEARCH ───────────────────────────────────────────────────────
+
+// ─── MARKDOWN PARSER (fallback for when agent ignores JSON format) ─────────
+// Also used when agent returns JSON but buries a markdown table inside a string value.
+// Strips <br> tags, handles "#" numbering columns, maps any column naming.
+function parseMarkdownTable(text, query) {
+  // Normalise: replace <br> variants with comma, strip bold markers
+  const norm = text
+    .replace(/<br\s*\/?>/gi, ', ')
+    .replace(/\*\*/g, '')
+    .replace(/\*/g, '');
+
+  const lines = norm.split(/\r?\n/);
+  const stripMd = s => s.replace(/^#+\s*/, '').trim();
+
+  function detectRole(h) {
+    const s = h.toLowerCase().replace(/[^a-z0-9 ]/g,' ').trim();
+    if (/^#$|^no$|^s\.?n|^num/.test(s))                         return 'skip';
+    if (/brand/.test(s))                                          return 'brand';
+    if (/model|product|name|item/.test(s))                        return 'model';
+    if (/price|aed|cost/.test(s))                                 return 'price';
+    if (/size|capacit|litre|liter|inch|screen/.test(s))           return 'specs';
+    if (/power|watt/.test(s))                                     return 'power';
+    if (/feature|selling|highlight|key|benefit/.test(s))          return 'features';
+    if (/timer|keep.?warm|program|function|note/.test(s))         return 'features2';
+    if (/connect|wifi|wi.fi|bluetooth|smart|os/.test(s))          return 'features3';
+    if (/where|availab|buy|store|retail/.test(s))                 return 'avail';
+    if (/energy|star|rating/.test(s))                             return 'energy';
+    if (/why|reason|suit|fit|match/.test(s))                      return 'why';
+    if (/url|link|href/.test(s))                                  return 'url';
+    return null;
+  }
+
+  let colRoles = [], inTable = false, tableDone = false;
+  const products = [], sumParts = [];
+
+  for (const line of lines) {
+    const t = line.trim();
+    if (!t) continue;
+
+    if (t.startsWith('|')) {
+      const cells = t.replace(/^\||\|$/g,'').split('|').map(c => c.trim());
+      if (cells.every(c => /^[-: ]+$/.test(c))) continue; // separator
+
+      const roles = cells.map(c => detectRole(c));
+      const hasPrice = roles.includes('price');
+      const hasName  = roles.some(r => r==='model' || r==='brand');
+
+      if (!tableDone && !inTable && hasPrice && hasName) {
+        colRoles = roles; inTable = true; continue;
+      }
+
+      if (inTable && !tableDone) {
+        const get = role => {
+          const idx = colRoles.indexOf(role);
+          return idx >= 0 ? (cells[idx] || '') : '';
+        };
+        const featParts = ['features','features2','features3']
+          .map(r => get(r)).filter(Boolean).join(', ');
+        const features = featParts
+          .split(/[,;·•]/)
+          .map(f => f.trim())
+          .filter(f => f.length > 2 && f.length < 80)
+          .slice(0, 5);
+
+        const cleanStr = s => s.replace(/\([A-Z0-9\-]{5,}\)/g,'').replace(/\s+/g,' ').trim();
+        const brand = cleanStr(get('brand'));
+        const model = cleanStr(get('model'));
+        const name  = brand && model && !model.toLowerCase().startsWith(brand.toLowerCase())
+          ? `${brand} ${model}` : model || brand || '';
+        if (!name) continue;
+
+        const priceNum = parseFloat(get('price').replace(/[^0-9.]/g,''));
+        const price    = priceNum > 9 ? priceNum : null;
+        const specs    = [get('specs'), get('power')].filter(Boolean).join(' · ');
+        const avail    = get('avail');
+        const agentUrl = get('url');
+        const onSDG    = /sharaf/i.test(avail);
+        const url      = (agentUrl && agentUrl.startsWith('http')) ? agentUrl
+                       : onSDG ? `https://uae.sharafdg.com/search/?q=${encodeURIComponent(name)}` : null;
+        const agentWhy = get('why');
+        const why      = agentWhy && agentWhy.length > 5 ? agentWhy
+                       : [onSDG ? 'Available at Sharaf DG' : avail, specs, features[0]]
+                           .filter(Boolean).join(' · ');
+
+        products.push({ name, brand, specs, price, original_price: null,
+                        features, energy_rating: get('energy') || null, why, url });
+        continue;
+      }
+    }
+
+    if (inTable && !tableDone) { tableDone = true; inTable = false; }
+    const clean = stripMd(t);
+    if (clean && !tableDone) sumParts.push(clean);
+  }
+
+  const summary = sumParts.filter(s => s.length > 4).join(' — ').substring(0, 300)
+    || (products.length ? `Found ${products.length} products for "${query}".` : '');
+
+  return { products, summary };
+}
+
+// ─── SEARCH ───────────────────────────────────────────────────────
 function go(s) {
   const v = s === 'v'
     ? document.getElementById('heroIn').value.trim()
@@ -493,27 +595,75 @@ async function doSearch(q) {
     const raw = (data.answer || '').trim();
     let parsed = null;
 
-    // ── Parse JSON from agent ──────────────────────────────────────
+    // ── STAGE 1: Try proper JSON with products array ───────────────
     try {
       let clean = raw;
-      // Strip markdown fences if present
-      if (clean.startsWith('```')) {
-        clean = clean.replace(/^```[a-z]*\n?/, '').replace(/```\s*$/, '').trim();
-      }
-      // Extract first JSON object even if there's surrounding text
-      const m = clean.match(/(\{[\s\S]*\})/);
+      if (clean.startsWith('```'))
+        clean = clean.replace(/^```[a-z]*\n?/,'').replace(/```\s*$/,'').trim();
+      const m   = clean.match(/(\{[\s\S]*\})/);
       const obj = JSON.parse(m ? m[1] : clean);
 
       if (obj && typeof obj === 'object') {
-        const products  = Array.isArray(obj.products) ? obj.products : [];
-        const summary   = obj.summary || `Here are the best matches for "${q}".`;
-        // Build extra HTML from all other fields (tips, guide, links, etc.)
-        const extraHtml = buildExtraHtml(obj);
-        parsed = { products, summary, extraHtml };
+        const products = Array.isArray(obj.products) ? obj.products : [];
+
+        if (products.length > 0) {
+          // ✅ Agent returned correct schema
+          parsed = {
+            products,
+            summary:   obj.summary || `Here are the best matches for "${q}".`,
+            extraHtml: buildExtraHtml(obj)
+          };
+        } else {
+          // ── STAGE 2: JSON parsed but no products array ─────────────
+          // Agent put the whole response in a single string field.
+          // Find the longest string value and run the markdown parser on it.
+          const textValues = Object.values(obj)
+            .filter(v => typeof v === 'string')
+            .sort((a, b) => b.length - a.length);
+
+          for (const txt of textValues) {
+            if (txt.includes('|')) {
+              const md = parseMarkdownTable(txt, q);
+              if (md.products.length > 0) {
+                // Use the JSON field name as the summary if it's short enough,
+                // otherwise use the first sentence of the text blob.
+                const firstSentence = txt.split(/[.!?]/)[0].replace(/[|*#]/g,'').trim();
+                parsed = {
+                  products:  md.products,
+                  summary:   obj.summary || (firstSentence.length < 200 ? firstSentence : `Here are the best matches for "${q}".`),
+                  extraHtml: buildExtraHtml(obj)
+                };
+                break;
+              }
+            }
+          }
+
+          // If still nothing, show the text blob in summary
+          if (!parsed) {
+            const mainText = textValues[0] || '';
+            parsed = {
+              products:  [],
+              summary:   mainText.substring(0, 400) || `Here are the best matches for "${q}".`,
+              extraHtml: ''
+            };
+          }
+        }
       }
-    } catch(e) {
-      // JSON parse failed — show raw in summary as last resort
-      parsed = { products: [], summary: raw.substring(0, 600), extraHtml: '' };
+    } catch(_) {
+      // JSON parse completely failed
+    }
+
+    // ── STAGE 3: Raw markdown (agent ignored JSON format entirely) ─
+    if (!parsed || parsed.products.length === 0) {
+      const md = parseMarkdownTable(raw, q);
+      if (md.products.length > 0) {
+        parsed = { products: md.products, summary: md.summary, extraHtml: parsed?.extraHtml || '' };
+      }
+    }
+
+    // ── STAGE 4: Last resort — show raw text in summary ───────────
+    if (!parsed) {
+      parsed = { products: [], summary: raw.substring(0, 400), extraHtml: '' };
     }
 
     stopProgress();
@@ -544,7 +694,6 @@ function renderResults(q, parsed, $) {
         No products were returned. The AI response is shown above.
        </p>`;
 
-  // Extra AI Insights panel
   const extraInfo = $('extraInfo');
   const extraBody = $('extraBody');
   if (parsed.extraHtml) {
