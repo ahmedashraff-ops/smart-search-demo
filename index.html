@@ -103,7 +103,9 @@ header{background:var(--white);border-bottom:3px solid var(--orange);position:st
 .compare-check{display:flex;align-items:center;gap:7px;cursor:pointer;font-size:12px;font-weight:600;color:var(--muted);user-select:none;transition:color .2s}
 .compare-check input[type=checkbox]{width:15px;height:15px;accent-color:var(--blue);cursor:pointer}
 .compare-check:hover{color:var(--blue)}
-
+.view-link{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:var(--blue);text-decoration:none;padding:6px 12px;border:1.5px solid var(--blue-pale);border-radius:7px;transition:all .2s}
+.view-link:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
+.view-link.disabled{color:#9ca3af;border-color:#e5e7eb;pointer-events:none}
 .prod-card.compare-selected{border-color:var(--blue)!important;box-shadow:0 0 0 3px rgba(0,47,134,.15)!important}
 .compare-bar-float{display:none;position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--blue);color:#fff;border-radius:14px;padding:12px 24px;font-size:13px;font-weight:700;z-index:200;align-items:center;gap:14px;box-shadow:0 8px 32px rgba(0,0,0,.25)}
 .compare-bar-float.show{display:flex}
@@ -333,6 +335,9 @@ function cardHTML(p, i) {
   const bg  = CAT_BG[cat], clr = CAT_CLR[cat], best = i < 2;
   const feats = (p.features||[]).slice(0,5).map(f=>`<span class="card-feat">${esc(f)}</span>`).join('');
   const hasUrl = p.url && p.url.startsWith('http');
+  const viewBtn = hasUrl
+    ? `<a class="view-link" href="${p.url}" target="_blank" rel="noopener">↗ View</a>`
+    : `<a class="view-link disabled">↗ View</a>`;
 
   // Register product for compare lookup
   const cardId = 'card-' + i;
@@ -946,7 +951,9 @@ async function openCompare() {
   hdr(document.getElementById('cmpHdr2'), p2);
 
   // Footer links
-  document.getElementById('cmpFooterLinks').innerHTML = '';
+  document.getElementById('cmpFooterLinks').innerHTML = [p1,p2].map(p =>
+    p.url ? `<a href="${p.url}" target="_blank" rel="noopener" class="view-link" style="font-size:11px">↗ ${esc(p.name.substring(0,22))}…</a>` : ''
+  ).join('');
 
   // Show loading
   document.getElementById('cmpLoading').style.display = 'block';
