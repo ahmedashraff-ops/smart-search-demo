@@ -328,82 +328,62 @@ function cardHTML(p, i) {
 }
 
 // ─── EXTRA CONTENT BUILDER ────────────────────────────────────────
-// Converts any JSON fields beyond "summary" and "products" into
-// styled HTML for the AI Insights panel.
-// Handles: strings, arrays, objects, nested objects, URLs.
+// Fix 5: skip any string field that contains "|" (markdown table) or is > 500 chars
 const SKIP_KEYS = new Set(['summary','products','error']);
 
 function buildExtraHtml(obj) {
   let html = '';
-
   for (const [key, val] of Object.entries(obj)) {
     if (SKIP_KEYS.has(key) || val === null || val === undefined) continue;
     if (Array.isArray(val) && val.length === 0) continue;
     if (typeof val === 'object' && !Array.isArray(val) && Object.keys(val).length === 0) continue;
-
-    const title = key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    // Skip string blobs that are markdown tables or just the full response text
+    if (typeof val === 'string' && (val.includes('|') || val.length > 500)) continue;
+    const title = key.replace(/_/g,' ').replace(/\b\w/g, c => c.toUpperCase());
     html += `<div class="extra-section"><div class="extra-title">${escHtml(title)}</div>`;
     html += renderValue(val);
     html += `</div>`;
   }
-
   return html;
 }
 
 function renderValue(val) {
-  // Plain string
   if (typeof val === 'string') {
     if (isUrl(val)) return `<a class="extra-link" href="${val}" target="_blank" rel="noopener">🔗 ${escHtml(val)}</a>`;
     return `<p class="extra-para">${escHtml(val)}</p>`;
   }
-
-  // Array
   if (Array.isArray(val)) {
-    // Array of objects → table
     if (val.length && typeof val[0] === 'object' && val[0] !== null) {
       const headers = Object.keys(val[0]);
-      let t = `<table class="extra-table"><tr>${headers.map(h =>
-        `<td>${escHtml(h.replace(/_/g,' '))}</td>`).join('')}</tr>`;
+      let t = `<table class="extra-table"><tr>${headers.map(h => `<td>${escHtml(h.replace(/_/g,' '))}</td>`).join('')}</tr>`;
       val.forEach(row => {
         t += `<tr>${headers.map(h => {
           const cell = row[h];
-          if (isUrl(String(cell || '')))
-            return `<td><a class="extra-link" href="${cell}" target="_blank" rel="noopener">🔗 Link</a></td>`;
-          return `<td>${escHtml(String(cell ?? ''))}</td>`;
+          if (isUrl(String(cell||''))) return `<td><a class="extra-link" href="${cell}" target="_blank" rel="noopener">🔗 Link</a></td>`;
+          return `<td>${escHtml(String(cell??''))}</td>`;
         }).join('')}</tr>`;
       });
       return t + `</table>`;
     }
-    // Array of strings → list
     return `<ul class="extra-list">${val.map(item =>
       `<li>${isUrl(String(item)) ? `<a class="extra-link" href="${item}" target="_blank" rel="noopener">🔗 ${escHtml(String(item))}</a>` : escHtml(String(item))}</li>`
     ).join('')}</ul>`;
   }
-
-  // Object → key-value grid
   if (typeof val === 'object') {
     let kv = `<div class="extra-kv">`;
     for (const [k, v] of Object.entries(val)) {
-      const vStr = String(v ?? '');
+      const vStr = String(v??'');
       kv += `<span class="extra-kv-key">${escHtml(k.replace(/_/g,' '))}:</span>`;
       kv += `<span class="extra-kv-val">${isUrl(vStr) ? `<a class="extra-link" href="${vStr}" target="_blank" rel="noopener">🔗 ${escHtml(vStr)}</a>` : escHtml(vStr)}</span>`;
     }
     return kv + `</div>`;
   }
-
   return `<p class="extra-para">${escHtml(String(val))}</p>`;
 }
 
-function isUrl(s) {
-  return /^https?:\/\//.test(s.trim());
-}
-
+function isUrl(s) { return /^https?:\/\//.test(s.trim()); }
 function escHtml(s) {
-  return String(s)
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;');
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 // ─── SETTINGS ─────────────────────────────────────────────────────
@@ -412,7 +392,7 @@ function toggleSettings() {
   p.style.display = p.style.display === 'none' ? 'block' : 'none';
 }
 function toggleExtra() {
-  const body    = document.getElementById('extraBody');
+  const body = document.getElementById('extraBody');
   const chevron = document.getElementById('extraChevron');
   body.classList.toggle('open');
   chevron.textContent = body.classList.contains('open') ? '▲' : '▼';
@@ -441,7 +421,7 @@ function startProgress() {
   const el = document.getElementById('loaderMsg');
   if (el) el.textContent = msgs[0];
   progressInterval = setInterval(() => {
-    i = Math.min(i + 1, msgs.length - 1);
+    i = Math.min(i+1, msgs.length-1);
     if (el) { el.style.opacity='0'; setTimeout(()=>{ el.textContent=msgs[i]; el.style.opacity='1'; },150); }
   }, 1800);
 }
@@ -449,37 +429,48 @@ function stopProgress() {
   if (progressInterval) { clearInterval(progressInterval); progressInterval = null; }
 }
 
-// ─── SEARCH ───────────────────────────────────────────────────────
-
-// ─── MARKDOWN PARSER (fallback for when agent ignores JSON format) ─────────
-// Also used when agent returns JSON but buries a markdown table inside a string value.
-// Strips <br> tags, handles "#" numbering columns, maps any column naming.
+// ─── MARKDOWN PARSER ──────────────────────────────────────────────
 function parseMarkdownTable(text, query) {
-  // Normalise: replace <br> variants with comma, strip bold markers
-  const norm = text
-    .replace(/<br\s*\/?>/gi, ', ')
-    .replace(/\*\*/g, '')
-    .replace(/\*/g, '');
+  // ── Normalise ──────────────────────────────────────────────────
+  let norm = text
+    .replace(/<br\s*\/?>/gi, ', ')   // <br> → comma
+    .replace(/\*\*/g, '')            // strip bold
+    .replace(/\*/g, '');             // strip italic
 
-  const lines = norm.split(/\r?\n/);
+  // Fix 1: handle single-line tables — agent puts entire table on one line.
+  // A row boundary in a single-line table looks like "| |" (pipe + only whitespace + pipe).
+  // Cell boundaries look like "| content |" (pipe + non-whitespace content + pipe).
+  // So replace "pipe + whitespace-only + pipe" with "pipe + newline + pipe".
+  norm = norm.replace(/\|\s+\|/g, '|\n|');
+
+  const lines   = norm.split(/\r?\n/);
   const stripMd = s => s.replace(/^#+\s*/, '').trim();
 
   function detectRole(h) {
-    const s = h.toLowerCase().replace(/[^a-z0-9 ]/g,' ').trim();
-    if (/^#$|^no$|^s\.?n|^num/.test(s))                         return 'skip';
-    if (/brand/.test(s))                                          return 'brand';
-    if (/model|product|name|item/.test(s))                        return 'model';
-    if (/price|aed|cost/.test(s))                                 return 'price';
-    if (/size|capacit|litre|liter|inch|screen/.test(s))           return 'specs';
-    if (/power|watt/.test(s))                                     return 'power';
-    if (/feature|selling|highlight|key|benefit/.test(s))          return 'features';
-    if (/timer|keep.?warm|program|function|note/.test(s))         return 'features2';
-    if (/connect|wifi|wi.fi|bluetooth|smart|os/.test(s))          return 'features3';
-    if (/where|availab|buy|store|retail/.test(s))                 return 'avail';
-    if (/energy|star|rating/.test(s))                             return 'energy';
-    if (/why|reason|suit|fit|match/.test(s))                      return 'why';
-    if (/url|link|href/.test(s))                                  return 'url';
+    const s = h.toLowerCase().replace(/[^a-z0-9 ]/g, ' ').trim();
+    if (/^#$|^no$|^s\.?n|^num/.test(s))                           return 'skip';
+    if (/brand/.test(s))                                            return 'brand';
+    if (/model|product|name|item/.test(s))                          return 'model';
+    if (/price|aed|cost/.test(s))                                   return 'price';
+    if (/size|capacit|litre|liter|inch|screen/.test(s))             return 'specs';
+    if (/power|watt/.test(s))                                       return 'power';
+    if (/feature|selling|highlight|key|benefit/.test(s))            return 'features';
+    if (/timer|keep.?warm|program|function|note/.test(s))           return 'features2';
+    if (/connect|wifi|wi.fi|bluetooth|smart|os|platform/.test(s))   return 'features3';
+    if (/where|availab|buy|store|retail/.test(s))                   return 'avail';
+    if (/energy|star|rating/.test(s))                               return 'energy';
+    if (/why|reason|suit|fit|match/.test(s))                        return 'why';
+    if (/url|link|href/.test(s))                                    return 'url';
     return null;
+  }
+
+  // Fix 2: clean SKU codes — strips "(QA65S90F)", "– QA65S90F", "- QA65S90F"
+  function cleanName(s) {
+    return s
+      .replace(/\s*[–\-]\s*[A-Z0-9]{6,}/g, '')   // "– QA65S85FAEXZN"
+      .replace(/\([A-Z0-9\-]{5,}\)/g, '')          // "(QA65S85FAEXZN)"
+      .replace(/\s+/g, ' ')
+      .trim();
   }
 
   let colRoles = [], inTable = false, tableDone = false;
@@ -490,22 +481,26 @@ function parseMarkdownTable(text, query) {
     if (!t) continue;
 
     if (t.startsWith('|')) {
-      const cells = t.replace(/^\||\|$/g,'').split('|').map(c => c.trim());
-      if (cells.every(c => /^[-: ]+$/.test(c))) continue; // separator
+      const cells = t.replace(/^\||\|$/g, '').split('|').map(c => c.trim());
+      if (cells.every(c => /^[-: ]+$/.test(c))) continue; // separator row
 
-      const roles = cells.map(c => detectRole(c));
+      const roles    = cells.map(c => detectRole(c));
       const hasPrice = roles.includes('price');
-      const hasName  = roles.some(r => r==='model' || r==='brand');
+      const hasName  = roles.some(r => r === 'model' || r === 'brand');
 
+      // Header row
       if (!tableDone && !inTable && hasPrice && hasName) {
         colRoles = roles; inTable = true; continue;
       }
 
+      // Data row
       if (inTable && !tableDone) {
         const get = role => {
           const idx = colRoles.indexOf(role);
           return idx >= 0 ? (cells[idx] || '') : '';
         };
+
+        // Collect features from all feature columns
         const featParts = ['features','features2','features3']
           .map(r => get(r)).filter(Boolean).join(', ');
         const features = featParts
@@ -514,28 +509,41 @@ function parseMarkdownTable(text, query) {
           .filter(f => f.length > 2 && f.length < 80)
           .slice(0, 5);
 
-        const cleanStr = s => s.replace(/\([A-Z0-9\-]{5,}\)/g,'').replace(/\s+/g,' ').trim();
-        const brand = cleanStr(get('brand'));
-        const model = cleanStr(get('model'));
+        const brand = cleanName(get('brand'));
+        const model = cleanName(get('model'));
         const name  = brand && model && !model.toLowerCase().startsWith(brand.toLowerCase())
           ? `${brand} ${model}` : model || brand || '';
         if (!name) continue;
 
-        const priceNum = parseFloat(get('price').replace(/[^0-9.]/g,''));
-        const price    = priceNum > 9 ? priceNum : null;
-        const specs    = [get('specs'), get('power')].filter(Boolean).join(' · ');
-        const avail    = get('avail');
-        const agentUrl = get('url');
-        const onSDG    = /sharaf/i.test(avail);
-        const url      = (agentUrl && agentUrl.startsWith('http')) ? agentUrl
-                       : onSDG ? `https://uae.sharafdg.com/search/?q=${encodeURIComponent(name)}` : null;
-        const agentWhy = get('why');
-        const why      = agentWhy && agentWhy.length > 5 ? agentWhy
-                       : [onSDG ? 'Available at Sharaf DG' : avail, specs, features[0]]
-                           .filter(Boolean).join(' · ');
+        // Fix 3: robust price extraction — handle "AED 3,699" and "3,699 AED"
+        const priceStr   = get('price').replace(/,/g, '');
+        const priceMatch = priceStr.match(/\d+(\.\d+)?/);
+        const priceNum   = priceMatch ? parseFloat(priceMatch[0]) : 0;
+        const price      = priceNum > 9 ? priceNum : null;
 
-        products.push({ name, brand, specs, price, original_price: null,
-                        features, energy_rating: get('energy') || null, why, url });
+        const specs = [get('specs'), get('power')].filter(Boolean).join(' · ');
+
+        // Fix 4: URL — use agent url if valid, else build Sharaf DG search URL.
+        // Default to Sharaf DG unless avail explicitly names another retailer.
+        const agentUrl  = get('url');
+        const avail     = get('avail');
+        const otherStore = /amazon|noon|carrefour|lulu|jumbo|plug/i.test(avail);
+        const validUrl  = agentUrl && agentUrl.startsWith('http');
+        const url = validUrl ? agentUrl
+          : !otherStore
+            ? `https://uae.sharafdg.com/search/?q=${encodeURIComponent(name)}`
+            : null;
+
+        const agentWhy = get('why');
+        const onSDG    = !otherStore;
+        const why = agentWhy && agentWhy.length > 5 ? agentWhy
+          : [onSDG ? 'Available at Sharaf DG UAE' : avail, specs, features[0]]
+              .filter(Boolean).join(' · ');
+
+        products.push({
+          name, brand, specs, price, original_price: null,
+          features, energy_rating: get('energy') || null, why, url
+        });
         continue;
       }
     }
@@ -545,7 +553,10 @@ function parseMarkdownTable(text, query) {
     if (clean && !tableDone) sumParts.push(clean);
   }
 
-  const summary = sumParts.filter(s => s.length > 4).join(' — ').substring(0, 300)
+  const summary = sumParts
+    .filter(s => s.length > 4 && !s.includes('|'))
+    .slice(0, 2).join(' — ')
+    .substring(0, 300)
     || (products.length ? `Found ${products.length} products for "${query}".` : '');
 
   return { products, summary };
@@ -595,7 +606,7 @@ async function doSearch(q) {
     const raw = (data.answer || '').trim();
     let parsed = null;
 
-    // ── STAGE 1: Try proper JSON with products array ───────────────
+    // ── STAGE 1: Proper JSON with products array ───────────────────
     try {
       let clean = raw;
       if (clean.startsWith('```'))
@@ -605,65 +616,69 @@ async function doSearch(q) {
 
       if (obj && typeof obj === 'object') {
         const products = Array.isArray(obj.products) ? obj.products : [];
-
         if (products.length > 0) {
-          // ✅ Agent returned correct schema
+          // ✅ Correct schema
           parsed = {
             products,
             summary:   obj.summary || `Here are the best matches for "${q}".`,
             extraHtml: buildExtraHtml(obj)
           };
         } else {
-          // ── STAGE 2: JSON parsed but no products array ─────────────
-          // Agent put the whole response in a single string field.
-          // Find the longest string value and run the markdown parser on it.
+          // ── STAGE 2: JSON ok but no products — find markdown in string values ──
+          // Sort string values longest-first (the big response blob is longest)
           const textValues = Object.values(obj)
             .filter(v => typeof v === 'string')
             .sort((a, b) => b.length - a.length);
 
           for (const txt of textValues) {
-            if (txt.includes('|')) {
-              const md = parseMarkdownTable(txt, q);
-              if (md.products.length > 0) {
-                // Use the JSON field name as the summary if it's short enough,
-                // otherwise use the first sentence of the text blob.
-                const firstSentence = txt.split(/[.!?]/)[0].replace(/[|*#]/g,'').trim();
-                parsed = {
-                  products:  md.products,
-                  summary:   obj.summary || (firstSentence.length < 200 ? firstSentence : `Here are the best matches for "${q}".`),
-                  extraHtml: buildExtraHtml(obj)
-                };
-                break;
-              }
+            if (!txt.includes('|')) continue;
+            const md = parseMarkdownTable(txt, q);
+            if (md.products.length > 0) {
+              // Pull a clean summary from the text before the table
+              const beforeTable = txt.split(/\|[-| :]+\|/)[0]
+                .replace(/[|*#]/g,'').trim().split(/[.!?]/)[0].trim();
+              parsed = {
+                products:  md.products,
+                summary:   obj.summary || (beforeTable.length > 10 && beforeTable.length < 300 ? beforeTable : `Here are the best matches for "${q}".`),
+                extraHtml: buildExtraHtml(obj)
+              };
+              break;
             }
           }
-
-          // If still nothing, show the text blob in summary
+          // No table found in any string — show longest text in summary
           if (!parsed) {
-            const mainText = textValues[0] || '';
+            const mainText = Object.values(obj)
+              .filter(v => typeof v === 'string')
+              .sort((a,b) => b.length - a.length)[0] || '';
             parsed = {
               products:  [],
-              summary:   mainText.substring(0, 400) || `Here are the best matches for "${q}".`,
+              summary:   mainText.replace(/[|*#]/g,'').trim().substring(0, 400) || raw.substring(0, 400),
               extraHtml: ''
             };
           }
         }
       }
-    } catch(_) {
-      // JSON parse completely failed
-    }
+    } catch(_) { /* JSON parse failed */ }
 
     // ── STAGE 3: Raw markdown (agent ignored JSON format entirely) ─
     if (!parsed || parsed.products.length === 0) {
       const md = parseMarkdownTable(raw, q);
       if (md.products.length > 0) {
-        parsed = { products: md.products, summary: md.summary, extraHtml: parsed?.extraHtml || '' };
+        parsed = {
+          products:  md.products,
+          summary:   md.summary,
+          extraHtml: parsed?.extraHtml || ''
+        };
       }
     }
 
-    // ── STAGE 4: Last resort — show raw text in summary ───────────
+    // ── STAGE 4: Last resort ───────────────────────────────────────
     if (!parsed) {
-      parsed = { products: [], summary: raw.substring(0, 400), extraHtml: '' };
+      parsed = {
+        products:  [],
+        summary:   raw.replace(/[|*#]/g,'').trim().substring(0, 400),
+        extraHtml: ''
+      };
     }
 
     stopProgress();
@@ -685,14 +700,11 @@ async function doSearch(q) {
 function renderResults(q, parsed, $) {
   if (!$) $ = id => document.getElementById(id);
   const products = parsed.products || [];
-
   $('aiSummary').textContent = parsed.summary || `Here are the best matches for "${q}".`;
   $('resMeta').innerHTML = `<strong>${products.length} product${products.length !== 1 ? 's' : ''} found on Sharaf DG</strong>`;
   $('prodGrid').innerHTML = products.length
     ? products.map((p, i) => cardHTML(p, i)).join('')
-    : `<p style="grid-column:1/-1;text-align:center;color:var(--muted);padding:32px;font-size:14px">
-        No products were returned. The AI response is shown above.
-       </p>`;
+    : `<p style="grid-column:1/-1;text-align:center;color:var(--muted);padding:32px;font-size:14px">No products were returned. The AI response is shown above.</p>`;
 
   const extraInfo = $('extraInfo');
   const extraBody = $('extraBody');
