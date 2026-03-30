@@ -79,14 +79,14 @@ header{background:var(--white);border-bottom:3px solid var(--orange);position:st
 .prod-card{background:var(--white);border:1.5px solid var(--border);border-radius:14px;overflow:hidden;transition:all .25s;cursor:pointer;display:flex;flex-direction:column}
 .prod-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,47,134,.12);border-color:var(--blue-pale)}
 .prod-card.best{border-color:var(--orange);box-shadow:0 4px 20px rgba(245,168,0,.18)}
-.card-img{height:160px;display:flex;align-items:center;justify-content:center;position:relative;font-size:72px}
+.card-img{height:160px;display:flex;align-items:center;justify-content:center;position:relative}
 .badge-best{position:absolute;top:10px;right:10px;background:var(--orange);color:var(--blue);font-size:10px;font-weight:800;padding:4px 10px;border-radius:20px}
 .badge-cat{position:absolute;top:10px;left:10px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:3px 9px;border-radius:4px}
 .card-body{padding:16px;flex:1;display:flex;flex-direction:column;gap:6px}
 .card-brand{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted)}
 .card-name{font-size:15px;font-weight:700;color:var(--text);line-height:1.3}
-.card-specs{font-size:12px;color:var(--muted)}
-.card-features{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.card-specs{font-size:12px;color:var(--muted);line-height:1.5}
+.card-features{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
 .card-feat{background:var(--blue-pale);color:var(--blue);font-size:11px;padding:3px 8px;border-radius:4px;font-weight:500}
 .card-footer{border-top:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;background:#fafbfd;margin-top:auto}
 .price-lbl{font-size:10px;color:var(--muted);font-weight:500}
@@ -95,9 +95,8 @@ header{background:var(--white);border-bottom:3px solid var(--orange);position:st
 .buy-btn{background:var(--orange);color:var(--blue);border:none;border-radius:7px;padding:8px 16px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;cursor:pointer;transition:background .2s;white-space:nowrap}
 .buy-btn:hover{background:var(--orange-dk)}
 .energy-tag{background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px}
-.card-why{padding:12px 16px;background:#fff8e1;border-top:1px solid #fde68a;font-size:12px;color:#78350f;line-height:1.5}
-.card-why-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#e09600;display:block;margin-bottom:3px}
-/* ── Extra info panel (AI insights below grid) ── */
+.card-why{padding:12px 16px;background:#fff8e1;border-top:1px solid #fde68a;font-size:12px;color:#78350f;line-height:1.6}
+.card-why-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#e09600;display:block;margin-bottom:4px}
 .extra-info{margin-top:32px}
 .extra-info-hdr{display:flex;align-items:center;gap:10px;margin-bottom:16px;cursor:pointer;user-select:none}
 .extra-info-hdr-line{height:1px;background:var(--border);flex:1}
@@ -124,7 +123,7 @@ footer strong{color:var(--orange)}
 .fu{animation:fadeUp .4s ease both}
 @media(max-width:768px){
   .hdr{padding:0 14px;gap:10px}
-  .ai-badge,.logo-tag{display:none}
+  .ai-badge{display:none}
   .hero h1{font-size:30px}
   .main{padding:16px}
 }
@@ -132,7 +131,7 @@ footer strong{color:var(--orange)}
 </head>
 <body>
 
-<div class="topbar">Free delivery on orders over <strong>AED 199</strong> &nbsp;·&nbsp; 0% installments via Tabby &amp; Tamara &nbsp;·&nbsp; Helpline: <strong>600 502 034</strong></div>
+<div class="topbar">Free delivery on orders over <strong>AED 199</strong> &nbsp;&middot;&nbsp; 0% installments via Tabby &amp; Tamara &nbsp;&middot;&nbsp; Helpline: <strong>600 502 034</strong></div>
 
 <header>
   <div class="hdr">
@@ -141,42 +140,42 @@ footer strong{color:var(--orange)}
       <div class="logo-bot">DG</div>
     </a>
     <div class="hdr-search">
-      <input id="hdrIn" type="text" placeholder="Search products, brands, models…" autocomplete="off"/>
-      <button class="hdr-go" id="hdrBtn" onclick="go('h')">🔍</button>
+      <input id="hdrIn" type="text" placeholder="Search products, brands, models&hellip;" autocomplete="off"/>
+      <button class="hdr-go" id="hdrBtn" onclick="go('h')">&#128269;</button>
     </div>
     <div class="ai-badge"><span class="pulse"></span>Yango AI Active</div>
-    <button class="settings-btn" onclick="toggleSettings()">⚙️ Settings</button>
+    <button class="settings-btn" onclick="toggleSettings()">&#9881;&#65039; Settings</button>
   </div>
 </header>
 
 <div class="settings-panel" id="settingsPanel">
   <div class="settings-inner">
     <div class="settings-top">
-      <div class="settings-title">⚙️ Yandex AI Studio Settings</div>
+      <div class="settings-title">&#9881;&#65039; Yandex AI Studio Settings</div>
       <div class="settings-actions">
-        <div class="saved-msg" id="savedMsg">✓ Saved</div>
+        <div class="saved-msg" id="savedMsg">&#10003; Saved</div>
         <button class="save-btn" onclick="saveSettings()">Save Settings</button>
         <button class="close-btn" onclick="toggleSettings()">Close</button>
       </div>
     </div>
     <div class="settings-grid">
       <div class="sfield">
-        <label>🔑 API Key</label>
-        <input id="apiKey" type="password" placeholder="AQVN…" autocomplete="new-password"/>
-        <div class="hint">console.yandex.cloud → Service Accounts → API Keys</div>
+        <label>&#128273; API Key</label>
+        <input id="apiKey" type="password" placeholder="AQVN&hellip;" autocomplete="new-password"/>
+        <div class="hint">console.yandex.cloud &rarr; Service Accounts &rarr; API Keys</div>
       </div>
       <div class="sfield">
-        <label>📁 Folder ID</label>
-        <input id="folderId" type="text" placeholder="b1g…" autocomplete="off"/>
+        <label>&#128193; Folder ID</label>
+        <input id="folderId" type="text" placeholder="b1g&hellip;" autocomplete="off"/>
         <div class="hint">Your Yandex Cloud folder overview page</div>
       </div>
       <div class="sfield">
-        <label>🤖 Agent Prompt ID</label>
+        <label>&#129302; Agent Prompt ID</label>
         <input id="promptId" type="text" placeholder="fvtap9mhn69o5c4jqjhv" autocomplete="off"/>
-        <div class="hint">Yandex AI Studio → Your Agent → Prompt ID</div>
+        <div class="hint">Yandex AI Studio &rarr; Your Agent &rarr; Prompt ID</div>
       </div>
       <div class="sfield">
-        <label>🌐 Proxy URL</label>
+        <label>&#127760; Proxy URL</label>
         <input id="proxyUrl" type="text" placeholder="https://your-project.vercel.app/api/proxy" autocomplete="off"/>
         <div class="hint">Your Vercel deployment URL + /api/proxy</div>
       </div>
@@ -185,24 +184,24 @@ footer strong{color:var(--orange)}
 </div>
 
 <section class="hero">
-  <div class="hero-pill">✦ Yango Smart Search</div>
+  <div class="hero-pill">&#10022; Yango Smart Search</div>
   <h1>Find It Fast.<br>Find It <span>Smart.</span></h1>
-  <p>Describe what you need — our AI finds real Sharaf DG products instantly.</p>
+  <p>Describe what you need &mdash; our AI finds real Sharaf DG products instantly.</p>
   <div class="hero-sw">
-    <input id="heroIn" type="text" placeholder="e.g. quiet AC for a small bedroom, large 4K TV for movie nights…" autocomplete="off"/>
-    <button class="hero-btn" id="heroBtn" onclick="go('v')">Search with AI →</button>
+    <input id="heroIn" type="text" placeholder="e.g. quiet AC for a small bedroom, large 4K TV for movie nights&hellip;" autocomplete="off"/>
+    <button class="hero-btn" id="heroBtn" onclick="go('v')">Search with AI &rarr;</button>
   </div>
 </section>
 
 <div class="main">
   <div class="loading" id="loader">
     <div class="spinner"></div>
-    <p id="loaderMsg">Connecting to Sharaf DG…</p>
+    <p id="loaderMsg">Connecting to Sharaf DG&hellip;</p>
   </div>
   <div class="err" id="errBox"></div>
   <div class="ai-panel" id="aiPanel">
     <div class="ai-summary">
-      <div class="ai-ico">🛒</div>
+      <div class="ai-ico">&#128722;</div>
       <div>
         <div class="ai-lbl">AI Response</div>
         <div class="ai-sum-text" id="aiSummary"></div>
@@ -210,20 +209,18 @@ footer strong{color:var(--orange)}
     </div>
     <div class="res-meta"><strong id="resMeta"></strong><div class="divider"></div></div>
     <div class="prod-grid" id="prodGrid"></div>
-    <!-- AI Insights panel injected here when agent returns extra info -->
     <div class="extra-info" id="extraInfo" style="display:none">
       <div class="extra-info-hdr" onclick="toggleExtra()">
-        <div class="extra-info-pill">💡 AI Insights <span id="extraChevron">▼</span></div>
+        <div class="extra-info-pill">&#128161; AI Insights <span id="extraChevron">&#9660;</span></div>
         <div class="extra-info-hdr-line"></div>
       </div>
       <div class="extra-info-body" id="extraBody"></div>
     </div>
   </div>
-
   <div class="empty" id="emptyState">
-    <div class="empty-icon">🔍</div>
+    <div class="empty-icon">&#128269;</div>
     <h2>What are you looking for today?</h2>
-    <p>Type anything above — a product type, brand, use case, or budget. Our AI will find the best matches from Sharaf DG in real time.</p>
+    <p>Type anything above &mdash; a product type, brand, use case, or budget. Our AI will find the best matches from Sharaf DG in real time.</p>
   </div>
 </div>
 
@@ -233,8 +230,8 @@ footer strong{color:var(--orange)}
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#F5A800"/><path d="M8 12l3 3 5-5" stroke="#002F86" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
     <span style="font-size:12px;font-weight:700;color:#fff;letter-spacing:.5px">Powered by Yango Tech AI</span>
   </div>
-  <div style="margin-bottom:6px">Smart Search powered by <strong>Yango Tech AI</strong> · Real-time Sharaf DG product search</div>
-  <div style="font-size:11px;opacity:.4">© 2025 Yango Tech · Sharaf DG</div>
+  <div style="margin-bottom:6px">Smart Search powered by <strong>Yango Tech AI</strong> &middot; Real-time Sharaf DG product search</div>
+  <div style="font-size:11px;opacity:.4">&copy; 2025 Yango Tech &middot; Sharaf DG</div>
 </footer>
 
 <script>
@@ -243,37 +240,120 @@ const CAT_CLR = {ac:'#0369a1',tv:'#6d28d9',fridge:'#065f46',microwave:'#c2410c',
 
 function guessCategory(name) {
   const n = (name||'').toLowerCase();
-  if(/ac|air.?con|split|inverter.*(ton|btu)/.test(n)) return 'ac';
-  if(/tv|television|oled|qled|screen|inch.*smart/.test(n)) return 'tv';
-  if(/fridge|refrigerator|freezer/.test(n)) return 'fridge';
-  if(/microwave|oven/.test(n)) return 'microwave';
-  if(/dishwash/.test(n)) return 'dishwasher';
-  if(/wash|laundry|dryer/.test(n)) return 'laundry';
-  if(/phone|iphone|galaxy|mobile|smartphone/.test(n)) return 'phone';
-  if(/laptop|macbook|notebook/.test(n)) return 'laptop';
-  if(/earphone|headphone|speaker|buds|audio/.test(n)) return 'audio';
-  if(/camera|gopro/.test(n)) return 'camera';
-  if(/kettle|boil/.test(n)) return 'kettle';
-  if(/toaster|iron|blender|mixer|juicer|vacuum|fan|heater|coffee|grind/.test(n)) return 'small';
+  if(/ac|air.?con|split|inverter.*(ton|btu)/.test(n))    return 'ac';
+  if(/\btv\b|television|oled|qled|smart.*[0-9].*(in|inch)/.test(n)) return 'tv';
+  if(/fridge|refrigerator|freezer/.test(n))              return 'fridge';
+  if(/microwave|oven/.test(n))                           return 'microwave';
+  if(/dishwash/.test(n))                                 return 'dishwasher';
+  if(/wash|laundry|dryer/.test(n))                       return 'laundry';
+  if(/phone|iphone|galaxy|mobile|smartphone/.test(n))    return 'phone';
+  if(/laptop|macbook|notebook/.test(n))                  return 'laptop';
+  if(/earphone|headphone|speaker|buds|audio/.test(n))    return 'audio';
+  if(/camera|gopro/.test(n))                             return 'camera';
+  if(/kettle|jug|boil/.test(n))                          return 'kettle';
+  if(/toaster|iron|blender|mixer|juicer|vacuum|fan|heater|coffee/.test(n)) return 'small';
   return 'other';
 }
 
-/* ─── MARKDOWN → PRODUCTS PARSER ──────────────────────────────────────────── */
+function getSVG(cat, clr) {
+  const s = {
+    tv:         `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="8" y="6" width="104" height="66" rx="6" fill="${clr}" opacity=".12"/><rect x="13" y="11" width="94" height="56" rx="4" fill="${clr}" opacity=".2"/><rect x="16" y="14" width="88" height="50" rx="3" fill="${clr}" opacity=".15"/><rect x="46" y="74" width="28" height="5" rx="2" fill="${clr}" opacity=".25"/><rect x="38" y="79" width="44" height="3" rx="1.5" fill="${clr}" opacity=".2"/><path d="M50 39l12-8v16z" fill="${clr}" opacity=".35"/></svg>`,
+    ac:         `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="10" y="22" width="100" height="42" rx="8" fill="${clr}" opacity=".15"/><rect x="10" y="22" width="100" height="14" rx="8" fill="${clr}" opacity=".2"/><rect x="18" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="34" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="50" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="66" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="82" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><circle cx="94" cy="29" r="4" fill="${clr}" opacity=".3"/></svg>`,
+    fridge:     `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="32" y="4" width="56" height="82" rx="7" fill="${clr}" opacity=".15"/><rect x="32" y="4" width="56" height="32" rx="7" fill="${clr}" opacity=".1"/><line x1="32" y1="36" x2="88" y2="36" stroke="${clr}" stroke-width="1.5" opacity=".2"/><rect x="80" y="17" width="5" height="14" rx="2.5" fill="${clr}" opacity=".3"/><rect x="80" y="50" width="5" height="20" rx="2.5" fill="${clr}" opacity=".25"/></svg>`,
+    microwave:  `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="8" y="18" width="104" height="58" rx="8" fill="${clr}" opacity=".15"/><rect x="14" y="24" width="68" height="46" rx="5" fill="${clr}" opacity=".12"/><rect x="88" y="24" width="18" height="46" rx="0" fill="${clr}" opacity=".08"/><circle cx="97" cy="38" r="6" fill="${clr}" opacity=".2"/><circle cx="48" cy="47" r="18" fill="${clr}" opacity=".08"/></svg>`,
+    dishwasher: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="30" y="4" width="60" height="82" rx="7" fill="${clr}" opacity=".15"/><rect x="30" y="4" width="60" height="16" rx="7" fill="${clr}" opacity=".12"/><rect x="38" y="28" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/><rect x="38" y="38" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/><rect x="38" y="48" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/></svg>`,
+    laundry:    `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="28" y="4" width="64" height="82" rx="8" fill="${clr}" opacity=".15"/><rect x="28" y="4" width="64" height="18" rx="8" fill="${clr}" opacity=".12"/><circle cx="60" cy="55" r="22" fill="${clr}" opacity=".1"/><circle cx="60" cy="55" r="10" fill="${clr}" opacity=".12"/></svg>`,
+    phone:      `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="40" y="4" width="40" height="82" rx="8" fill="${clr}" opacity=".15"/><rect x="44" y="10" width="32" height="62" rx="4" fill="${clr}" opacity=".1"/><circle cx="60" cy="79" r="3.5" fill="${clr}" opacity=".25"/></svg>`,
+    laptop:     `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="16" y="14" width="88" height="56" rx="5" fill="${clr}" opacity=".15"/><rect x="20" y="18" width="80" height="48" rx="3" fill="${clr}" opacity=".1"/><rect x="6" y="70" width="108" height="6" rx="3" fill="${clr}" opacity=".15"/></svg>`,
+    audio:      `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><circle cx="60" cy="45" r="30" fill="${clr}" opacity=".12"/><circle cx="60" cy="45" r="18" fill="${clr}" opacity=".12"/><circle cx="60" cy="45" r="8" fill="${clr}" opacity=".18"/></svg>`,
+    camera:     `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="10" y="26" width="100" height="56" rx="8" fill="${clr}" opacity=".15"/><path d="M42 26l8-14h20l8 14" fill="${clr}" opacity=".12"/><circle cx="60" cy="54" r="18" fill="${clr}" opacity=".12"/><circle cx="60" cy="54" r="9" fill="${clr}" opacity=".18"/></svg>`,
+    kettle:     `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><path d="M38 20 Q34 45 38 68 Q52 76 68 72 Q84 68 86 45 Q88 22 72 18 Z" fill="${clr}" opacity=".15"/><path d="M72 18 Q82 16 86 28" stroke="${clr}" stroke-width="3" stroke-linecap="round" fill="none" opacity=".3"/><path d="M34 36 Q24 38 26 50 Q28 60 36 58" stroke="${clr}" stroke-width="3" stroke-linecap="round" fill="none" opacity=".25"/><rect x="38" y="68" width="34" height="5" rx="2.5" fill="${clr}" opacity=".2"/></svg>`,
+    small:      `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="30" y="20" width="60" height="52" rx="8" fill="${clr}" opacity=".15"/><rect x="38" y="28" width="44" height="28" rx="4" fill="${clr}" opacity=".1"/><circle cx="60" cy="74" r="6" fill="${clr}" opacity=".2"/><rect x="48" y="62" width="24" height="4" rx="2" fill="${clr}" opacity=".15"/></svg>`,
+    other:      `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="20" y="20" width="80" height="55" rx="7" fill="${clr}" opacity=".15"/><rect x="28" y="28" width="64" height="38" rx="4" fill="${clr}" opacity=".1"/><rect x="48" y="75" width="24" height="5" rx="2" fill="${clr}" opacity=".2"/></svg>`
+  };
+  return s[cat] || s.other;
+}
+
+function cardHTML(p, i) {
+  const cat  = guessCategory(p.name);
+  const bg   = CAT_BG[cat], clr = CAT_CLR[cat], best = i < 2;
+  const feats = (p.features||[]).slice(0,5).map(f => `<span class="card-feat">${f}</span>`).join('');
+  return `
+  <div class="prod-card${best?' best':''} fu" style="animation-delay:${i*.07}s">
+    <div class="card-img" style="background:${bg};overflow:hidden;position:relative">
+      ${getSVG(cat,clr)}
+      <div class="badge-cat" style="background:${bg};color:${clr}">${cat.toUpperCase()}</div>
+      ${best?`<div class="badge-best">&#11088; Best Match</div>`:''}
+    </div>
+    <div class="card-body">
+      <div class="card-brand">${p.brand||''}</div>
+      <div class="card-name">${p.name||'Product'}</div>
+      ${p.specs?`<div class="card-specs">${p.specs}</div>`:''}
+      ${feats?`<div class="card-features">${feats}</div>`:''}
+    </div>
+    <div class="card-footer">
+      <div>
+        <div class="price-lbl">AED</div>
+        <div class="price-num">${p.price?Number(p.price).toLocaleString():'&ndash;'}</div>
+        ${p.original_price?`<div class="price-old">AED ${Number(p.original_price).toLocaleString()}</div>`:''}
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+        ${p.energy_rating?`<div class="energy-tag">${p.energy_rating}</div>`:''}
+        <button class="buy-btn" ${p.url?`onclick="window.open('${p.url}','_blank')"`:''}>${p.url?'View on Sharaf DG &rarr;':'Search on Site'}</button>
+      </div>
+    </div>
+    ${p.why?`<div class="card-why"><span class="card-why-lbl">&#10024; Why this matches</span>${p.why}</div>`:''}
+  </div>`;
+}
+
+/* ─── MARKDOWN PARSER ─────────────────────────────────────────────────────── */
+
+// Strip markdown formatting AND inline SKU codes like – *QA65S90FAEXZN*
+function stripMd(s) {
+  return (s||'')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')   // bold
+    .replace(/\*([^*]{1,60})\*/g, '$1')  // italic / inline code
+    .replace(/^#+\s*/, '')               // headings
+    .trim();
+}
+
+// Decide whether a row of cells looks like the product table header
+function isProductHeader(cells) {
+  const j = cells.map(c => c.toLowerCase()).join(' ');
+  return (j.includes('brand') || j.includes('model') || j.includes('product') || j.includes('name'))
+      && (j.includes('price') || j.includes('aed'));
+}
+
+// Map header labels to column indices — very broad matching
+function mapHeaders(cells) {
+  const map = {};
+  cells.forEach((raw, idx) => {
+    const c = raw.toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
+    if (!c || /^(#|no|num|number)$/.test(c)) return; // skip index cols
+    if (/brand/.test(c))                                         map.brand    = idx;
+    if (/model|product|name/.test(c) && map.model === undefined) map.model    = idx;
+    if (/capacit|size|power|watt|litre|liter/.test(c))           map.specs    = idx;
+    // Broad features catch: key selling points, key features, timer, keep-warm, connectivity, highlights
+    if (/feature|selling|timer|keep|connect|spec|highlight|point/.test(c)) map.features = idx;
+    if (/price|aed|cost/.test(c))                                map.price    = idx;
+    if (/where|buy|availab|retail|store|stock/.test(c))          map.where    = idx;
+  });
+  return map;
+}
+
 function parseMarkdownResponse(raw, query) {
-  const lines = raw.split('\n');
+  const lines         = raw.split('\n');
   const products      = [];
   const summaryParts  = [];
   const extraSections = [];
 
-  let inProductTable   = false;
+  let colMap           = null;   // null until we find the header row
   let productTableDone = false;
-  let colMap           = {};
   let currentSection   = null;
 
   function flushSection() {
-    if (currentSection && (currentSection.title || currentSection.rows.length)) {
+    if (currentSection && (currentSection.title || currentSection.rows.length))
       extraSections.push(currentSection);
-    }
     currentSection = null;
   }
 
@@ -282,114 +362,112 @@ function parseMarkdownResponse(raw, query) {
     const trimmed = line.trim();
     if (!trimmed) continue;
 
-    /* ── TABLE LINE ── */
-    if (trimmed.startsWith('|')) {
-      const cells = trimmed.replace(/^\||\|$/g, '').split('|').map(c => c.trim());
+    const isTableRow = trimmed.startsWith('|');
+    const isSep      = /^\|[\s|:\-]+\|$/.test(trimmed);
 
-      // Separator row — skip
-      if (cells.every(c => /^[-: ]+$/.test(c))) continue;
+    if (isTableRow) {
+      if (isSep) continue;
+      const cells = trimmed.replace(/^\||\|$/g, '').split('|').map(c => stripMd(c));
 
-      const joined = cells.join(' ').toLowerCase();
-
-      // ── Product table header detection ──
-      if (!productTableDone &&
-          (joined.includes('brand') || joined.includes('model')) &&
-          (joined.includes('price') || joined.includes('aed'))) {
-        inProductTable = true;
-        colMap = {};
-        cells.forEach((c, idx) => {
-          const cl = c.toLowerCase();
-          if      (cl.includes('brand'))                               colMap.brand    = idx;
-          else if (cl.includes('model'))                               colMap.model    = idx;
-          else if (cl.includes('capacit') || cl.includes('size'))     colMap.specs    = idx;
-          else if (cl.includes('feature') || cl.includes('timer') ||
-                  cl.includes('key'))                                  colMap.features = idx;
-          else if (cl.includes('price') || cl.includes('aed'))        colMap.price    = idx;
-          else if (cl.includes('where') || cl.includes('buy') ||
-                  cl.includes('avail'))                                colMap.where    = idx;
-        });
+      // ── Detect product table header ──
+      if (!productTableDone && colMap === null && isProductHeader(cells)) {
+        colMap = mapHeaders(cells);
         continue;
       }
 
       // ── Product data row ──
-      if (inProductTable && !productTableDone) {
+      if (!productTableDone && colMap !== null) {
         const get = key => (colMap[key] !== undefined && cells[colMap[key]])
-          ? cells[colMap[key]].replace(/\*\*/g, '').trim() : '';
+          ? cells[colMap[key]].trim() : '';
 
-        const brand       = get('brand');
-        const model       = get('model');
-        const specs       = get('specs');
-        const featuresRaw = get('features');
-        const priceRaw    = get('price');
-        const where       = get('where');
+        const brand = get('brand');
+        const model = get('model');
+        if (!brand && !model) continue; // empty / header repeat
 
-        if (!brand && !model) continue;
+        // Build display name — prefer "Brand Model", avoid duplication
+        const rawName = (brand && model)
+          ? (model.toLowerCase().startsWith(brand.toLowerCase()) ? model : `${brand} ${model}`)
+          : (model || brand);
 
-        const priceMatch = priceRaw.replace(/,/g, '').match(/\d+/);
+        // Strip appended SKU codes: " – *ABC123*" or " *ABC123*"
+        const name = rawName
+          .replace(/\s*[–\-]\s*\*[A-Z0-9]{4,}\*/g, '')
+          .replace(/\s*\*[A-Z0-9]{5,}\*/g, '')
+          .trim();
+
+        // FIX: remove ALL thousand-separator commas before parseInt
+        // so "4,999" parses as 4999 not 4
+        const priceRaw   = get('price').replace(/,/g, '');
+        const priceMatch = priceRaw.match(/\d+/);
         const price      = priceMatch ? parseInt(priceMatch[0]) : null;
-        const onSDG      = where.toLowerCase().includes('sharaf');
 
-        const features = featuresRaw
-          .split(/[,;]/)
-          .map(f => f.trim())
-          .filter(f => f.length > 2 && f.length < 60)
-          .slice(0, 5);
+        // Features — split on bullets, semicolons, commas, newlines
+        const featRaw  = get('features');
+        const features = featRaw
+          ? featRaw
+              .split(/[•\n;,]/)
+              .map(f => f.replace(/^[\s\-\*]+/, '').trim())
+              .filter(f => f.length > 2 && f.length < 80)
+              .slice(0, 5)
+          : [];
 
-        products.push({
-          name:           [brand, model].filter(Boolean).join(' '),
-          brand,
-          specs,
-          price,
-          original_price: null,
-          features,
-          why:  onSDG
-            ? `Available at Sharaf DG${where.includes(',') ? ' and other retailers' : ''}`
-            : (where ? `Available at ${where}` : ''),
-          url:  onSDG ? 'https://uae.sharafdg.com' : null,
-          energy_rating:  null
-        });
+        const specs = get('specs');
+
+        // "Where to buy" → only use for SDG URL, NOT as "why this matches"
+        const where = get('where');
+        const onSDG = /sharaf/i.test(where);
+        const url   = onSDG
+          ? `https://uae.sharafdg.com/search/?q=${encodeURIComponent(name)}`
+          : null;
+
+        // Build a meaningful "why" from actual features, not availability
+        let why = '';
+        if (features.length > 0) {
+          why = `Matches "${query}" &mdash; highlights include ${features.slice(0,2).join(' and ')}`;
+        } else if (specs) {
+          why = `Matches "${query}" &mdash; ${specs}`;
+        }
+
+        products.push({ name, brand, specs, price, original_price: null, features, why, url, energy_rating: null });
         continue;
       }
 
-      // ── Other table (How to Choose, etc.) → extra sections ──
+      // ── Table rows after products = extra sections ──
       if (productTableDone) {
         if (!currentSection) currentSection = { title: '', rows: [] };
         currentSection.rows.push(cells);
-        continue;
       }
-    }
 
-    /* ── NON-TABLE LINE ── */
-
-    // Mark product table as done when we leave it
-    if (inProductTable && !productTableDone && products.length > 0) {
-      productTableDone = true;
-      inProductTable   = false;
-    }
-
-    const clean = trimmed.replace(/\*\*/g, '').replace(/\*/g, '').replace(/^#+\s*/, '').trim();
-    if (!clean) continue;
-
-    if (!productTableDone) {
-      summaryParts.push(clean);
     } else {
-      // Section heading?
-      if (/^#{1,4} /.test(trimmed)) {
-        flushSection();
-        currentSection = { title: clean, rows: [] };
+      // ── Non-table line: leaving product table? ──
+      if (colMap !== null && !productTableDone && products.length > 0) {
+        productTableDone = true;
+        colMap = null;
+      }
+
+      const clean = stripMd(trimmed);
+      if (!clean) continue;
+
+      if (!productTableDone) {
+        summaryParts.push(clean);
       } else {
-        if (!currentSection) currentSection = { title: '', rows: [] };
-        currentSection.rows.push([clean]);
+        if (/^#{1,4} /.test(trimmed)) {
+          flushSection();
+          currentSection = { title: clean, rows: [] };
+        } else {
+          if (!currentSection) currentSection = { title: '', rows: [] };
+          currentSection.rows.push([clean]);
+        }
       }
     }
   }
   flushSection();
 
-  /* ── Summary text ── */
-  const summary = summaryParts.filter(s => s.length > 4).join(' · ').substring(0, 400)
-    || `Showing ${products.length} result${products.length !== 1 ? 's' : ''} for: ${query}`;
+  const summary = summaryParts
+    .filter(s => s.length > 4 && !/^[\|\-\s]+$/.test(s))
+    .slice(0, 3).join(' ')
+    || `Here are the best matches found for "${query}".`;
 
-  /* ── Extra HTML ── */
   let extraHtml = '';
   extraSections.forEach(sec => {
     if (!sec.title && !sec.rows.length) return;
@@ -398,89 +476,28 @@ function parseMarkdownResponse(raw, query) {
     const isTable = sec.rows.some(r => r.length > 1);
     if (isTable) {
       extraHtml += `<table class="extra-table">`;
-      sec.rows.forEach(row => {
-        extraHtml += `<tr>${row.map(c => `<td>${c}</td>`).join('')}</tr>`;
-      });
+      sec.rows.forEach(row => { extraHtml += `<tr>${row.map(c=>`<td>${c}</td>`).join('')}</tr>`; });
       extraHtml += `</table>`;
     } else {
-      sec.rows.forEach(row => {
-        if (row[0]) extraHtml += `<p class="extra-para">${row[0]}</p>`;
-      });
+      sec.rows.forEach(row => { if (row[0]) extraHtml += `<p class="extra-para">${row[0]}</p>`; });
     }
     extraHtml += `</div>`;
   });
 
-  return { products, summary, extraHtml };
+  return { summary, products, extraHtml };
 }
 
-/* ─── SVG ILLUSTRATIONS ────────────────────────────────────────────────────── */
-function getSVG(cat, clr) {
-  const svgs = {
-    tv:         `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="8" y="6" width="104" height="66" rx="6" fill="${clr}" opacity=".12"/><rect x="13" y="11" width="94" height="56" rx="4" fill="${clr}" opacity=".2"/><rect x="16" y="14" width="88" height="50" rx="3" fill="${clr}" opacity=".15"/><rect x="46" y="74" width="28" height="5" rx="2" fill="${clr}" opacity=".25"/><rect x="38" y="79" width="44" height="3" rx="1.5" fill="${clr}" opacity=".2"/><circle cx="107" cy="18" r="3" fill="${clr}" opacity=".4"/><path d="M50 39l12-8v16z" fill="${clr}" opacity=".35"/></svg>`,
-    ac:         `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="10" y="22" width="100" height="42" rx="8" fill="${clr}" opacity=".15"/><rect x="10" y="22" width="100" height="14" rx="8" fill="${clr}" opacity=".2"/><rect x="18" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="34" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="50" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="66" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="82" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><circle cx="94" cy="29" r="4" fill="${clr}" opacity=".3"/></svg>`,
-    fridge:     `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="32" y="4" width="56" height="82" rx="7" fill="${clr}" opacity=".15"/><rect x="32" y="4" width="56" height="32" rx="7" fill="${clr}" opacity=".1"/><line x1="32" y1="36" x2="88" y2="36" stroke="${clr}" stroke-width="1.5" opacity=".2"/><rect x="80" y="17" width="5" height="14" rx="2.5" fill="${clr}" opacity=".3"/><rect x="80" y="50" width="5" height="20" rx="2.5" fill="${clr}" opacity=".25"/></svg>`,
-    microwave:  `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="8" y="18" width="104" height="58" rx="8" fill="${clr}" opacity=".15"/><rect x="14" y="24" width="68" height="46" rx="5" fill="${clr}" opacity=".12"/><rect x="88" y="24" width="18" height="46" rx="0" fill="${clr}" opacity=".08"/><circle cx="97" cy="38" r="6" fill="${clr}" opacity=".2"/><circle cx="48" cy="47" r="18" fill="${clr}" opacity=".08"/></svg>`,
-    dishwasher: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="30" y="4" width="60" height="82" rx="7" fill="${clr}" opacity=".15"/><rect x="30" y="4" width="60" height="16" rx="7" fill="${clr}" opacity=".12"/><rect x="38" y="28" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/><rect x="38" y="38" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/><rect x="38" y="48" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/></svg>`,
-    laundry:    `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="28" y="4" width="64" height="82" rx="8" fill="${clr}" opacity=".15"/><rect x="28" y="4" width="64" height="18" rx="8" fill="${clr}" opacity=".12"/><circle cx="60" cy="55" r="22" fill="${clr}" opacity=".1"/><circle cx="60" cy="55" r="16" fill="${clr}" opacity=".1"/><circle cx="60" cy="55" r="8" fill="${clr}" opacity=".12"/></svg>`,
-    phone:      `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="40" y="4" width="40" height="82" rx="8" fill="${clr}" opacity=".15"/><rect x="44" y="10" width="32" height="62" rx="4" fill="${clr}" opacity=".1"/><circle cx="60" cy="79" r="3.5" fill="${clr}" opacity=".25"/></svg>`,
-    laptop:     `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="16" y="14" width="88" height="56" rx="5" fill="${clr}" opacity=".15"/><rect x="20" y="18" width="80" height="48" rx="3" fill="${clr}" opacity=".1"/><rect x="6" y="70" width="108" height="6" rx="3" fill="${clr}" opacity=".15"/></svg>`,
-    audio:      `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><circle cx="60" cy="45" r="30" fill="${clr}" opacity=".12"/><circle cx="60" cy="45" r="20" fill="${clr}" opacity=".12"/><circle cx="60" cy="45" r="10" fill="${clr}" opacity=".15"/></svg>`,
-    camera:     `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="10" y="26" width="100" height="56" rx="8" fill="${clr}" opacity=".15"/><path d="M42 26l8-14h20l8 14" fill="${clr}" opacity=".12"/><circle cx="60" cy="54" r="18" fill="${clr}" opacity=".12"/><circle cx="60" cy="54" r="5" fill="${clr}" opacity=".2"/></svg>`,
-    kettle:     `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><ellipse cx="58" cy="56" rx="30" ry="26" fill="${clr}" opacity=".15"/><rect x="28" y="30" width="60" height="8" rx="4" fill="${clr}" opacity=".2"/><rect x="40" y="24" width="36" height="8" rx="4" fill="${clr}" opacity=".15"/><path d="M88 50 Q102 50 102 60 Q102 70 88 70" stroke="${clr}" stroke-width="3" fill="none" opacity=".25"/><rect x="46" y="78" width="24" height="5" rx="2.5" fill="${clr}" opacity=".2"/></svg>`,
-    small:      `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="30" y="20" width="60" height="52" rx="8" fill="${clr}" opacity=".15"/><rect x="38" y="28" width="44" height="28" rx="4" fill="${clr}" opacity=".1"/><circle cx="60" cy="74" r="6" fill="${clr}" opacity=".2"/><rect x="48" y="62" width="24" height="4" rx="2" fill="${clr}" opacity=".15"/></svg>`,
-    other:      `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="20" y="20" width="80" height="55" rx="7" fill="${clr}" opacity=".15"/><rect x="28" y="28" width="64" height="38" rx="4" fill="${clr}" opacity=".1"/></svg>`
-  };
-  return svgs[cat] || svgs.other;
-}
-
-function cardHTML(p, i) {
-  const cat   = guessCategory(p.name);
-  const bg    = CAT_BG[cat];
-  const clr   = CAT_CLR[cat];
-  const best  = i < 2;
-  const feats = (p.features||[]).slice(0,3).map(f => `<span class="card-feat">${f}</span>`).join('');
-  return `
-  <div class="prod-card${best?' best':''} fu" style="animation-delay:${i*.07}s">
-    <div class="card-img" style="background:${bg};display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative">
-      ${getSVG(cat, clr)}
-      <div class="badge-cat" style="background:${bg};color:${clr};position:absolute;top:10px;left:10px">${cat.toUpperCase()}</div>
-      ${best?'<div class="badge-best" style="position:absolute;top:10px;right:10px">⭐ Best Match</div>':''}
-    </div>
-    <div class="card-body">
-      <div class="card-brand">${p.brand||''}</div>
-      <div class="card-name">${p.name||'Product'}</div>
-      ${p.specs?`<div class="card-specs">${p.specs}</div>`:''}
-      <div class="card-features">${feats}</div>
-    </div>
-    <div class="card-footer">
-      <div>
-        <div class="price-lbl">AED</div>
-        <div class="price-num">${p.price?Number(p.price).toLocaleString():'–'}</div>
-        ${p.original_price?`<div class="price-old">AED ${Number(p.original_price).toLocaleString()}</div>`:''}
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
-        ${p.energy_rating?`<div class="energy-tag">${p.energy_rating}</div>`:''}
-        <button class="buy-btn" ${p.url?`onclick="window.open('${p.url}','_blank')"`:''}>
-          ${p.url?'View on Sharaf DG →':'Search on Site'}
-        </button>
-      </div>
-    </div>
-    ${p.why?`<div class="card-why"><span class="card-why-lbl">✨ Why this matches</span>${p.why}</div>`:''}
-  </div>`;
-}
-
+/* ─── SETTINGS ────────────────────────────────────────────────────────────── */
 function toggleSettings() {
   const p = document.getElementById('settingsPanel');
   p.style.display = p.style.display === 'none' ? 'block' : 'none';
 }
-
 function toggleExtra() {
-  const body    = document.getElementById('extraBody');
-  const chevron = document.getElementById('extraChevron');
+  const body = document.getElementById('extraBody');
+  const chev = document.getElementById('extraChevron');
   body.classList.toggle('open');
-  chevron.textContent = body.classList.contains('open') ? '▲' : '▼';
+  chev.innerHTML = body.classList.contains('open') ? '&#9650;' : '&#9660;';
 }
-
 function saveSettings() {
   localStorage.setItem('sdg_key',    document.getElementById('apiKey').value);
   localStorage.setItem('sdg_fold',   document.getElementById('folderId').value);
@@ -490,7 +507,6 @@ function saveSettings() {
   m.style.display = 'block';
   setTimeout(() => m.style.display = 'none', 2500);
 }
-
 function loadSettings() {
   document.getElementById('apiKey').value   = localStorage.getItem('sdg_key')    || '';
   document.getElementById('folderId').value = localStorage.getItem('sdg_fold')   || 'b1g3c22pier4ri4nu7rs';
@@ -498,25 +514,36 @@ function loadSettings() {
   document.getElementById('proxyUrl').value = localStorage.getItem('sdg_prox')   || 'https://smart-search-proxy.vercel.app/api/proxy';
 }
 
-/* ── PROGRESS ANIMATION ── */
+/* ─── PROGRESS ────────────────────────────────────────────────────────────── */
 let progressInterval = null;
 function startProgress() {
-  const messages = ['Connecting to Sharaf DG…','Searching product catalog…','Analysing your request…','Finding best matches…','Fetching prices & details…','Almost there…'];
+  const msgs = [
+    'Connecting to Sharaf DG\u2026','Searching product catalog\u2026',
+    'Analysing your request\u2026','Finding best matches\u2026',
+    'Fetching prices & details\u2026','Almost there\u2026'
+  ];
   let i = 0;
   const el = document.getElementById('loaderMsg');
-  if (el) el.textContent = messages[0];
+  if (el) el.textContent = msgs[0];
   progressInterval = setInterval(() => {
-    i = Math.min(i + 1, messages.length - 1);
-    if (el) { el.style.opacity='0'; setTimeout(()=>{el.textContent=messages[i];el.style.opacity='1';},150); }
+    i = Math.min(i+1, msgs.length-1);
+    if (el) { el.style.opacity='0'; setTimeout(()=>{ el.textContent=msgs[i]; el.style.opacity='1'; }, 150); }
   }, 1800);
 }
 function stopProgress() {
   if (progressInterval) { clearInterval(progressInterval); progressInterval = null; }
 }
 
+/* ─── SEARCH ──────────────────────────────────────────────────────────────── */
 function go(s) {
-  const v = s==='v' ? document.getElementById('heroIn').value.trim() : document.getElementById('hdrIn').value.trim();
-  if (v) { document.getElementById('heroIn').value=v; document.getElementById('hdrIn').value=v; doSearch(v); }
+  const v = s==='v'
+    ? document.getElementById('heroIn').value.trim()
+    : document.getElementById('hdrIn').value.trim();
+  if (v) {
+    document.getElementById('heroIn').value = v;
+    document.getElementById('hdrIn').value  = v;
+    doSearch(v);
+  }
 }
 
 async function doSearch(q) {
@@ -525,10 +552,10 @@ async function doSearch(q) {
   const promptId = document.getElementById('promptId').value.trim();
   const proxy    = document.getElementById('proxyUrl').value.trim();
 
-  if (!key)      { showErr('Please enter your API Key in ⚙️ Settings.');         return; }
-  if (!fold)     { showErr('Please enter your Folder ID in ⚙️ Settings.');       return; }
-  if (!promptId) { showErr('Please enter your Agent Prompt ID in ⚙️ Settings.'); return; }
-  if (!proxy)    { showErr('Please enter your Proxy URL in ⚙️ Settings.');       return; }
+  if (!key)      { showErr('Please enter your API Key in &#9881; Settings.');         return; }
+  if (!fold)     { showErr('Please enter your Folder ID in &#9881; Settings.');       return; }
+  if (!promptId) { showErr('Please enter your Agent Prompt ID in &#9881; Settings.'); return; }
+  if (!proxy)    { showErr('Please enter your Proxy URL in &#9881; Settings.');       return; }
 
   const $ = id => document.getElementById(id);
   $('aiPanel').classList.remove('on');
@@ -549,31 +576,46 @@ async function doSearch(q) {
     if (!r.ok) throw new Error(data.error || 'Search error ' + r.status);
 
     const raw = data.answer || '';
-    let parsed;
+    let parsed = null;
 
-    /* 1 — Try JSON (if agent returns structured JSON) */
+    // Path 1 — JSON response
     try {
       let clean = raw.trim();
       if (clean.startsWith('```')) clean = clean.replace(/^```[a-z]*\n?/,'').replace(/```\s*$/,'').trim();
       const m = clean.match(/(\{[\s\S]*\})/);
       const obj = JSON.parse(m ? m[1] : clean);
-      if (obj && (obj.products || obj.summary)) {
-        parsed = { products: obj.products||[], summary: obj.summary||'', extraHtml: '' };
-      }
-    } catch(e) { /* fall through to markdown parser */ }
+      if (obj && Array.isArray(obj.products) && obj.products.length > 0)
+        parsed = { summary: obj.summary||'', products: obj.products, extraHtml: '' };
+    } catch(_) {}
 
-    /* 2 — Fall back to markdown parser */
-    if (!parsed) {
-      parsed = parseMarkdownResponse(raw, q);
+    // Path 2 — markdown table parser
+    if (!parsed || !parsed.products.length) {
+      const fb = parseMarkdownResponse(raw, q);
+      if (fb.products.length > 0) parsed = fb;
     }
 
     stopProgress();
-    renderResults(q, parsed, $);
+
+    if (parsed && parsed.products.length > 0) {
+      renderResults(q, parsed, $);
+    } else {
+      // Last resort — raw text in summary
+      $('loader').classList.remove('on');
+      $('aiSummary').textContent = raw.substring(0, 600) + (raw.length > 600 ? '\u2026' : '');
+      $('resMeta').innerHTML = '';
+      $('prodGrid').innerHTML = '';
+      $('extraInfo').style.display = 'none';
+      $('aiPanel').classList.add('on');
+      $('aiPanel').scrollIntoView({ behavior:'smooth', block:'start' });
+    }
 
   } catch(e) {
     stopProgress();
     $('loader').classList.remove('on');
-    showErr('Error: ' + e.message);
+    if (e.name === 'TypeError' && e.message.toLowerCase().includes('fetch'))
+      showErr('Connection error \u2014 the request timed out or the server is unavailable. Please try again.');
+    else
+      showErr('Error: ' + e.message);
   } finally {
     $('heroBtn').disabled = false;
   }
@@ -582,22 +624,16 @@ async function doSearch(q) {
 function renderResults(q, parsed, $) {
   if (!$) $ = id => document.getElementById(id);
   const products = parsed.products || [];
-
-  $('aiSummary').textContent = parsed.summary || 'Here are the best matches for your search.';
+  $('aiSummary').textContent = parsed.summary || `Here are the best matches for "${q}".`;
   $('resMeta').innerHTML = `<strong>${products.length} product${products.length!==1?'s':''} found on Sharaf DG</strong>`;
-  $('prodGrid').innerHTML = products.length
-    ? products.map((p,i) => cardHTML(p,i)).join('')
-    : `<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);font-size:14px">No products could be extracted. The AI response is shown in the summary above.</div>`;
+  $('prodGrid').innerHTML = products.map((p,i) => cardHTML(p,i)).join('');
 
-  /* Extra AI insights panel */
-  const extraInfo = $('extraInfo');
-  const extraBody = $('extraBody');
+  const extraInfo = $('extraInfo'), extraBody = $('extraBody');
   if (parsed.extraHtml) {
     extraBody.innerHTML = parsed.extraHtml;
     extraInfo.style.display = 'block';
-    // Auto-open the panel
     extraBody.classList.add('open');
-    document.getElementById('extraChevron').textContent = '▲';
+    document.getElementById('extraChevron').innerHTML = '&#9650;';
   } else {
     extraInfo.style.display = 'none';
     extraBody.innerHTML = '';
@@ -610,14 +646,12 @@ function renderResults(q, parsed, $) {
 
 function showErr(m) {
   const b = document.getElementById('errBox');
-  b.textContent = m;
-  b.classList.add('on');
+  b.innerHTML = m; b.classList.add('on');
   b.scrollIntoView({ behavior:'smooth', block:'center' });
 }
 
 document.getElementById('heroIn').addEventListener('keypress', e => { if(e.key==='Enter') go('v'); });
 document.getElementById('hdrIn').addEventListener('keypress',  e => { if(e.key==='Enter') go('h'); });
-
 loadSettings();
 </script>
 </body>
