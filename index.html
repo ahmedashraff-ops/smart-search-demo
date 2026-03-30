@@ -297,83 +297,193 @@ function cardHTML(p, i) {
 }
 
 // ─── TEXT / MARKDOWN PARSER ───────────────────────────────────────
-// Handles whatever the agent returns: markdown tables, bullet lists,
-// plain paragraphs, mixed content. Extracts product rows into cards
-// and routes everything else to the AI Insights panel.
+<script>
+// ─── CATEGORIES ───────────────────────────────────────────────────
+const CAT_BG  = {tv:'#ede9fe',ac:'#e0f2fe',fridge:'#d1fae5',phone:'#fce7f3',laptop:'#e0e7ff',audio:'#fef3c7',camera:'#f0fdf4',microwave:'#ffedd5',dishwasher:'#cffafe',laundry:'#dbeafe',kettle:'#fff7ed',small:'#fdf4ff',other:'#f1f5f9'};
+const CAT_CLR = {tv:'#6d28d9',ac:'#0369a1',fridge:'#065f46',phone:'#be185d',laptop:'#4338ca',audio:'#92400e',camera:'#166534',microwave:'#c2410c',dishwasher:'#0e7490',laundry:'#1d4ed8',kettle:'#c2410c',small:'#7c3aed',other:'#475569'};
+
+function guessCategory(n) {
+  n = (n||'').toLowerCase();
+  if (/tv|oled|qled|television/.test(n))          return 'tv';
+  if (/ac|air.?con|split|inverter/.test(n))        return 'ac';
+  if (/fridge|refrigerator|freezer/.test(n))       return 'fridge';
+  if (/phone|iphone|galaxy|mobile/.test(n))        return 'phone';
+  if (/laptop|macbook|notebook/.test(n))           return 'laptop';
+  if (/earphone|headphone|speaker|buds/.test(n))   return 'audio';
+  if (/camera|gopro/.test(n))                      return 'camera';
+  if (/microwave|oven/.test(n))                    return 'microwave';
+  if (/dishwash/.test(n))                          return 'dishwasher';
+  if (/wash|dryer|laundry/.test(n))                return 'laundry';
+  if (/kettle|boil/.test(n))                       return 'kettle';
+  if (/toaster|iron|blender|mixer|coffee/.test(n)) return 'small';
+  return 'other';
+}
+
+function getSVG(cat, c) {
+  const s = {
+    tv:`<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="8" y="6" width="104" height="66" rx="6" fill="${c}" opacity=".12"/><rect x="13" y="11" width="94" height="56" rx="4" fill="${c}" opacity=".2"/><path d="M50 39l12-8v16z" fill="${c}" opacity=".35"/></svg>`,
+    ac:`<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="10" y="22" width="100" height="42" rx="8" fill="${c}" opacity=".15"/><rect x="10" y="22" width="100" height="14" rx="8" fill="${c}" opacity=".2"/><rect x="18" y="42" width="12" height="18" rx="2" fill="${c}" opacity=".12"/><rect x="34" y="42" width="12" height="18" rx="2" fill="${c}" opacity=".12"/><rect x="50" y="42" width="12" height="18" rx="2" fill="${c}" opacity=".12"/><rect x="66" y="42" width="12" height="18" rx="2" fill="${c}" opacity=".12"/><rect x="82" y="42" width="12" height="18" rx="2" fill="${c}" opacity=".12"/></svg>`,
+    fridge:`<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="32" y="4" width="56" height="82" rx="7" fill="${c}" opacity=".15"/><line x1="32" y1="36" x2="88" y2="36" stroke="${c}" stroke-width="1.5" opacity=".2"/><rect x="80" y="17" width="5" height="14" rx="2.5" fill="${c}" opacity=".3"/></svg>`,
+    phone:`<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="40" y="4" width="40" height="82" rx="8" fill="${c}" opacity=".15"/><rect x="44" y="10" width="32" height="62" rx="4" fill="${c}" opacity=".1"/><circle cx="60" cy="79" r="3.5" fill="${c}" opacity=".25"/></svg>`,
+    laptop:`<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="16" y="14" width="88" height="56" rx="5" fill="${c}" opacity=".15"/><rect x="20" y="18" width="80" height="48" rx="3" fill="${c}" opacity=".1"/><rect x="6" y="70" width="108" height="6" rx="3" fill="${c}" opacity=".15"/></svg>`,
+    audio:`<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><circle cx="60" cy="45" r="30" fill="${c}" opacity=".12"/><circle cx="60" cy="45" r="16" fill="${c}" opacity=".14"/><circle cx="60" cy="45" r="7" fill="${c}" opacity=".18"/></svg>`,
+    camera:`<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="10" y="26" width="100" height="56" rx="8" fill="${c}" opacity=".15"/><path d="M42 26l8-14h20l8 14" fill="${c}" opacity=".12"/><circle cx="60" cy="54" r="18" fill="${c}" opacity=".12"/></svg>`,
+    kettle:`<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><path d="M38 20 Q34 45 38 68 Q52 76 68 72 Q84 68 86 45 Q88 22 72 18 Z" fill="${c}" opacity=".15"/><path d="M34 36 Q24 38 26 50 Q28 60 36 58" stroke="${c}" stroke-width="3" fill="none" opacity=".25"/></svg>`,
+    other:`<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="20" y="20" width="80" height="55" rx="7" fill="${c}" opacity=".15"/><rect x="28" y="28" width="64" height="38" rx="4" fill="${c}" opacity=".1"/></svg>`
+  };
+  return s[cat]||s.other;
+}
+
+// ─── CARD ─────────────────────────────────────────────────────────
+function cardHTML(p, i) {
+  const cat = guessCategory(p.name);
+  const bg  = CAT_BG[cat], clr = CAT_CLR[cat], best = i < 2;
+  const feats = (p.features||[]).slice(0,5).map(f=>`<span class="card-feat">${esc(f)}</span>`).join('');
+  const hasUrl = p.url && p.url.startsWith('http');
+  const btn = hasUrl
+    ? `<a class="buy-btn" href="${p.url}" target="_blank" rel="noopener">View on Sharaf DG →</a>`
+    : `<span class="buy-btn no-url">Search on Site</span>`;
+  return `
+  <div class="prod-card${best?' best':''} fu" style="animation-delay:${i*.07}s">
+    <div class="card-img" style="background:${bg};position:relative;display:flex;align-items:center;justify-content:center">
+      ${getSVG(cat,clr)}
+      <div class="badge-cat" style="background:${bg};color:${clr}">${cat.toUpperCase()}</div>
+      ${best?'<div class="badge-best">⭐ Best Match</div>':''}
+    </div>
+    <div class="card-body">
+      <div class="card-brand">${esc(p.brand||'')}</div>
+      <div class="card-name">${esc(p.name||'Product')}</div>
+      ${p.specs?`<div class="card-specs">${esc(p.specs)}</div>`:''}
+      ${feats?`<div class="card-features">${feats}</div>`:''}
+    </div>
+    <div class="card-footer">
+      <div>
+        <div class="price-lbl">AED</div>
+        <div class="price-num">${p.price?Number(p.price).toLocaleString():'–'}</div>
+        ${p.original_price?`<div class="price-old">AED ${Number(p.original_price).toLocaleString()}</div>`:''}
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+        ${p.energy_rating?`<div class="energy-tag">${esc(p.energy_rating)}</div>`:''}
+        ${btn}
+      </div>
+    </div>
+    ${p.why?`<div class="card-why"><span class="card-why-lbl">✨ Why this matches</span>${esc(p.why)}</div>`:''}
+  </div>`;
+}
+
+// ─── AGENT TEXT PARSER ────────────────────────────────────────────
+//
+// Handles the exact format the agent returns:
+//
+//   [Intro paragraph(s)]
+//   | Size | Model | Price (AED) | Key Features | Store Availability |
+//   |------|-------|-------------|--------------|-------------------|
+//   | 65 in | Samsung S90F | D 6,419 – D 9,499 | • feat1 <br>• feat2 | Mall of Emirates |
+//   ...
+//   **Why these models stand out**
+//   - bullet 1
+//   - bullet 2
+//
+// KEY FIXES vs previous version:
+//   1. <br> inside table cells → replaced with COMMA not newline (keeps row on one line)
+//   2. Price "D 6,419 – D 9,499" → extract lowest number, strip "D"/"AED"
+//   3. URLs in <https://...> angle-bracket format → extracted correctly
+//   4. "Size" column → mapped to specs and prepended to product name
+//   5. Store availability column → always generates Sharaf DG search URL
+//      (these ARE Sharaf DG stores, just physical locations)
+//   6. Post-table content (Why these models stand out, tips etc) → AI Insights
+
 function parseAgentText(raw, query) {
 
-  // Step 1: normalise
-  // Replace <br> with newline, strip bold/italic markers
-  let text = raw
-    .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/\*\*/g, '')
-    .replace(/\*/g, '');
+  // ── Step 1: Fix <br> inside table cells ───────────────────────
+  // Replace <br> with ", " BEFORE splitting into lines.
+  // This keeps multi-feature cells on a single line for the table parser.
+  let text = raw.replace(/<br\s*\/?>/gi, ', ');
 
+  // Strip bold/italic markdown
+  text = text.replace(/\*\*/g, '').replace(/\*/g, '');
+
+  // ── Step 2: Split into lines ───────────────────────────────────
   const lines = text.split(/\r?\n/);
 
-  // ── Helpers ──
-  const strip  = s => s.replace(/^#+\s*/,'').trim();
-  const isUrl  = s => /^https?:\/\//.test(s.trim());
+  // ── Helpers ───────────────────────────────────────────────────
 
-  // Detect what role a table header cell plays
-  function role(h) {
-    const s = h.toLowerCase().replace(/[^a-z0-9]/g,' ').trim();
-    if (/^#$|^no$|^s ?n|^num/.test(s))                            return 'skip';
-    if (/brand/.test(s))                                            return 'brand';
-    if (/model|product|name|item/.test(s))                          return 'model';
-    if (/\bprice\b|aed|cost/.test(s))                               return 'price';
-    if (/size|capacit|inch|screen|litre/.test(s))                   return 'specs';
-    if (/power|watt/.test(s))                                       return 'power';
-    if (/feature|key|highlight|selling|benefit/.test(s))            return 'feat';
-    if (/note|timer|keep warm|program|function/.test(s))            return 'feat2';
-    if (/connect|wifi|smart|platform|os/.test(s))                   return 'feat3';
-    if (/avail|where|buy|store|retail/.test(s))                     return 'avail';
-    if (/energy|star/.test(s))                                      return 'energy';
-    if (/why|reason|suit|match/.test(s))                            return 'why';
-    if (/url|link|http/.test(s))                                    return 'url';
+  // Extract all URLs including <https://...> angle-bracket format
+  function extractUrls(s) {
+    const urls = [];
+    // Angle-bracket URLs: <https://...>
+    const ab = s.match(/<(https?:\/\/[^>]+)>/g) || [];
+    ab.forEach(m => urls.push(m.replace(/^<|>$/g, '')));
+    // Plain URLs
+    const plain = s.match(/https?:\/\/[^\s\])"'<>|]+/g) || [];
+    plain.forEach(u => urls.push(u));
+    return [...new Set(urls)];
+  }
+
+  // Parse price — handles "D 6,419 – D 9,499", "AED 3,299", "3299", "3,299.00"
+  // Takes the LOWEST number in a range
+  function parsePrice(s) {
+    // Remove currency symbols and letters except digits, dots, commas, spaces, dashes
+    const cleaned = s.replace(/[A-Z]+/gi, ' ').replace(/[^\d,.\s\-–]/g, ' ');
+    // Extract all numbers
+    const nums = cleaned.match(/[\d,]+(?:\.\d+)?/g) || [];
+    const parsed = nums.map(n => parseFloat(n.replace(/,/g, ''))).filter(n => n > 9);
+    return parsed.length ? Math.min(...parsed) : null;
+  }
+
+  // Clean SKU codes from product name
+  function cleanName(s) {
+    return s
+      .replace(/\s*[–\-—]\s*[A-Z0-9]{5,}/g, '')   // – QA65S85FAEXZN
+      .replace(/\([A-Z0-9\-]{5,}\)/g, '')            // (QA65S85FAEXZN)
+      .replace(/<[^>]+>/g, '')                        // any remaining tags
+      .replace(/\s+/g, ' ').trim();
+  }
+
+  // Detect column role from header text
+  function detectRole(h) {
+    const s = h.toLowerCase().replace(/[^a-z0-9]/g, ' ').trim();
+    if (/^#$|^no$|^s ?n|^num/.test(s))                          return 'skip';
+    if (/^size$|^screen|^inch/.test(s))                          return 'size';
+    if (/brand/.test(s))                                          return 'brand';
+    if (/model|product|name|item/.test(s))                        return 'model';
+    if (/price|aed|cost/.test(s))                                 return 'price';
+    if (/capacit|litre|watt|power/.test(s))                       return 'specs';
+    if (/feature|key|highlight|selling|benefit/.test(s))          return 'feat';
+    if (/note|timer|program|function/.test(s))                    return 'feat2';
+    if (/connect|wifi|smart|os|platform/.test(s))                 return 'feat3';
+    if (/store|avail|where|buy|retail|location/.test(s))          return 'avail';
+    if (/energy|star/.test(s))                                    return 'energy';
+    if (/why|reason|suit|match/.test(s))                          return 'why';
+    if (/url|link/.test(s))                                       return 'url';
     return null;
   }
 
-  // Clean SKU codes out of a name string
-  function cleanName(s) {
-    return s
-      .replace(/\s*[–\-—]\s*[A-Z0-9]{5,}/g,'')  // – QA65S85FAEXZN
-      .replace(/\([A-Z0-9\-]{5,}\)/g,'')          // (QA65S85FAEXZN)
-      .replace(/\s+/g,' ').trim();
-  }
+  let colRoles  = [];
+  let inTable   = false;
+  let tableDone = false;
 
-  // Parse a price string robustly
-  function parsePrice(s) {
-    const n = parseFloat(s.replace(/,/g,'').match(/[\d.]+/)?.[0]||'0');
-    return n > 9 ? n : null;
-  }
+  const products     = [];
+  const summaryLines = [];
+  const extraLines   = [];
 
-  // Extract all URLs from a string
-  function extractUrls(s) {
-    return (s.match(/https?:\/\/[^\s\])"'>]+/g)||[]);
-  }
-
-  let colRoles = [], inTable = false, tableDone = false;
-  const products    = [];
-  const summaryLines= [];
-  const extraLines  = [];
-
-  for (let li = 0; li < lines.length; li++) {
-    const t = lines[li].trim();
+  for (const line of lines) {
+    const t = line.trim();
     if (!t) continue;
 
-    // ── TABLE LINE ──
+    // ── TABLE LINE ────────────────────────────────────────────────
     if (t.startsWith('|')) {
-      const cells = t.replace(/^\||\|$/g,'').split('|').map(c=>c.trim());
+      const cells = t.replace(/^\||\|$/g, '').split('|').map(c => c.trim());
 
-      // Skip separator rows
-      if (cells.every(c=>/^[-: ]+$/.test(c))) continue;
+      // Skip separator rows (|---|---|)
+      if (cells.every(c => /^[-: ]+$/.test(c))) continue;
 
-      // Detect header: must have a price col AND a name/model col
-      const cellRoles = cells.map(c=>role(c));
-      if (!tableDone && !inTable &&
-          cellRoles.includes('price') &&
-          cellRoles.some(r=>r==='model'||r==='brand')) {
+      const cellRoles = cells.map(c => detectRole(c));
+      const hasPrice  = cellRoles.includes('price');
+      const hasName   = cellRoles.some(r => r === 'model' || r === 'brand' || r === 'size');
+
+      // Header row detection
+      if (!tableDone && !inTable && hasPrice && hasName) {
         colRoles = cellRoles;
         inTable  = true;
         continue;
@@ -381,78 +491,113 @@ function parseAgentText(raw, query) {
 
       // Data row
       if (inTable && !tableDone) {
-        const get = r => { const i=colRoles.indexOf(r); return i>=0?(cells[i]||''):''};
+        const get = r => { const i = colRoles.indexOf(r); return i >= 0 ? (cells[i] || '') : ''; };
 
-        // Collect features from all feature columns + extract any embedded URLs
-        const featRaw = ['feat','feat2','feat3'].map(r=>get(r)).filter(Boolean).join(' | ');
-        // Features: split on bullet chars or semicolons but NOT on pipe (pipe = col separator already handled)
+        // Features: merge all feature columns, split on bullet separators
+        const featRaw = ['feat','feat2','feat3']
+          .map(r => get(r)).filter(Boolean).join(', ')
+          .replace(/<[^>]+>/g, '')          // strip any leftover tags
+          .replace(/^[•·\-–]\s*/gm, '');    // strip leading bullets
         const features = featRaw
-          .split(/[;·•\n]/)
-          .map(f=>f.replace(/^[-–]\s*/,'').trim())
-          .filter(f=>f.length>2&&f.length<90&&!/^https?/.test(f))
-          .slice(0,5);
+          .split(/[,;·•]|(?:\s{2,})/)
+          .map(f => f.trim())
+          .filter(f => f.length > 3 && f.length < 90)
+          .slice(0, 5);
 
+        // Name: combine size + model, clean SKU codes
+        const size  = cleanName(get('size'));
         const brand = cleanName(get('brand'));
         const model = cleanName(get('model'));
-        const name  = (brand && model && !model.toLowerCase().startsWith(brand.toLowerCase()))
-          ? `${brand} ${model}` : model||brand||'';
+
+        // Build display name
+        let name = '';
+        if (brand && model) {
+          name = model.toLowerCase().startsWith(brand.toLowerCase())
+            ? model : `${brand} ${model}`;
+        } else {
+          name = model || brand || '';
+        }
+        // Prepend size if it adds info (e.g. "65 in")
+        if (size && !name.includes(size.replace(/\s*in$/,''))) {
+          name = `${name} ${size}`.trim();
+        }
+        name = cleanName(name);
         if (!name) continue;
 
+        // Specs: size + any specs col
+        const specs = [size, get('specs')].filter(Boolean).join(' · ');
+
+        // Price
         const price = parsePrice(get('price'));
-        const specs = [get('specs'),get('power')].filter(Boolean).join(' · ');
-        const avail = get('avail');
 
-        // URL: prefer explicit url col → search the entire row for any http link
-        let url = get('url');
-        if (!url || !isUrl(url)) {
-          // scan all cells for a URL
-          const allUrls = cells.flatMap(c=>extractUrls(c));
-          url = allUrls.find(u=>u.includes('sharafdg'))||allUrls[0]||'';
-        }
-        // If still no URL, generate a Sharaf DG search URL unless competitor mentioned
-        if (!url || !isUrl(url)) {
-          const competitor = /amazon|noon|carrefour|lulu|jumbo|plug/i.test(avail);
-          url = competitor ? null : `https://uae.sharafdg.com/search/?q=${encodeURIComponent(name)}`;
-        }
+        // URL: check explicit url col first, then scan ALL cells for URLs
+        // Store availability column (e.g. "Dubai Mall, Abu Dhabi Mall") = Sharaf DG locations
+        const avail     = get('avail');
+        const agentUrl  = get('url');
+        const allUrls   = cells.flatMap(c => extractUrls(c));
+        const sdgUrl    = allUrls.find(u => u.includes('sharafdg')) || null;
+        const anyUrl    = allUrls[0] || null;
 
+        let url = null;
+        if (agentUrl && agentUrl.startsWith('http'))            url = agentUrl;
+        else if (sdgUrl)                                         url = sdgUrl;
+        else if (anyUrl)                                         url = anyUrl;
+        else url = `https://uae.sharafdg.com/search/?q=${encodeURIComponent(name)}`;
+
+        // Why
         const agentWhy = get('why');
-        const why = agentWhy && agentWhy.length>5 ? agentWhy
-          : ['Available at Sharaf DG UAE', specs, features[0]].filter(Boolean).join(' · ');
+        const why = agentWhy && agentWhy.length > 5
+          ? agentWhy
+          : [specs, features[0], 'Available at Sharaf DG UAE'].filter(Boolean).join(' · ');
 
-        products.push({name, brand, specs, price, original_price:null,
-                       features, energy_rating:get('energy')||null, why, url});
+        products.push({
+          name, brand, specs, price,
+          original_price: null,
+          features,
+          energy_rating: get('energy') || null,
+          why, url
+        });
         continue;
       }
 
-      // Post-table: route to extra
+      // Post-table table lines → extra
       if (tableDone) { extraLines.push(t); continue; }
     }
 
-    // ── NON-TABLE LINE ──
-    if (inTable && !tableDone) { tableDone = true; inTable = false; }
+    // ── NON-TABLE LINE ────────────────────────────────────────────
+    if (inTable && !tableDone) {
+      tableDone = true;
+      inTable   = false;
+    }
 
-    const clean = strip(t);
+    const clean = t.replace(/^#+\s*/, '').trim();
     if (!clean) continue;
 
     if (!tableDone) {
-      summaryLines.push(clean);
+      // Before table → summary
+      if (!clean.startsWith('|')) summaryLines.push(clean);
     } else {
+      // After table → insights
       extraLines.push(clean);
     }
   }
 
-  // Build summary: first non-table paragraph, skip lines that look like table remnants
+  // ── Build summary (first non-empty paragraph before the table) ──
   const summary = summaryLines
-    .filter(l=>l.length>5&&!l.startsWith('|')&&!/^[-–]/.test(l))
-    .slice(0,3).join(' ')
-    .substring(0,400)
+    .filter(l => l.length > 5 && !l.startsWith('|'))
+    .join(' ')
+    .replace(/[|*#]/g, '')
+    .trim()
+    .substring(0, 400)
     || (products.length
       ? `Found ${products.length} products matching your search.`
-      : raw.replace(/[|*#]/g,'').trim().substring(0,300));
+      : raw.replace(/[|*#<>]/g,'').trim().substring(0, 300));
 
-  // Build extra text: lines after the product table
+  // ── Build insights (everything after the table) ──────────────────
+  // Strip pipe characters and clean up for readability
   const extra = extraLines
-    .filter(l=>l.length>3&&!l.startsWith('|'))
+    .filter(l => l.length > 2 && !l.match(/^[\|\-\s]+$/))
+    .map(l => l.replace(/^\||\|$/g, '').replace(/\|/g,' · ').trim())
     .join('\n')
     .trim();
 
@@ -460,37 +605,59 @@ function parseAgentText(raw, query) {
 }
 
 // ─── UTILITIES ────────────────────────────────────────────────────
-function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function toggleSettings(){const p=document.getElementById('settingsPanel');p.style.display=p.style.display==='none'?'block':'none';}
-function toggleInsights(){const b=document.getElementById('insightsBody');const c=document.getElementById('insightsChevron');b.classList.toggle('open');c.textContent=b.classList.contains('open')?'▲':'▼';}
-function saveSettings(){
-  localStorage.setItem('sdg_key',   document.getElementById('apiKey').value);
-  localStorage.setItem('sdg_fold',  document.getElementById('folderId').value);
-  localStorage.setItem('sdg_prompt',document.getElementById('promptId').value);
-  localStorage.setItem('sdg_prox',  document.getElementById('proxyUrl').value);
-  const m=document.getElementById('savedMsg');m.style.display='block';setTimeout(()=>m.style.display='none',2500);
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
-function loadSettings(){
-  document.getElementById('apiKey').value   =localStorage.getItem('sdg_key')   ||'';
-  document.getElementById('folderId').value =localStorage.getItem('sdg_fold')  ||'b1g3c22pier4ri4nu7rs';
-  document.getElementById('promptId').value =localStorage.getItem('sdg_prompt')||'';
-  document.getElementById('proxyUrl').value =localStorage.getItem('sdg_prox')  ||'https://smart-search-proxy.vercel.app/api/proxy';
+function toggleSettings() {
+  const p = document.getElementById('settingsPanel');
+  p.style.display = p.style.display === 'none' ? 'block' : 'none';
+}
+function toggleInsights() {
+  const b = document.getElementById('insightsBody');
+  const c = document.getElementById('insightsChevron');
+  b.classList.toggle('open');
+  c.textContent = b.classList.contains('open') ? '▲' : '▼';
+}
+function saveSettings() {
+  localStorage.setItem('sdg_key',    document.getElementById('apiKey').value);
+  localStorage.setItem('sdg_fold',   document.getElementById('folderId').value);
+  localStorage.setItem('sdg_prompt', document.getElementById('promptId').value);
+  localStorage.setItem('sdg_prox',   document.getElementById('proxyUrl').value);
+  const m = document.getElementById('savedMsg');
+  m.style.display = 'block';
+  setTimeout(() => m.style.display = 'none', 2500);
+}
+function loadSettings() {
+  document.getElementById('apiKey').value   = localStorage.getItem('sdg_key')    || '';
+  document.getElementById('folderId').value = localStorage.getItem('sdg_fold')   || 'b1g3c22pier4ri4nu7rs';
+  document.getElementById('promptId').value = localStorage.getItem('sdg_prompt') || '';
+  document.getElementById('proxyUrl').value = localStorage.getItem('sdg_prox')   || 'https://smart-search-proxy.vercel.app/api/proxy';
 }
 
 // ─── PROGRESS ─────────────────────────────────────────────────────
-let prog=null;
-function startProgress(){
-  const msgs=['Connecting to Sharaf DG…','Searching product catalog…','Analysing your request…','Finding best matches…','Fetching prices & details…','Almost there…'];
-  let i=0;const el=document.getElementById('loaderMsg');
-  if(el)el.textContent=msgs[0];
-  prog=setInterval(()=>{i=Math.min(i+1,msgs.length-1);if(el){el.style.opacity='0';setTimeout(()=>{el.textContent=msgs[i];el.style.opacity='1';},150);}},1800);
+let prog = null;
+function startProgress() {
+  const msgs = ['Connecting to Sharaf DG…','Searching product catalog…','Analysing your request…','Finding best matches…','Fetching prices & details…','Almost there…'];
+  let i = 0;
+  const el = document.getElementById('loaderMsg');
+  if (el) el.textContent = msgs[0];
+  prog = setInterval(() => {
+    i = Math.min(i+1, msgs.length-1);
+    if (el) { el.style.opacity='0'; setTimeout(()=>{ el.textContent=msgs[i]; el.style.opacity='1'; }, 150); }
+  }, 1800);
 }
-function stopProgress(){if(prog){clearInterval(prog);prog=null;}}
+function stopProgress() { if (prog) { clearInterval(prog); prog = null; } }
 
 // ─── SEARCH ───────────────────────────────────────────────────────
-function go(s){
-  const v=s==='v'?document.getElementById('heroIn').value.trim():document.getElementById('hdrIn').value.trim();
-  if(v){document.getElementById('heroIn').value=v;document.getElementById('hdrIn').value=v;doSearch(v);}
+function go(s) {
+  const v = s==='v'
+    ? document.getElementById('heroIn').value.trim()
+    : document.getElementById('hdrIn').value.trim();
+  if (v) {
+    document.getElementById('heroIn').value = v;
+    document.getElementById('hdrIn').value  = v;
+    doSearch(v);
+  }
 }
 
 async function doSearch(q) {
@@ -499,72 +666,80 @@ async function doSearch(q) {
   const promptId = document.getElementById('promptId').value.trim();
   const proxy    = document.getElementById('proxyUrl').value.trim();
 
-  if(!key)     {showErr('Please enter your API Key in ⚙️ Settings.');return;}
-  if(!fold)    {showErr('Please enter your Folder ID in ⚙️ Settings.');return;}
-  if(!promptId){showErr('Please enter your Agent Prompt ID in ⚙️ Settings.');return;}
-  if(!proxy)   {showErr('Please enter your Proxy URL in ⚙️ Settings.');return;}
+  if (!key)      { showErr('Please enter your API Key in ⚙️ Settings.');         return; }
+  if (!fold)     { showErr('Please enter your Folder ID in ⚙️ Settings.');       return; }
+  if (!promptId) { showErr('Please enter your Agent Prompt ID in ⚙️ Settings.'); return; }
+  if (!proxy)    { showErr('Please enter your Proxy URL in ⚙️ Settings.');       return; }
 
-  const $=id=>document.getElementById(id);
+  const $ = id => document.getElementById(id);
   $('aiPanel').classList.remove('on');
   $('errBox').classList.remove('on');
-  $('emptyState').style.display='none';
+  $('emptyState').style.display = 'none';
   $('loader').classList.add('on');
-  $('heroBtn').disabled=true;
+  $('heroBtn').disabled = true;
   startProgress();
-  $('loader').scrollIntoView({behavior:'smooth',block:'center'});
+  $('loader').scrollIntoView({ behavior:'smooth', block:'center' });
 
   try {
-    const r = await fetch(proxy,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({apiKey:key,folderId:fold,promptId,query:q})
+    const r = await fetch(proxy, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ apiKey: key, folderId: fold, promptId, query: q })
     });
     const data = await r.json();
-    if(!r.ok) throw new Error(data.error||'Search error '+r.status);
+    if (!r.ok) throw new Error(data.error || 'Search error ' + r.status);
 
-    const raw = (data.answer||'').trim();
-    const {products, summary, extra} = parseAgentText(raw, q);
+    const raw = (data.answer || '').trim();
+    const { products, summary, extra } = parseAgentText(raw, q);
 
     stopProgress();
 
+    // 1 — AI Response (summary)
     $('aiSummary').textContent = summary;
+
+    // 2 — Products
     $('resMeta').innerHTML = `<strong>${products.length} product${products.length!==1?'s':''} found on Sharaf DG</strong>`;
     $('prodGrid').innerHTML = products.length
-      ? products.map((p,i)=>cardHTML(p,i)).join('')
+      ? products.map((p,i) => cardHTML(p,i)).join('')
       : `<p style="grid-column:1/-1;text-align:center;color:var(--muted);padding:32px;font-size:14px">No product cards could be extracted. See the AI Response above.</p>`;
 
-    // AI Insights: show extra content from agent (tips, notes, etc.)
+    // 3 — AI Insights (rest of agent output: tips, why section etc.)
     const wrap = $('insightsWrap');
     const body = $('insightsBody');
     if (extra) {
       body.textContent = extra;
-      wrap.style.display='block';
+      wrap.style.display = 'block';
       body.classList.add('open');
-      $('insightsChevron').textContent='▲';
+      $('insightsChevron').textContent = '▲';
     } else {
-      wrap.style.display='none';
+      wrap.style.display = 'none';
     }
 
     $('loader').classList.remove('on');
     $('aiPanel').classList.add('on');
-    $('aiPanel').scrollIntoView({behavior:'smooth',block:'start'});
+    $('aiPanel').scrollIntoView({ behavior:'smooth', block:'start' });
 
   } catch(e) {
     stopProgress();
     $('loader').classList.remove('on');
-    if(e.name==='TypeError'||e.message.toLowerCase().includes('fetch'))
+    if (e.name === 'TypeError' || e.message.toLowerCase().includes('fetch'))
       showErr('Connection error — the search timed out or the server is unreachable. Please try again.');
     else
-      showErr('Error: '+e.message);
+      showErr('Error: ' + e.message);
   } finally {
-    $('heroBtn').disabled=false;
+    $('heroBtn').disabled = false;
   }
 }
 
-function showErr(m){const b=document.getElementById('errBox');b.textContent=m;b.classList.add('on');b.scrollIntoView({behavior:'smooth',block:'center'});}
+function showErr(m) {
+  const b = document.getElementById('errBox');
+  b.textContent = m;
+  b.classList.add('on');
+  b.scrollIntoView({ behavior:'smooth', block:'center' });
+}
 
-document.getElementById('heroIn').addEventListener('keypress',e=>{if(e.key==='Enter')go('v');});
-document.getElementById('hdrIn').addEventListener('keypress', e=>{if(e.key==='Enter')go('h');});
+document.getElementById('heroIn').addEventListener('keypress', e => { if (e.key==='Enter') go('v'); });
+document.getElementById('hdrIn').addEventListener('keypress',  e => { if (e.key==='Enter') go('h'); });
 loadSettings();
 </script>
 </body>
