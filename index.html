@@ -449,17 +449,15 @@ function parseAgentText(raw, query) {
         name = cleanName(name);
         if (!name) continue;
 
-        // ── Product quality gate ────────────────────────────────────
-        // Reject rows that look like description sentences, not product names.
-        // A real product name: starts with a brand/number, has no verb phrases,
-        // doesn't read like a sentence (ends with period, contains "where/which/that/for").
-        const looksLikeSentence =
-          name.length > 60 ||                                      // too long to be a product name
-          /\.$/.test(name) ||                                       // ends with a period
-          /(where|which|that|rooms|viewing|better|matter|vs\.?|choose|ideal|suitable)/i.test(name) ||
-          /^(best|good|great|ideal|perfect|use|for |if )/i.test(name) || // starts like a recommendation
-          (name.split(' ').length > 7 && !/\d/.test(name));        // 7+ words and no numbers = sentence
-        if (looksLikeSentence) continue;
+        // ── Product quality gate ──────────────────────────────────────
+        // Only reject rows that are clearly NOT product names.
+        // Be conservative — it's better to show a wrong card than miss a product.
+        const notAProduct =
+          /\.$/.test(name) ||           // ends with a period — it's a sentence
+          /^(best |good |great |ideal |perfect |if |use |for )/i.test(name) ||  // recommendation opener
+          /\b(where|which|rooms|viewing|better|matter|choose|suitable|vs\.?)\b/i.test(name) || // comparison words
+          (name.split(' ').length > 10 && !/\d/.test(name)); // 10+ words AND no digits = definitely a sentence
+        if (notAProduct) continue;
 
         // Specs: size + any specs col
         const specs = [size, get('specs')].filter(Boolean).join(' · ');
@@ -519,16 +517,30 @@ function parseAgentText(raw, query) {
     }
   }
 
-  // ── Build summary (first non-empty paragraph before the table) ──
-  const summary = summaryLines
+  // ── Build summary ──────────────────────────────────────────────
+  // Primary: lines before the table. Fallback: auto-generate from results.
+  let summary = summaryLines
     .filter(l => l.length > 5 && !l.startsWith('|'))
     .join(' ')
     .replace(/[|*#]/g, '')
     .trim()
-    .substring(0, 400)
-    || (products.length
-      ? `Found ${products.length} products matching your search.`
-      : raw.replace(/[|*#<>]/g,'').trim().substring(0, 300));
+    .substring(0, 400);
+
+  if (!summary) {
+    // No intro lines — agent started straight with the table.
+    // Build a clean summary from what we found.
+    if (products.length > 0) {
+      const brands = [...new Set(products.map(p => p.brand).filter(Boolean))].slice(0, 3);
+      summary = `Found ${products.length} product${products.length !== 1 ? 's' : ''} on Sharaf DG` +
+        (brands.length ? ` from ${brands.join(', ')}` : '') + '.';
+    } else {
+      // Pull first meaningful sentence from raw (skip pipe-heavy lines)
+      const firstSentence = raw.split(/\n/)
+        .map(l => l.replace(/[|*#<>]/g, '').replace(/\s+/g, ' ').trim())
+        .find(l => l.length > 20 && l.length < 300 && !l.startsWith('-'));
+      summary = firstSentence || `Here are the results for your search.`;
+    }
+  }
 
   // ── Build insights (everything after the table) ──────────────────
   // Returns the raw extraLines array so renderInsightsHtml() can format them properly
