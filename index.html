@@ -64,7 +64,6 @@ header{background:var(--white);border-bottom:3px solid var(--orange);position:st
 .spinner{width:44px;height:44px;border:3px solid var(--border);border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading p{color:var(--muted);font-size:14px;transition:opacity .3s}
-.loading strong{color:var(--blue)}
 .err{display:none;background:#fef2f2;border:1px solid #fca5a5;color:var(--red);padding:14px 18px;border-radius:10px;margin-bottom:20px;font-size:14px}
 .err.on{display:block}
 .ai-panel{display:none}
@@ -98,6 +97,21 @@ header{background:var(--white);border-bottom:3px solid var(--orange);position:st
 .energy-tag{background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px}
 .card-why{padding:12px 16px;background:#fff8e1;border-top:1px solid #fde68a;font-size:12px;color:#78350f;line-height:1.5}
 .card-why-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#e09600;display:block;margin-bottom:3px}
+/* ── Extra info panel (AI insights below grid) ── */
+.extra-info{margin-top:32px}
+.extra-info-hdr{display:flex;align-items:center;gap:10px;margin-bottom:16px;cursor:pointer;user-select:none}
+.extra-info-hdr-line{height:1px;background:var(--border);flex:1}
+.extra-info-pill{background:var(--blue-pale);color:var(--blue);font-size:11px;font-weight:700;padding:5px 14px;border-radius:20px;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.extra-info-body{display:none}
+.extra-info-body.open{display:block}
+.extra-section{background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:16px}
+.extra-title{font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;color:var(--blue);margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--blue-pale)}
+.extra-table{width:100%;border-collapse:collapse;font-size:13px}
+.extra-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.5}
+.extra-table tr:first-child td{font-weight:700;color:var(--blue);background:var(--blue-pale);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+.extra-table tr:last-child td{border-bottom:none}
+.extra-table tr:nth-child(even) td{background:#fafbfd}
+.extra-para{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:6px}
 .empty{text-align:center;padding:72px 24px;color:var(--muted)}
 .empty-icon{font-size:64px;margin-bottom:16px;opacity:.35}
 .empty h2{font-family:'Nunito',sans-serif;font-size:24px;font-weight:900;color:var(--blue);margin-bottom:10px}
@@ -196,6 +210,14 @@ footer strong{color:var(--orange)}
     </div>
     <div class="res-meta"><strong id="resMeta"></strong><div class="divider"></div></div>
     <div class="prod-grid" id="prodGrid"></div>
+    <!-- AI Insights panel injected here when agent returns extra info -->
+    <div class="extra-info" id="extraInfo" style="display:none">
+      <div class="extra-info-hdr" onclick="toggleExtra()">
+        <div class="extra-info-pill">💡 AI Insights <span id="extraChevron">▼</span></div>
+        <div class="extra-info-hdr-line"></div>
+      </div>
+      <div class="extra-info-body" id="extraBody"></div>
+    </div>
   </div>
 
   <div class="empty" id="emptyState">
@@ -216,8 +238,8 @@ footer strong{color:var(--orange)}
 </footer>
 
 <script>
-const CAT_BG  = {ac:'#e0f2fe',tv:'#ede9fe',fridge:'#d1fae5',microwave:'#ffedd5',dishwasher:'#cffafe',laundry:'#dbeafe',phone:'#fce7f3',laptop:'#e0e7ff',audio:'#fef3c7',camera:'#f0fdf4',other:'#f1f5f9'};
-const CAT_CLR = {ac:'#0369a1',tv:'#6d28d9',fridge:'#065f46',microwave:'#c2410c',dishwasher:'#0e7490',laundry:'#1d4ed8',phone:'#be185d',laptop:'#4338ca',audio:'#92400e',camera:'#166534',other:'#475569'};
+const CAT_BG  = {ac:'#e0f2fe',tv:'#ede9fe',fridge:'#d1fae5',microwave:'#ffedd5',dishwasher:'#cffafe',laundry:'#dbeafe',phone:'#fce7f3',laptop:'#e0e7ff',audio:'#fef3c7',camera:'#f0fdf4',kettle:'#fff7ed',small:'#fdf4ff',other:'#f1f5f9'};
+const CAT_CLR = {ac:'#0369a1',tv:'#6d28d9',fridge:'#065f46',microwave:'#c2410c',dishwasher:'#0e7490',laundry:'#1d4ed8',phone:'#be185d',laptop:'#4338ca',audio:'#92400e',camera:'#166534',kettle:'#c2410c',small:'#7c3aed',other:'#475569'};
 
 function guessCategory(name) {
   const n = (name||'').toLowerCase();
@@ -231,31 +253,191 @@ function guessCategory(name) {
   if(/laptop|macbook|notebook/.test(n)) return 'laptop';
   if(/earphone|headphone|speaker|buds|audio/.test(n)) return 'audio';
   if(/camera|gopro/.test(n)) return 'camera';
+  if(/kettle|boil/.test(n)) return 'kettle';
+  if(/toaster|iron|blender|mixer|juicer|vacuum|fan|heater|coffee|grind/.test(n)) return 'small';
   return 'other';
 }
 
+/* ─── MARKDOWN → PRODUCTS PARSER ──────────────────────────────────────────── */
+function parseMarkdownResponse(raw, query) {
+  const lines = raw.split('\n');
+  const products      = [];
+  const summaryParts  = [];
+  const extraSections = [];
+
+  let inProductTable   = false;
+  let productTableDone = false;
+  let colMap           = {};
+  let currentSection   = null;
+
+  function flushSection() {
+    if (currentSection && (currentSection.title || currentSection.rows.length)) {
+      extraSections.push(currentSection);
+    }
+    currentSection = null;
+  }
+
+  for (let i = 0; i < lines.length; i++) {
+    const line    = lines[i];
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+
+    /* ── TABLE LINE ── */
+    if (trimmed.startsWith('|')) {
+      const cells = trimmed.replace(/^\||\|$/g, '').split('|').map(c => c.trim());
+
+      // Separator row — skip
+      if (cells.every(c => /^[-: ]+$/.test(c))) continue;
+
+      const joined = cells.join(' ').toLowerCase();
+
+      // ── Product table header detection ──
+      if (!productTableDone &&
+          (joined.includes('brand') || joined.includes('model')) &&
+          (joined.includes('price') || joined.includes('aed'))) {
+        inProductTable = true;
+        colMap = {};
+        cells.forEach((c, idx) => {
+          const cl = c.toLowerCase();
+          if      (cl.includes('brand'))                               colMap.brand    = idx;
+          else if (cl.includes('model'))                               colMap.model    = idx;
+          else if (cl.includes('capacit') || cl.includes('size'))     colMap.specs    = idx;
+          else if (cl.includes('feature') || cl.includes('timer') ||
+                  cl.includes('key'))                                  colMap.features = idx;
+          else if (cl.includes('price') || cl.includes('aed'))        colMap.price    = idx;
+          else if (cl.includes('where') || cl.includes('buy') ||
+                  cl.includes('avail'))                                colMap.where    = idx;
+        });
+        continue;
+      }
+
+      // ── Product data row ──
+      if (inProductTable && !productTableDone) {
+        const get = key => (colMap[key] !== undefined && cells[colMap[key]])
+          ? cells[colMap[key]].replace(/\*\*/g, '').trim() : '';
+
+        const brand       = get('brand');
+        const model       = get('model');
+        const specs       = get('specs');
+        const featuresRaw = get('features');
+        const priceRaw    = get('price');
+        const where       = get('where');
+
+        if (!brand && !model) continue;
+
+        const priceMatch = priceRaw.replace(/,/g, '').match(/\d+/);
+        const price      = priceMatch ? parseInt(priceMatch[0]) : null;
+        const onSDG      = where.toLowerCase().includes('sharaf');
+
+        const features = featuresRaw
+          .split(/[,;]/)
+          .map(f => f.trim())
+          .filter(f => f.length > 2 && f.length < 60)
+          .slice(0, 5);
+
+        products.push({
+          name:           [brand, model].filter(Boolean).join(' '),
+          brand,
+          specs,
+          price,
+          original_price: null,
+          features,
+          why:  onSDG
+            ? `Available at Sharaf DG${where.includes(',') ? ' and other retailers' : ''}`
+            : (where ? `Available at ${where}` : ''),
+          url:  onSDG ? 'https://uae.sharafdg.com' : null,
+          energy_rating:  null
+        });
+        continue;
+      }
+
+      // ── Other table (How to Choose, etc.) → extra sections ──
+      if (productTableDone) {
+        if (!currentSection) currentSection = { title: '', rows: [] };
+        currentSection.rows.push(cells);
+        continue;
+      }
+    }
+
+    /* ── NON-TABLE LINE ── */
+
+    // Mark product table as done when we leave it
+    if (inProductTable && !productTableDone && products.length > 0) {
+      productTableDone = true;
+      inProductTable   = false;
+    }
+
+    const clean = trimmed.replace(/\*\*/g, '').replace(/\*/g, '').replace(/^#+\s*/, '').trim();
+    if (!clean) continue;
+
+    if (!productTableDone) {
+      summaryParts.push(clean);
+    } else {
+      // Section heading?
+      if (/^#{1,4} /.test(trimmed)) {
+        flushSection();
+        currentSection = { title: clean, rows: [] };
+      } else {
+        if (!currentSection) currentSection = { title: '', rows: [] };
+        currentSection.rows.push([clean]);
+      }
+    }
+  }
+  flushSection();
+
+  /* ── Summary text ── */
+  const summary = summaryParts.filter(s => s.length > 4).join(' · ').substring(0, 400)
+    || `Showing ${products.length} result${products.length !== 1 ? 's' : ''} for: ${query}`;
+
+  /* ── Extra HTML ── */
+  let extraHtml = '';
+  extraSections.forEach(sec => {
+    if (!sec.title && !sec.rows.length) return;
+    extraHtml += `<div class="extra-section">`;
+    if (sec.title) extraHtml += `<div class="extra-title">${sec.title}</div>`;
+    const isTable = sec.rows.some(r => r.length > 1);
+    if (isTable) {
+      extraHtml += `<table class="extra-table">`;
+      sec.rows.forEach(row => {
+        extraHtml += `<tr>${row.map(c => `<td>${c}</td>`).join('')}</tr>`;
+      });
+      extraHtml += `</table>`;
+    } else {
+      sec.rows.forEach(row => {
+        if (row[0]) extraHtml += `<p class="extra-para">${row[0]}</p>`;
+      });
+    }
+    extraHtml += `</div>`;
+  });
+
+  return { products, summary, extraHtml };
+}
+
+/* ─── SVG ILLUSTRATIONS ────────────────────────────────────────────────────── */
 function getSVG(cat, clr) {
   const svgs = {
-    tv: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="8" y="6" width="104" height="66" rx="6" fill="${clr}" opacity=".12"/><rect x="13" y="11" width="94" height="56" rx="4" fill="${clr}" opacity=".2"/><rect x="16" y="14" width="88" height="50" rx="3" fill="${clr}" opacity=".15"/><rect x="46" y="74" width="28" height="5" rx="2" fill="${clr}" opacity=".25"/><rect x="38" y="79" width="44" height="3" rx="1.5" fill="${clr}" opacity=".2"/><circle cx="107" cy="18" r="3" fill="${clr}" opacity=".4"/><circle cx="107" cy="26" r="3" fill="${clr}" opacity=".3"/><path d="M50 39l12-8v16z" fill="${clr}" opacity=".35"/></svg>`,
-    ac: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="10" y="22" width="100" height="42" rx="8" fill="${clr}" opacity=".15"/><rect x="10" y="22" width="100" height="14" rx="8" fill="${clr}" opacity=".2"/><rect x="18" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="34" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="50" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="66" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="82" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><circle cx="94" cy="29" r="4" fill="${clr}" opacity=".3"/><circle cx="82" cy="29" r="4" fill="${clr}" opacity=".2"/><rect x="10" y="64" width="100" height="5" rx="2.5" fill="${clr}" opacity=".1"/></svg>`,
-    fridge: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="32" y="4" width="56" height="82" rx="7" fill="${clr}" opacity=".15"/><rect x="32" y="4" width="56" height="32" rx="7" fill="${clr}" opacity=".1"/><rect x="32" y="36" width="56" height="50" rx="0" fill="${clr}" opacity=".08"/><line x1="32" y1="36" x2="88" y2="36" stroke="${clr}" stroke-width="1.5" opacity=".2"/><rect x="80" y="17" width="5" height="14" rx="2.5" fill="${clr}" opacity=".3"/><rect x="80" y="50" width="5" height="20" rx="2.5" fill="${clr}" opacity=".25"/><rect x="40" y="46" width="26" height="2" rx="1" fill="${clr}" opacity=".15"/><rect x="40" y="52" width="18" height="2" rx="1" fill="${clr}" opacity=".15"/><rect x="40" y="60" width="26" height="2" rx="1" fill="${clr}" opacity=".15"/></svg>`,
-    microwave: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="8" y="18" width="104" height="58" rx="8" fill="${clr}" opacity=".15"/><rect x="14" y="24" width="68" height="46" rx="5" fill="${clr}" opacity=".12"/><rect x="88" y="24" width="18" height="46" rx="0" fill="${clr}" opacity=".08"/><circle cx="97" cy="38" r="6" fill="${clr}" opacity=".2"/><rect x="91" y="52" width="14" height="4" rx="2" fill="${clr}" opacity=".18"/><rect x="91" y="60" width="14" height="4" rx="2" fill="${clr}" opacity=".18"/><circle cx="48" cy="47" r="18" fill="${clr}" opacity=".08"/><circle cx="48" cy="47" r="11" fill="${clr}" opacity=".08"/></svg>`,
-    dishwasher: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="30" y="4" width="60" height="82" rx="7" fill="${clr}" opacity=".15"/><rect x="30" y="4" width="60" height="16" rx="7" fill="${clr}" opacity=".12"/><rect x="38" y="9" width="24" height="6" rx="3" fill="${clr}" opacity=".2"/><circle cx="81" cy="12" r="3.5" fill="${clr}" opacity=".25"/><rect x="38" y="28" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/><rect x="38" y="38" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/><rect x="38" y="48" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/><rect x="38" y="58" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/><rect x="38" y="68" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/></svg>`,
-    laundry: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="28" y="4" width="64" height="82" rx="8" fill="${clr}" opacity=".15"/><rect x="28" y="4" width="64" height="18" rx="8" fill="${clr}" opacity=".12"/><circle cx="60" cy="55" r="22" fill="${clr}" opacity=".1"/><circle cx="60" cy="55" r="16" fill="${clr}" opacity=".1"/><circle cx="60" cy="55" r="8" fill="${clr}" opacity=".12"/><rect x="36" y="11" width="16" height="5" rx="2.5" fill="${clr}" opacity=".2"/><circle cx="78" cy="13" r="3" fill="${clr}" opacity=".25"/><circle cx="68" cy="13" r="3" fill="${clr}" opacity=".2"/></svg>`,
-    phone: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="40" y="4" width="40" height="82" rx="8" fill="${clr}" opacity=".15"/><rect x="44" y="10" width="32" height="62" rx="4" fill="${clr}" opacity=".1"/><circle cx="60" cy="79" r="3.5" fill="${clr}" opacity=".25"/><rect x="52" y="7" width="16" height="3" rx="1.5" fill="${clr}" opacity=".2"/></svg>`,
-    laptop: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="16" y="14" width="88" height="56" rx="5" fill="${clr}" opacity=".15"/><rect x="20" y="18" width="80" height="48" rx="3" fill="${clr}" opacity=".1"/><rect x="6" y="70" width="108" height="6" rx="3" fill="${clr}" opacity=".15"/><rect x="44" y="70" width="32" height="4" rx="2" fill="${clr}" opacity=".2"/></svg>`,
-    audio: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><circle cx="60" cy="45" r="30" fill="${clr}" opacity=".12"/><circle cx="60" cy="45" r="20" fill="${clr}" opacity=".12"/><circle cx="60" cy="45" r="10" fill="${clr}" opacity=".15"/><path d="M28 45c0-17.7 14.3-32 32-32" stroke="${clr}" stroke-width="2.5" stroke-linecap="round" opacity=".3"/><path d="M92 45c0 17.7-14.3 32-32 32" stroke="${clr}" stroke-width="2.5" stroke-linecap="round" opacity=".3"/></svg>`,
-    camera: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="10" y="26" width="100" height="56" rx="8" fill="${clr}" opacity=".15"/><path d="M42 26l8-14h20l8 14" fill="${clr}" opacity=".12"/><circle cx="60" cy="54" r="18" fill="${clr}" opacity=".12"/><circle cx="60" cy="54" r="11" fill="${clr}" opacity=".12"/><circle cx="60" cy="54" r="5" fill="${clr}" opacity=".2"/><circle cx="88" cy="36" r="4" fill="${clr}" opacity=".2"/></svg>`,
-    other: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="20" y="20" width="80" height="55" rx="7" fill="${clr}" opacity=".15"/><rect x="28" y="28" width="64" height="38" rx="4" fill="${clr}" opacity=".1"/><rect x="48" y="75" width="24" height="5" rx="2" fill="${clr}" opacity=".2"/></svg>`
+    tv:         `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="8" y="6" width="104" height="66" rx="6" fill="${clr}" opacity=".12"/><rect x="13" y="11" width="94" height="56" rx="4" fill="${clr}" opacity=".2"/><rect x="16" y="14" width="88" height="50" rx="3" fill="${clr}" opacity=".15"/><rect x="46" y="74" width="28" height="5" rx="2" fill="${clr}" opacity=".25"/><rect x="38" y="79" width="44" height="3" rx="1.5" fill="${clr}" opacity=".2"/><circle cx="107" cy="18" r="3" fill="${clr}" opacity=".4"/><path d="M50 39l12-8v16z" fill="${clr}" opacity=".35"/></svg>`,
+    ac:         `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="10" y="22" width="100" height="42" rx="8" fill="${clr}" opacity=".15"/><rect x="10" y="22" width="100" height="14" rx="8" fill="${clr}" opacity=".2"/><rect x="18" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="34" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="50" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="66" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="82" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><circle cx="94" cy="29" r="4" fill="${clr}" opacity=".3"/></svg>`,
+    fridge:     `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="32" y="4" width="56" height="82" rx="7" fill="${clr}" opacity=".15"/><rect x="32" y="4" width="56" height="32" rx="7" fill="${clr}" opacity=".1"/><line x1="32" y1="36" x2="88" y2="36" stroke="${clr}" stroke-width="1.5" opacity=".2"/><rect x="80" y="17" width="5" height="14" rx="2.5" fill="${clr}" opacity=".3"/><rect x="80" y="50" width="5" height="20" rx="2.5" fill="${clr}" opacity=".25"/></svg>`,
+    microwave:  `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="8" y="18" width="104" height="58" rx="8" fill="${clr}" opacity=".15"/><rect x="14" y="24" width="68" height="46" rx="5" fill="${clr}" opacity=".12"/><rect x="88" y="24" width="18" height="46" rx="0" fill="${clr}" opacity=".08"/><circle cx="97" cy="38" r="6" fill="${clr}" opacity=".2"/><circle cx="48" cy="47" r="18" fill="${clr}" opacity=".08"/></svg>`,
+    dishwasher: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="30" y="4" width="60" height="82" rx="7" fill="${clr}" opacity=".15"/><rect x="30" y="4" width="60" height="16" rx="7" fill="${clr}" opacity=".12"/><rect x="38" y="28" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/><rect x="38" y="38" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/><rect x="38" y="48" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/></svg>`,
+    laundry:    `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="28" y="4" width="64" height="82" rx="8" fill="${clr}" opacity=".15"/><rect x="28" y="4" width="64" height="18" rx="8" fill="${clr}" opacity=".12"/><circle cx="60" cy="55" r="22" fill="${clr}" opacity=".1"/><circle cx="60" cy="55" r="16" fill="${clr}" opacity=".1"/><circle cx="60" cy="55" r="8" fill="${clr}" opacity=".12"/></svg>`,
+    phone:      `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="40" y="4" width="40" height="82" rx="8" fill="${clr}" opacity=".15"/><rect x="44" y="10" width="32" height="62" rx="4" fill="${clr}" opacity=".1"/><circle cx="60" cy="79" r="3.5" fill="${clr}" opacity=".25"/></svg>`,
+    laptop:     `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="16" y="14" width="88" height="56" rx="5" fill="${clr}" opacity=".15"/><rect x="20" y="18" width="80" height="48" rx="3" fill="${clr}" opacity=".1"/><rect x="6" y="70" width="108" height="6" rx="3" fill="${clr}" opacity=".15"/></svg>`,
+    audio:      `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><circle cx="60" cy="45" r="30" fill="${clr}" opacity=".12"/><circle cx="60" cy="45" r="20" fill="${clr}" opacity=".12"/><circle cx="60" cy="45" r="10" fill="${clr}" opacity=".15"/></svg>`,
+    camera:     `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="10" y="26" width="100" height="56" rx="8" fill="${clr}" opacity=".15"/><path d="M42 26l8-14h20l8 14" fill="${clr}" opacity=".12"/><circle cx="60" cy="54" r="18" fill="${clr}" opacity=".12"/><circle cx="60" cy="54" r="5" fill="${clr}" opacity=".2"/></svg>`,
+    kettle:     `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><ellipse cx="58" cy="56" rx="30" ry="26" fill="${clr}" opacity=".15"/><rect x="28" y="30" width="60" height="8" rx="4" fill="${clr}" opacity=".2"/><rect x="40" y="24" width="36" height="8" rx="4" fill="${clr}" opacity=".15"/><path d="M88 50 Q102 50 102 60 Q102 70 88 70" stroke="${clr}" stroke-width="3" fill="none" opacity=".25"/><rect x="46" y="78" width="24" height="5" rx="2.5" fill="${clr}" opacity=".2"/></svg>`,
+    small:      `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="30" y="20" width="60" height="52" rx="8" fill="${clr}" opacity=".15"/><rect x="38" y="28" width="44" height="28" rx="4" fill="${clr}" opacity=".1"/><circle cx="60" cy="74" r="6" fill="${clr}" opacity=".2"/><rect x="48" y="62" width="24" height="4" rx="2" fill="${clr}" opacity=".15"/></svg>`,
+    other:      `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="20" y="20" width="80" height="55" rx="7" fill="${clr}" opacity=".15"/><rect x="28" y="28" width="64" height="38" rx="4" fill="${clr}" opacity=".1"/></svg>`
   };
   return svgs[cat] || svgs.other;
 }
 
 function cardHTML(p, i) {
-  const cat  = guessCategory(p.name);
-  const bg   = CAT_BG[cat];
-  const clr  = CAT_CLR[cat];
-  const best = i < 2;
+  const cat   = guessCategory(p.name);
+  const bg    = CAT_BG[cat];
+  const clr   = CAT_CLR[cat];
+  const best  = i < 2;
   const feats = (p.features||[]).slice(0,3).map(f => `<span class="card-feat">${f}</span>`).join('');
   return `
   <div class="prod-card${best?' best':''} fu" style="animation-delay:${i*.07}s">
@@ -292,11 +474,18 @@ function toggleSettings() {
   p.style.display = p.style.display === 'none' ? 'block' : 'none';
 }
 
+function toggleExtra() {
+  const body    = document.getElementById('extraBody');
+  const chevron = document.getElementById('extraChevron');
+  body.classList.toggle('open');
+  chevron.textContent = body.classList.contains('open') ? '▲' : '▼';
+}
+
 function saveSettings() {
-  localStorage.setItem('sdg_key',      document.getElementById('apiKey').value);
-  localStorage.setItem('sdg_fold',     document.getElementById('folderId').value);
-  localStorage.setItem('sdg_prompt',   document.getElementById('promptId').value);
-  localStorage.setItem('sdg_prox',     document.getElementById('proxyUrl').value);
+  localStorage.setItem('sdg_key',    document.getElementById('apiKey').value);
+  localStorage.setItem('sdg_fold',   document.getElementById('folderId').value);
+  localStorage.setItem('sdg_prompt', document.getElementById('promptId').value);
+  localStorage.setItem('sdg_prox',   document.getElementById('proxyUrl').value);
   const m = document.getElementById('savedMsg');
   m.style.display = 'block';
   setTimeout(() => m.style.display = 'none', 2500);
@@ -311,41 +500,23 @@ function loadSettings() {
 
 /* ── PROGRESS ANIMATION ── */
 let progressInterval = null;
-
 function startProgress() {
-  const messages = [
-    'Connecting to Sharaf DG…',
-    'Searching product catalog…',
-    'Analysing your request…',
-    'Finding best matches…',
-    'Fetching prices & details…',
-    'Almost there…'
-  ];
+  const messages = ['Connecting to Sharaf DG…','Searching product catalog…','Analysing your request…','Finding best matches…','Fetching prices & details…','Almost there…'];
   let i = 0;
   const el = document.getElementById('loaderMsg');
   if (el) el.textContent = messages[0];
   progressInterval = setInterval(() => {
     i = Math.min(i + 1, messages.length - 1);
-    if (el) {
-      el.style.opacity = '0';
-      setTimeout(() => { el.textContent = messages[i]; el.style.opacity = '1'; }, 150);
-    }
+    if (el) { el.style.opacity='0'; setTimeout(()=>{el.textContent=messages[i];el.style.opacity='1';},150); }
   }, 1800);
 }
-
 function stopProgress() {
   if (progressInterval) { clearInterval(progressInterval); progressInterval = null; }
 }
 
 function go(s) {
-  const v = s === 'v'
-    ? document.getElementById('heroIn').value.trim()
-    : document.getElementById('hdrIn').value.trim();
-  if (v) {
-    document.getElementById('heroIn').value = v;
-    document.getElementById('hdrIn').value  = v;
-    doSearch(v);
-  }
+  const v = s==='v' ? document.getElementById('heroIn').value.trim() : document.getElementById('hdrIn').value.trim();
+  if (v) { document.getElementById('heroIn').value=v; document.getElementById('hdrIn').value=v; doSearch(v); }
 }
 
 async function doSearch(q) {
@@ -354,10 +525,10 @@ async function doSearch(q) {
   const promptId = document.getElementById('promptId').value.trim();
   const proxy    = document.getElementById('proxyUrl').value.trim();
 
-  if (!key)      { showErr('Please enter your API Key in ⚙️ Settings.');      return; }
-  if (!fold)     { showErr('Please enter your Folder ID in ⚙️ Settings.');    return; }
+  if (!key)      { showErr('Please enter your API Key in ⚙️ Settings.');         return; }
+  if (!fold)     { showErr('Please enter your Folder ID in ⚙️ Settings.');       return; }
   if (!promptId) { showErr('Please enter your Agent Prompt ID in ⚙️ Settings.'); return; }
-  if (!proxy)    { showErr('Please enter your Proxy URL in ⚙️ Settings.');    return; }
+  if (!proxy)    { showErr('Please enter your Proxy URL in ⚙️ Settings.');       return; }
 
   const $ = id => document.getElementById(id);
   $('aiPanel').classList.remove('on');
@@ -366,7 +537,7 @@ async function doSearch(q) {
   $('loader').classList.add('on');
   $('heroBtn').disabled = true;
   startProgress();
-  $('loader').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  $('loader').scrollIntoView({ behavior:'smooth', block:'center' });
 
   try {
     const r = await fetch(proxy, {
@@ -379,22 +550,21 @@ async function doSearch(q) {
 
     const raw = data.answer || '';
     let parsed;
+
+    /* 1 — Try JSON (if agent returns structured JSON) */
     try {
       let clean = raw.trim();
-      if (clean.startsWith('```')) {
-        clean = clean.replace(/^```[a-z]*\n?/, '').replace(/```\s*$/, '').trim();
-      }
+      if (clean.startsWith('```')) clean = clean.replace(/^```[a-z]*\n?/,'').replace(/```\s*$/,'').trim();
       const m = clean.match(/(\{[\s\S]*\})/);
-      parsed = JSON.parse(m ? m[1] : clean);
-    } catch(e) {
-      stopProgress();
-      $('loader').classList.remove('on');
-      $('aiSummary').textContent = 'Results for: ' + q;
-      $('resMeta').innerHTML = '';
-      $('prodGrid').innerHTML = `<div style="grid-column:1/-1;background:var(--white);border-radius:12px;padding:24px;line-height:1.8;color:var(--text);font-size:14px;border:1.5px solid var(--border);white-space:pre-wrap">${raw}</div>`;
-      $('aiPanel').classList.add('on');
-      $('aiPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      return;
+      const obj = JSON.parse(m ? m[1] : clean);
+      if (obj && (obj.products || obj.summary)) {
+        parsed = { products: obj.products||[], summary: obj.summary||'', extraHtml: '' };
+      }
+    } catch(e) { /* fall through to markdown parser */ }
+
+    /* 2 — Fall back to markdown parser */
+    if (!parsed) {
+      parsed = parseMarkdownResponse(raw, q);
     }
 
     stopProgress();
@@ -412,23 +582,41 @@ async function doSearch(q) {
 function renderResults(q, parsed, $) {
   if (!$) $ = id => document.getElementById(id);
   const products = parsed.products || [];
+
   $('aiSummary').textContent = parsed.summary || 'Here are the best matches for your search.';
-  $('resMeta').innerHTML = `<strong>${products.length} product${products.length !== 1 ? 's' : ''} found on Sharaf DG</strong>`;
-  $('prodGrid').innerHTML = products.map((p, i) => cardHTML(p, i)).join('');
+  $('resMeta').innerHTML = `<strong>${products.length} product${products.length!==1?'s':''} found on Sharaf DG</strong>`;
+  $('prodGrid').innerHTML = products.length
+    ? products.map((p,i) => cardHTML(p,i)).join('')
+    : `<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);font-size:14px">No products could be extracted. The AI response is shown in the summary above.</div>`;
+
+  /* Extra AI insights panel */
+  const extraInfo = $('extraInfo');
+  const extraBody = $('extraBody');
+  if (parsed.extraHtml) {
+    extraBody.innerHTML = parsed.extraHtml;
+    extraInfo.style.display = 'block';
+    // Auto-open the panel
+    extraBody.classList.add('open');
+    document.getElementById('extraChevron').textContent = '▲';
+  } else {
+    extraInfo.style.display = 'none';
+    extraBody.innerHTML = '';
+  }
+
   $('loader').classList.remove('on');
   $('aiPanel').classList.add('on');
-  $('aiPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  $('aiPanel').scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
 function showErr(m) {
   const b = document.getElementById('errBox');
   b.textContent = m;
   b.classList.add('on');
-  b.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  b.scrollIntoView({ behavior:'smooth', block:'center' });
 }
 
-document.getElementById('heroIn').addEventListener('keypress', e => { if (e.key === 'Enter') go('v'); });
-document.getElementById('hdrIn').addEventListener('keypress',  e => { if (e.key === 'Enter') go('h'); });
+document.getElementById('heroIn').addEventListener('keypress', e => { if(e.key==='Enter') go('v'); });
+document.getElementById('hdrIn').addEventListener('keypress',  e => { if(e.key==='Enter') go('h'); });
 
 loadSettings();
 </script>
