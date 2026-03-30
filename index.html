@@ -85,18 +85,20 @@ header{background:var(--white);border-bottom:3px solid var(--orange);position:st
 .card-body{padding:16px;flex:1;display:flex;flex-direction:column;gap:6px}
 .card-brand{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted)}
 .card-name{font-size:15px;font-weight:700;color:var(--text);line-height:1.3}
-.card-specs{font-size:12px;color:var(--muted);line-height:1.5}
+.card-specs{font-size:12px;color:var(--muted)}
 .card-features{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
 .card-feat{background:var(--blue-pale);color:var(--blue);font-size:11px;padding:3px 8px;border-radius:4px;font-weight:500}
 .card-footer{border-top:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;background:#fafbfd;margin-top:auto}
 .price-lbl{font-size:10px;color:var(--muted);font-weight:500}
 .price-num{font-family:'Nunito',sans-serif;font-size:22px;font-weight:900;color:var(--blue)}
 .price-old{font-size:12px;color:var(--muted);text-decoration:line-through}
-.buy-btn{background:var(--orange);color:var(--blue);border:none;border-radius:7px;padding:8px 16px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;cursor:pointer;transition:background .2s;white-space:nowrap}
+.buy-btn{background:var(--orange);color:var(--blue);border:none;border-radius:7px;padding:8px 16px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;cursor:pointer;transition:background .2s;white-space:nowrap;text-decoration:none;display:inline-block}
 .buy-btn:hover{background:var(--orange-dk)}
+.buy-btn.disabled{background:#d1d5db;color:#6b7280;cursor:default}
 .energy-tag{background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px}
-.card-why{padding:12px 16px;background:#fff8e1;border-top:1px solid #fde68a;font-size:12px;color:#78350f;line-height:1.6}
-.card-why-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#e09600;display:block;margin-bottom:4px}
+.card-why{padding:12px 16px;background:#fff8e1;border-top:1px solid #fde68a;font-size:12px;color:#78350f;line-height:1.5}
+.card-why-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#e09600;display:block;margin-bottom:3px}
+/* ── AI Insights panel ── */
 .extra-info{margin-top:32px}
 .extra-info-hdr{display:flex;align-items:center;gap:10px;margin-bottom:16px;cursor:pointer;user-select:none}
 .extra-info-hdr-line{height:1px;background:var(--border);flex:1}
@@ -110,7 +112,15 @@ header{background:var(--white);border-bottom:3px solid var(--orange);position:st
 .extra-table tr:first-child td{font-weight:700;color:var(--blue);background:var(--blue-pale);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
 .extra-table tr:last-child td{border-bottom:none}
 .extra-table tr:nth-child(even) td{background:#fafbfd}
-.extra-para{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:6px}
+.extra-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.extra-list li{font-size:13px;color:var(--text);line-height:1.6;padding-left:16px;position:relative}
+.extra-list li::before{content:'→';position:absolute;left:0;color:var(--orange);font-weight:700}
+.extra-para{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:8px}
+.extra-kv{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:13px}
+.extra-kv-key{font-weight:700;color:var(--blue);white-space:nowrap}
+.extra-kv-val{color:var(--text)}
+.extra-link{display:inline-flex;align-items:center;gap:6px;background:var(--blue-pale);color:var(--blue);padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none;margin:3px 4px 3px 0;transition:background .2s}
+.extra-link:hover{background:#c7d6f5}
 .empty{text-align:center;padding:72px 24px;color:var(--muted)}
 .empty-icon{font-size:64px;margin-bottom:16px;opacity:.35}
 .empty h2{font-family:'Nunito',sans-serif;font-size:24px;font-weight:900;color:var(--blue);margin-bottom:10px}
@@ -131,7 +141,7 @@ footer strong{color:var(--orange)}
 </head>
 <body>
 
-<div class="topbar">Free delivery on orders over <strong>AED 199</strong> &nbsp;&middot;&nbsp; 0% installments via Tabby &amp; Tamara &nbsp;&middot;&nbsp; Helpline: <strong>600 502 034</strong></div>
+<div class="topbar">Free delivery on orders over <strong>AED 199</strong> &nbsp;·&nbsp; 0% installments via Tabby &amp; Tamara &nbsp;·&nbsp; Helpline: <strong>600 502 034</strong></div>
 
 <header>
   <div class="hdr">
@@ -140,42 +150,42 @@ footer strong{color:var(--orange)}
       <div class="logo-bot">DG</div>
     </a>
     <div class="hdr-search">
-      <input id="hdrIn" type="text" placeholder="Search products, brands, models&hellip;" autocomplete="off"/>
-      <button class="hdr-go" id="hdrBtn" onclick="go('h')">&#128269;</button>
+      <input id="hdrIn" type="text" placeholder="Search products, brands, models…" autocomplete="off"/>
+      <button class="hdr-go" id="hdrBtn" onclick="go('h')">🔍</button>
     </div>
     <div class="ai-badge"><span class="pulse"></span>Yango AI Active</div>
-    <button class="settings-btn" onclick="toggleSettings()">&#9881;&#65039; Settings</button>
+    <button class="settings-btn" onclick="toggleSettings()">⚙️ Settings</button>
   </div>
 </header>
 
 <div class="settings-panel" id="settingsPanel">
   <div class="settings-inner">
     <div class="settings-top">
-      <div class="settings-title">&#9881;&#65039; Yandex AI Studio Settings</div>
+      <div class="settings-title">⚙️ Yandex AI Studio Settings</div>
       <div class="settings-actions">
-        <div class="saved-msg" id="savedMsg">&#10003; Saved</div>
+        <div class="saved-msg" id="savedMsg">✓ Saved</div>
         <button class="save-btn" onclick="saveSettings()">Save Settings</button>
         <button class="close-btn" onclick="toggleSettings()">Close</button>
       </div>
     </div>
     <div class="settings-grid">
       <div class="sfield">
-        <label>&#128273; API Key</label>
-        <input id="apiKey" type="password" placeholder="AQVN&hellip;" autocomplete="new-password"/>
-        <div class="hint">console.yandex.cloud &rarr; Service Accounts &rarr; API Keys</div>
+        <label>🔑 API Key</label>
+        <input id="apiKey" type="password" placeholder="AQVN…" autocomplete="new-password"/>
+        <div class="hint">console.yandex.cloud → Service Accounts → API Keys</div>
       </div>
       <div class="sfield">
-        <label>&#128193; Folder ID</label>
-        <input id="folderId" type="text" placeholder="b1g&hellip;" autocomplete="off"/>
+        <label>📁 Folder ID</label>
+        <input id="folderId" type="text" placeholder="b1g…" autocomplete="off"/>
         <div class="hint">Your Yandex Cloud folder overview page</div>
       </div>
       <div class="sfield">
-        <label>&#129302; Agent Prompt ID</label>
+        <label>🤖 Agent Prompt ID</label>
         <input id="promptId" type="text" placeholder="fvtap9mhn69o5c4jqjhv" autocomplete="off"/>
-        <div class="hint">Yandex AI Studio &rarr; Your Agent &rarr; Prompt ID</div>
+        <div class="hint">Yandex AI Studio → Your Agent → Prompt ID</div>
       </div>
       <div class="sfield">
-        <label>&#127760; Proxy URL</label>
+        <label>🌐 Proxy URL</label>
         <input id="proxyUrl" type="text" placeholder="https://your-project.vercel.app/api/proxy" autocomplete="off"/>
         <div class="hint">Your Vercel deployment URL + /api/proxy</div>
       </div>
@@ -184,24 +194,24 @@ footer strong{color:var(--orange)}
 </div>
 
 <section class="hero">
-  <div class="hero-pill">&#10022; Yango Smart Search</div>
+  <div class="hero-pill">✦ Yango Smart Search</div>
   <h1>Find It Fast.<br>Find It <span>Smart.</span></h1>
-  <p>Describe what you need &mdash; our AI finds real Sharaf DG products instantly.</p>
+  <p>Describe what you need — our AI finds real Sharaf DG products instantly.</p>
   <div class="hero-sw">
-    <input id="heroIn" type="text" placeholder="e.g. quiet AC for a small bedroom, large 4K TV for movie nights&hellip;" autocomplete="off"/>
-    <button class="hero-btn" id="heroBtn" onclick="go('v')">Search with AI &rarr;</button>
+    <input id="heroIn" type="text" placeholder="e.g. quiet AC for a small bedroom, large 4K TV for movie nights…" autocomplete="off"/>
+    <button class="hero-btn" id="heroBtn" onclick="go('v')">Search with AI →</button>
   </div>
 </section>
 
 <div class="main">
   <div class="loading" id="loader">
     <div class="spinner"></div>
-    <p id="loaderMsg">Connecting to Sharaf DG&hellip;</p>
+    <p id="loaderMsg">Connecting to Sharaf DG…</p>
   </div>
   <div class="err" id="errBox"></div>
   <div class="ai-panel" id="aiPanel">
     <div class="ai-summary">
-      <div class="ai-ico">&#128722;</div>
+      <div class="ai-ico">🛒</div>
       <div>
         <div class="ai-lbl">AI Response</div>
         <div class="ai-sum-text" id="aiSummary"></div>
@@ -211,16 +221,16 @@ footer strong{color:var(--orange)}
     <div class="prod-grid" id="prodGrid"></div>
     <div class="extra-info" id="extraInfo" style="display:none">
       <div class="extra-info-hdr" onclick="toggleExtra()">
-        <div class="extra-info-pill">&#128161; AI Insights <span id="extraChevron">&#9660;</span></div>
+        <div class="extra-info-pill">💡 AI Insights <span id="extraChevron">▼</span></div>
         <div class="extra-info-hdr-line"></div>
       </div>
       <div class="extra-info-body" id="extraBody"></div>
     </div>
   </div>
   <div class="empty" id="emptyState">
-    <div class="empty-icon">&#128269;</div>
+    <div class="empty-icon">🔍</div>
     <h2>What are you looking for today?</h2>
-    <p>Type anything above &mdash; a product type, brand, use case, or budget. Our AI will find the best matches from Sharaf DG in real time.</p>
+    <p>Type anything above — a product type, brand, use case, or budget. Our AI will find the best matches from Sharaf DG in real time.</p>
   </div>
 </div>
 
@@ -230,683 +240,182 @@ footer strong{color:var(--orange)}
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#F5A800"/><path d="M8 12l3 3 5-5" stroke="#002F86" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
     <span style="font-size:12px;font-weight:700;color:#fff;letter-spacing:.5px">Powered by Yango Tech AI</span>
   </div>
-  <div style="margin-bottom:6px">Smart Search powered by <strong>Yango Tech AI</strong> &middot; Real-time Sharaf DG product search</div>
-  <div style="font-size:11px;opacity:.4">&copy; 2025 Yango Tech &middot; Sharaf DG</div>
+  <div style="margin-bottom:6px">Smart Search powered by <strong>Yango Tech AI</strong> · Real-time Sharaf DG product search</div>
+  <div style="font-size:11px;opacity:.4">© 2025 Yango Tech · Sharaf DG</div>
 </footer>
 
-
 <script>
+// ─── CATEGORY MAPS ────────────────────────────────────────────────
 const CAT_BG  = {ac:'#e0f2fe',tv:'#ede9fe',fridge:'#d1fae5',microwave:'#ffedd5',dishwasher:'#cffafe',laundry:'#dbeafe',phone:'#fce7f3',laptop:'#e0e7ff',audio:'#fef3c7',camera:'#f0fdf4',kettle:'#fff7ed',small:'#fdf4ff',other:'#f1f5f9'};
 const CAT_CLR = {ac:'#0369a1',tv:'#6d28d9',fridge:'#065f46',microwave:'#c2410c',dishwasher:'#0e7490',laundry:'#1d4ed8',phone:'#be185d',laptop:'#4338ca',audio:'#92400e',camera:'#166534',kettle:'#c2410c',small:'#7c3aed',other:'#475569'};
 
 function guessCategory(name) {
   const n = (name||'').toLowerCase();
-  if(/ac|air.?con|split|inverter.*(ton|btu)/.test(n))    return 'ac';
-  if(/\btv\b|television|oled|qled|smart.*[0-9].*(in|inch)/.test(n)) return 'tv';
-  if(/fridge|refrigerator|freezer/.test(n))              return 'fridge';
-  if(/microwave|oven/.test(n))                           return 'microwave';
-  if(/dishwash/.test(n))                                 return 'dishwasher';
-  if(/wash|laundry|dryer/.test(n))                       return 'laundry';
-  if(/phone|iphone|galaxy|mobile|smartphone/.test(n))    return 'phone';
-  if(/laptop|macbook|notebook/.test(n))                  return 'laptop';
-  if(/earphone|headphone|speaker|buds|audio/.test(n))    return 'audio';
-  if(/camera|gopro/.test(n))                             return 'camera';
-  if(/kettle|jug|boil/.test(n))                          return 'kettle';
-  if(/toaster|iron|blender|mixer|juicer|vacuum|fan|heater|coffee/.test(n)) return 'small';
+  if (/ac|air.?con|split|inverter.*(ton|btu)/.test(n)) return 'ac';
+  if (/tv|television|oled|qled|screen|inch.*smart/.test(n)) return 'tv';
+  if (/fridge|refrigerator|freezer/.test(n)) return 'fridge';
+  if (/microwave|oven/.test(n)) return 'microwave';
+  if (/dishwash/.test(n)) return 'dishwasher';
+  if (/wash|laundry|dryer/.test(n)) return 'laundry';
+  if (/phone|iphone|galaxy|mobile|smartphone/.test(n)) return 'phone';
+  if (/laptop|macbook|notebook/.test(n)) return 'laptop';
+  if (/earphone|headphone|speaker|buds|audio/.test(n)) return 'audio';
+  if (/camera|gopro/.test(n)) return 'camera';
+  if (/kettle|jug|boil/.test(n)) return 'kettle';
+  if (/toaster|iron|blender|mixer|juicer|vacuum|fan|heater|coffee|grind/.test(n)) return 'small';
   return 'other';
 }
 
+// ─── SVG ILLUSTRATIONS ────────────────────────────────────────────
 function getSVG(cat, clr) {
   const s = {
-    tv:         `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="8" y="6" width="104" height="66" rx="6" fill="${clr}" opacity=".12"/><rect x="13" y="11" width="94" height="56" rx="4" fill="${clr}" opacity=".2"/><rect x="16" y="14" width="88" height="50" rx="3" fill="${clr}" opacity=".15"/><rect x="46" y="74" width="28" height="5" rx="2" fill="${clr}" opacity=".25"/><rect x="38" y="79" width="44" height="3" rx="1.5" fill="${clr}" opacity=".2"/><path d="M50 39l12-8v16z" fill="${clr}" opacity=".35"/></svg>`,
-    ac:         `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="10" y="22" width="100" height="42" rx="8" fill="${clr}" opacity=".15"/><rect x="10" y="22" width="100" height="14" rx="8" fill="${clr}" opacity=".2"/><rect x="18" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="34" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="50" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="66" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="82" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><circle cx="94" cy="29" r="4" fill="${clr}" opacity=".3"/></svg>`,
-    fridge:     `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="32" y="4" width="56" height="82" rx="7" fill="${clr}" opacity=".15"/><rect x="32" y="4" width="56" height="32" rx="7" fill="${clr}" opacity=".1"/><line x1="32" y1="36" x2="88" y2="36" stroke="${clr}" stroke-width="1.5" opacity=".2"/><rect x="80" y="17" width="5" height="14" rx="2.5" fill="${clr}" opacity=".3"/><rect x="80" y="50" width="5" height="20" rx="2.5" fill="${clr}" opacity=".25"/></svg>`,
-    microwave:  `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="8" y="18" width="104" height="58" rx="8" fill="${clr}" opacity=".15"/><rect x="14" y="24" width="68" height="46" rx="5" fill="${clr}" opacity=".12"/><rect x="88" y="24" width="18" height="46" rx="0" fill="${clr}" opacity=".08"/><circle cx="97" cy="38" r="6" fill="${clr}" opacity=".2"/><circle cx="48" cy="47" r="18" fill="${clr}" opacity=".08"/></svg>`,
-    dishwasher: `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="30" y="4" width="60" height="82" rx="7" fill="${clr}" opacity=".15"/><rect x="30" y="4" width="60" height="16" rx="7" fill="${clr}" opacity=".12"/><rect x="38" y="28" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/><rect x="38" y="38" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/><rect x="38" y="48" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/></svg>`,
-    laundry:    `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="28" y="4" width="64" height="82" rx="8" fill="${clr}" opacity=".15"/><rect x="28" y="4" width="64" height="18" rx="8" fill="${clr}" opacity=".12"/><circle cx="60" cy="55" r="22" fill="${clr}" opacity=".1"/><circle cx="60" cy="55" r="10" fill="${clr}" opacity=".12"/></svg>`,
-    phone:      `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="40" y="4" width="40" height="82" rx="8" fill="${clr}" opacity=".15"/><rect x="44" y="10" width="32" height="62" rx="4" fill="${clr}" opacity=".1"/><circle cx="60" cy="79" r="3.5" fill="${clr}" opacity=".25"/></svg>`,
-    laptop:     `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="16" y="14" width="88" height="56" rx="5" fill="${clr}" opacity=".15"/><rect x="20" y="18" width="80" height="48" rx="3" fill="${clr}" opacity=".1"/><rect x="6" y="70" width="108" height="6" rx="3" fill="${clr}" opacity=".15"/></svg>`,
-    audio:      `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><circle cx="60" cy="45" r="30" fill="${clr}" opacity=".12"/><circle cx="60" cy="45" r="18" fill="${clr}" opacity=".12"/><circle cx="60" cy="45" r="8" fill="${clr}" opacity=".18"/></svg>`,
-    camera:     `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="10" y="26" width="100" height="56" rx="8" fill="${clr}" opacity=".15"/><path d="M42 26l8-14h20l8 14" fill="${clr}" opacity=".12"/><circle cx="60" cy="54" r="18" fill="${clr}" opacity=".12"/><circle cx="60" cy="54" r="9" fill="${clr}" opacity=".18"/></svg>`,
-    kettle:     `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><path d="M38 20 Q34 45 38 68 Q52 76 68 72 Q84 68 86 45 Q88 22 72 18 Z" fill="${clr}" opacity=".15"/><path d="M72 18 Q82 16 86 28" stroke="${clr}" stroke-width="3" stroke-linecap="round" fill="none" opacity=".3"/><path d="M34 36 Q24 38 26 50 Q28 60 36 58" stroke="${clr}" stroke-width="3" stroke-linecap="round" fill="none" opacity=".25"/><rect x="38" y="68" width="34" height="5" rx="2.5" fill="${clr}" opacity=".2"/></svg>`,
-    small:      `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="30" y="20" width="60" height="52" rx="8" fill="${clr}" opacity=".15"/><rect x="38" y="28" width="44" height="28" rx="4" fill="${clr}" opacity=".1"/><circle cx="60" cy="74" r="6" fill="${clr}" opacity=".2"/><rect x="48" y="62" width="24" height="4" rx="2" fill="${clr}" opacity=".15"/></svg>`,
-    other:      `<svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="68"><rect x="20" y="20" width="80" height="55" rx="7" fill="${clr}" opacity=".15"/><rect x="28" y="28" width="64" height="38" rx="4" fill="${clr}" opacity=".1"/><rect x="48" y="75" width="24" height="5" rx="2" fill="${clr}" opacity=".2"/></svg>`
+    tv:         `<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="8" y="6" width="104" height="66" rx="6" fill="${clr}" opacity=".12"/><rect x="13" y="11" width="94" height="56" rx="4" fill="${clr}" opacity=".2"/><rect x="16" y="14" width="88" height="50" rx="3" fill="${clr}" opacity=".15"/><rect x="46" y="74" width="28" height="5" rx="2" fill="${clr}" opacity=".25"/><path d="M50 39l12-8v16z" fill="${clr}" opacity=".35"/></svg>`,
+    ac:         `<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="10" y="22" width="100" height="42" rx="8" fill="${clr}" opacity=".15"/><rect x="10" y="22" width="100" height="14" rx="8" fill="${clr}" opacity=".2"/><rect x="18" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="34" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="50" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="66" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/><rect x="82" y="42" width="12" height="18" rx="2" fill="${clr}" opacity=".12"/></svg>`,
+    fridge:     `<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="32" y="4" width="56" height="82" rx="7" fill="${clr}" opacity=".15"/><rect x="32" y="4" width="56" height="32" rx="7" fill="${clr}" opacity=".1"/><line x1="32" y1="36" x2="88" y2="36" stroke="${clr}" stroke-width="1.5" opacity=".2"/><rect x="80" y="17" width="5" height="14" rx="2.5" fill="${clr}" opacity=".3"/><rect x="80" y="50" width="5" height="20" rx="2.5" fill="${clr}" opacity=".25"/></svg>`,
+    microwave:  `<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="8" y="18" width="104" height="58" rx="8" fill="${clr}" opacity=".15"/><rect x="14" y="24" width="68" height="46" rx="5" fill="${clr}" opacity=".12"/><circle cx="97" cy="38" r="6" fill="${clr}" opacity=".2"/><circle cx="48" cy="47" r="18" fill="${clr}" opacity=".08"/></svg>`,
+    dishwasher: `<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="30" y="4" width="60" height="82" rx="7" fill="${clr}" opacity=".15"/><rect x="30" y="4" width="60" height="16" rx="7" fill="${clr}" opacity=".12"/><rect x="38" y="28" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/><rect x="38" y="40" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/><rect x="38" y="52" width="44" height="3" rx="1.5" fill="${clr}" opacity=".12"/></svg>`,
+    laundry:    `<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="28" y="4" width="64" height="82" rx="8" fill="${clr}" opacity=".15"/><rect x="28" y="4" width="64" height="18" rx="8" fill="${clr}" opacity=".12"/><circle cx="60" cy="55" r="22" fill="${clr}" opacity=".1"/><circle cx="60" cy="55" r="10" fill="${clr}" opacity=".12"/></svg>`,
+    phone:      `<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="40" y="4" width="40" height="82" rx="8" fill="${clr}" opacity=".15"/><rect x="44" y="10" width="32" height="62" rx="4" fill="${clr}" opacity=".1"/><circle cx="60" cy="79" r="3.5" fill="${clr}" opacity=".25"/></svg>`,
+    laptop:     `<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="16" y="14" width="88" height="56" rx="5" fill="${clr}" opacity=".15"/><rect x="20" y="18" width="80" height="48" rx="3" fill="${clr}" opacity=".1"/><rect x="6" y="70" width="108" height="6" rx="3" fill="${clr}" opacity=".15"/></svg>`,
+    audio:      `<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><circle cx="60" cy="45" r="30" fill="${clr}" opacity=".12"/><circle cx="60" cy="45" r="18" fill="${clr}" opacity=".12"/><circle cx="60" cy="45" r="8" fill="${clr}" opacity=".18"/></svg>`,
+    camera:     `<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="10" y="26" width="100" height="56" rx="8" fill="${clr}" opacity=".15"/><path d="M42 26l8-14h20l8 14" fill="${clr}" opacity=".12"/><circle cx="60" cy="54" r="18" fill="${clr}" opacity=".12"/><circle cx="60" cy="54" r="9" fill="${clr}" opacity=".18"/></svg>`,
+    kettle:     `<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><path d="M38 20 Q34 45 38 68 Q52 76 68 72 Q84 68 86 45 Q88 22 72 18 Z" fill="${clr}" opacity=".15"/><path d="M72 18 Q82 16 86 28" stroke="${clr}" stroke-width="3" stroke-linecap="round" fill="none" opacity=".3"/><path d="M34 36 Q24 38 26 50 Q28 60 36 58" stroke="${clr}" stroke-width="3" stroke-linecap="round" fill="none" opacity=".25"/><rect x="38" y="68" width="34" height="5" rx="2.5" fill="${clr}" opacity=".2"/></svg>`,
+    small:      `<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="30" y="20" width="60" height="52" rx="8" fill="${clr}" opacity=".15"/><rect x="38" y="28" width="44" height="28" rx="4" fill="${clr}" opacity=".1"/><circle cx="60" cy="74" r="6" fill="${clr}" opacity=".2"/></svg>`,
+    other:      `<svg viewBox="0 0 120 90" fill="none" width="90" height="68"><rect x="20" y="20" width="80" height="55" rx="7" fill="${clr}" opacity=".15"/><rect x="28" y="28" width="64" height="38" rx="4" fill="${clr}" opacity=".1"/></svg>`
   };
   return s[cat] || s.other;
 }
 
-
+// ─── CARD HTML ────────────────────────────────────────────────────
 function cardHTML(p, i) {
-  const name = p.name || p.title || p.product_title || 'Product';
-  const brand = p.brand || '';
-  const specs = p.specs || p.description || p.summary || '';
-  const price = p.price;
-  const originalPrice = p.original_price;
-  const features = Array.isArray(p.features) ? p.features : [];
-  const why = p.why || p.reason || '';
-  const url = p.url || p.product_url || '';
-  const cat  = guessCategory(name);
+  const cat  = guessCategory(p.name);
   const bg   = CAT_BG[cat], clr = CAT_CLR[cat], best = i < 2;
-  const feats = features.slice(0,5).map(f => `<span class="card-feat">${safeText(f)}</span>`).join('');
-  const safeUrl = url ? JSON.stringify(String(url)) : '""';
+  const feats = (p.features || []).slice(0, 5).map(f =>
+    `<span class="card-feat">${escHtml(f)}</span>`).join('');
+
+  // URL: use whatever the agent provides directly
+  const url = (p.url && p.url !== 'null' && p.url.startsWith('http')) ? p.url : null;
+  const btnHtml = url
+    ? `<a class="buy-btn" href="${url}" target="_blank" rel="noopener">View on Sharaf DG →</a>`
+    : `<button class="buy-btn disabled" disabled>Not available online</button>`;
+
   return `
-  <div class="prod-card${best?' best':''} fu" style="animation-delay:${i*.07}s">
-    <div class="card-img" style="background:${bg};overflow:hidden;position:relative">
-      ${getSVG(cat,clr)}
+  <div class="prod-card${best ? ' best' : ''} fu" style="animation-delay:${i * .07}s">
+    <div class="card-img" style="background:${bg};position:relative;display:flex;align-items:center;justify-content:center">
+      ${getSVG(cat, clr)}
       <div class="badge-cat" style="background:${bg};color:${clr}">${cat.toUpperCase()}</div>
-      ${best?`<div class="badge-best">&#11088; Best Match</div>`:''}
+      ${best ? '<div class="badge-best">⭐ Best Match</div>' : ''}
     </div>
     <div class="card-body">
-      <div class="card-brand">${safeText(brand)}</div>
-      <div class="card-name">${safeText(name)}</div>
-      ${specs?`<div class="card-specs">${safeText(specs)}</div>`:''}
-      ${feats?`<div class="card-features">${feats}</div>`:''}
+      <div class="card-brand">${escHtml(p.brand || '')}</div>
+      <div class="card-name">${escHtml(p.name || 'Product')}</div>
+      ${p.specs ? `<div class="card-specs">${escHtml(p.specs)}</div>` : ''}
+      ${feats ? `<div class="card-features">${feats}</div>` : ''}
     </div>
     <div class="card-footer">
       <div>
         <div class="price-lbl">AED</div>
-        <div class="price-num">${price !== null && price !== undefined ? Number(price).toLocaleString() : '&ndash;'}</div>
-        ${originalPrice ? `<div class="price-old">AED ${Number(originalPrice).toLocaleString()}</div>` : ''}
+        <div class="price-num">${p.price ? Number(p.price).toLocaleString() : '–'}</div>
+        ${p.original_price ? `<div class="price-old">AED ${Number(p.original_price).toLocaleString()}</div>` : ''}
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
-        ${p.energy_rating?`<div class="energy-tag">${safeText(p.energy_rating)}</div>`:''}
-        <button class="buy-btn" ${url?`onclick="window.open(${safeUrl},'_blank')"`:''}>${url?'View on Sharaf DG &rarr;':'Search on Site'}</button>
+        ${p.energy_rating ? `<div class="energy-tag">${escHtml(p.energy_rating)}</div>` : ''}
+        ${btnHtml}
       </div>
     </div>
-    ${why?`<div class="card-why"><span class="card-why-lbl">&#10024; Why this matches</span>${safeText(why)}</div>`:''}
+    ${p.why ? `<div class="card-why"><span class="card-why-lbl">✨ Why this matches</span>${escHtml(p.why)}</div>` : ''}
   </div>`;
 }
 
-function safeText(v) {
-  if (v === null || v === undefined) return '';
-  if (Array.isArray(v)) return v.map(safeText).filter(Boolean).join(' ');
-  if (typeof v === 'object') {
-    try { return JSON.stringify(v); } catch (_) { return ''; }
-  }
-  return String(v).trim();
-}
+// ─── EXTRA CONTENT BUILDER ────────────────────────────────────────
+// Converts any JSON fields beyond "summary" and "products" into
+// styled HTML for the AI Insights panel.
+// Handles: strings, arrays, objects, nested objects, URLs.
+const SKIP_KEYS = new Set(['summary','products','error']);
 
-function prettifyTitle(key) {
-  return String(key || '')
-    .replace(/[_-]+/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .replace(/\b\w/g, m => m.toUpperCase());
-}
-
-function asArray(v) {
-  if (!v && v !== 0) return [];
-  if (Array.isArray(v)) return v;
-  if (typeof v === 'string') {
-    return v.split(/[•\n;]+/).map(s => s.trim()).filter(Boolean);
-  }
-  return [v];
-}
-
-function normalizeFeatures(v) {
-  return asArray(v)
-    .flatMap(item => {
-      if (item === null || item === undefined) return [];
-      if (typeof item === 'string') {
-        return item.split(/\n|;|\u2022|\u2023|\*+/).map(s => s.replace(/^[-–—*\s]+/, '').trim()).filter(Boolean);
-      }
-      if (typeof item === 'object') {
-        const t = pickValue(item, ['text','label','title','name','value']);
-        return t ? [String(t).trim()] : [];
-      }
-      return [String(item).trim()];
-    })
-    .map(s => s.replace(/\s+/g, ' ').trim())
-    .filter((s, i, arr) => s && arr.indexOf(s) === i)
-    .slice(0, 6);
-}
-
-function parsePrice(v) {
-  const text = safeText(v).replace(/,/g, '');
-  const m = text.match(/-?\d+(?:\.\d+)?/);
-  return m ? Number(m[0]) : null;
-}
-
-function pickValue(obj, keys) {
-  if (!obj || typeof obj !== 'object') return '';
-  for (const key of keys) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      const val = obj[key];
-      const text = safeText(val);
-      if (text) return val;
-    }
-  }
-  const lower = Object.keys(obj).reduce((acc, k) => { acc[k.toLowerCase()] = k; return acc; }, {});
-  for (const key of keys) {
-    const k = lower[String(key).toLowerCase()];
-    if (k !== undefined) {
-      const val = obj[k];
-      const text = safeText(val);
-      if (text) return val;
-    }
-  }
-  return '';
-}
-
-function isPlainObject(v) {
-  return !!v && typeof v === 'object' && !Array.isArray(v);
-}
-
-function stripMd(s) {
-  return safeText(s)
-    .replace(/\*\*([^*]+)\*\*/g, '$1')
-    .replace(/\*([^*]{1,60})\*/g, '$1')
-    .replace(/^#+\s*/, '')
-    .trim();
-}
-
-function extractJsonBlock(raw) {
-  if (!raw) return null;
-  if (typeof raw === 'object') return raw;
-  let text = String(raw).trim();
-  if (!text) return null;
-  if (text.startsWith('```')) {
-    text = text.replace(/^```[a-z]*\n?/, '').replace(/```\s*$/, '').trim();
-  }
-  try {
-    return JSON.parse(text);
-  } catch (_) {}
-
-  let start = -1;
-  let opener = null;
-  for (let i = 0; i < text.length; i++) {
-    if (text[i] === '{' || text[i] === '[') { start = i; opener = text[i]; break; }
-  }
-  if (start < 0) return null;
-
-  let inStr = false;
-  let esc = false;
-  const stack = [opener];
-  for (let i = start + 1; i < text.length; i++) {
-    const ch = text[i];
-    if (inStr) {
-      if (esc) esc = false;
-      else if (ch === '\\') esc = true;
-      else if (ch === '"') inStr = false;
-      continue;
-    }
-    if (ch === '"') { inStr = true; continue; }
-    if (ch === '{' || ch === '[') stack.push(ch);
-    else if (ch === '}' || ch === ']') {
-      const last = stack[stack.length - 1];
-      if ((last === '{' && ch === '}') || (last === '[' && ch === ']')) {
-        stack.pop();
-        if (stack.length === 0) {
-          const candidate = text.slice(start, i + 1);
-          try { return JSON.parse(candidate); } catch (_) { return null; }
-        }
-      } else {
-        return null;
-      }
-    }
-  }
-  return null;
-}
-
-function scoreProductArray(arr) {
-  if (!Array.isArray(arr) || arr.length === 0) return 0;
-  let score = 0;
-  const sample = arr.slice(0, 6);
-  for (const item of sample) {
-    if (!isPlainObject(item)) continue;
-    const title = pickValue(item, ['title','product_title','name','model','productName','display_name','sku_name']);
-    const price = pickValue(item, ['price','current_price','sale_price','amount']);
-    const url = pickValue(item, ['url','product_url','link','productLink','buy_url','purchase_url','page_url']);
-    const features = pickValue(item, ['features','feature','highlights','bullets','benefits']);
-    const why = pickValue(item, ['why','why_fit','fit_reason','reason','why_this_product','recommendation_reason']);
-    if (safeText(title)) score += 2;
-    if (safeText(price)) score += 1;
-    if (safeText(url)) score += 1;
-    if (safeText(features)) score += 1;
-    if (safeText(why)) score += 1;
-  }
-  return score;
-}
-
-function findBestProductArray(node) {
-  let best = null;
-  let bestScore = 0;
-  function walk(value) {
-    if (!value || typeof value !== 'object') return;
-    if (Array.isArray(value)) {
-      const sc = scoreProductArray(value);
-      if (sc > bestScore) { bestScore = sc; best = value; }
-      for (const item of value) walk(item);
-      return;
-    }
-    for (const k of Object.keys(value)) walk(value[k]);
-  }
-  walk(node);
-  return bestScore >= 3 ? best : null;
-}
-
-function normalizeProduct(item, query) {
-  const brand = safeText(pickValue(item, ['brand','manufacturer','maker','vendor']));
-  const titleRaw = safeText(pickValue(item, ['title','product_title','name','model','productName','display_name','sku_name'])) || 'Product';
-  const title = brand && !titleRaw.toLowerCase().includes(brand.toLowerCase()) ? `${brand} ${titleRaw}` : titleRaw;
-  const price = parsePrice(pickValue(item, ['price','current_price','sale_price','amount','final_price']));
-  const original_price = parsePrice(pickValue(item, ['original_price','old_price','regular_price','compare_at_price','mrp']));
-  const url = safeText(pickValue(item, ['url','product_url','link','productLink','buy_url','purchase_url','page_url','href']))
-    || (title ? `https://uae.sharafdg.com/search/?q=${encodeURIComponent(title)}` : '');
-  const features = normalizeFeatures(pickValue(item, ['features','feature','highlights','bullets','benefits','key_features']));
-  const specs = safeText(pickValue(item, ['specs','specification','specifications','description','summary','details']));
-  let why = safeText(pickValue(item, ['why','why_fit','fit_reason','reason','why_this_product','recommendation_reason']));
-  if (!why && features.length) {
-    why = `Matches "${query}" because it highlights ${features.slice(0, 2).join(' and ')}.`;
-  } else if (!why && specs) {
-    why = `Matches "${query}" because it aligns with the listed specifications.`;
-  }
-  const energy_rating = safeText(pickValue(item, ['energy_rating','energy']));
-  return { name: title, brand, specs, price, original_price, features, why, url, energy_rating };
-}
-
-function objectToRows(obj) {
-  if (!isPlainObject(obj)) return [];
-  return Object.keys(obj)
-    .filter(k => !['products','product','items','results','matches','recommendations','summary','meta','metadata','query','input'].includes(k.toLowerCase()))
-    .map(k => [prettifyTitle(k), safeText(obj[k]) || '—']);
-}
-
-function renderValueAsHtml(value, title) {
-  if (value === null || value === undefined || value === '') return '';
-  const t = title ? `<div class="extra-title">${title}</div>` : '';
-  if (Array.isArray(value)) {
-    if (!value.length) return '';
-    if (value.every(v => isPlainObject(v))) {
-      const allKeys = [...new Set(value.flatMap(v => Object.keys(v)))];
-      if (allKeys.length > 0 && value.length > 0) {
-        let html = `<div class="extra-section">${t}<table class="extra-table">`;
-        html += `<tr>${allKeys.map(k => `<td>${prettifyTitle(k)}</td>`).join('')}</tr>`;
-        value.forEach(row => {
-          html += `<tr>${allKeys.map(k => `<td>${safeText(row[k]) || '—'}</td>`).join('')}</tr>`;
-        });
-        html += `</table></div>`;
-        return html;
-      }
-    }
-    let html = `<div class="extra-section">${t}`;
-    value.forEach(item => {
-      if (isPlainObject(item)) {
-        const rows = objectToRows(item);
-        if (rows.length) {
-          html += `<table class="extra-table">${rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('')}</table>`;
-        }
-      } else {
-        const text = safeText(item);
-        if (text) html += `<p class="extra-para">${text}</p>`;
-      }
-    });
-    html += `</div>`;
-    return html;
-  }
-  if (isPlainObject(value)) {
-    const rows = objectToRows(value);
-    let html = `<div class="extra-section">${t}`;
-    if (rows.length) {
-      html += `<table class="extra-table"><tr><td>Field</td><td>Value</td></tr>${rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('')}</table>`;
-    } else {
-      Object.keys(value).forEach(k => {
-        const sub = renderValueAsHtml(value[k], prettifyTitle(k));
-        if (sub) html += sub;
-      });
-    }
-    html += `</div>`;
-    return html;
-  }
-  return `<div class="extra-section">${t}<p class="extra-para">${safeText(value)}</p></div>`;
-}
-
-function buildExtraHtml(data, consumedKeys = new Set()) {
-  if (!isPlainObject(data)) return '';
+function buildExtraHtml(obj) {
   let html = '';
-  const specialKeys = new Set(['products','product','items','results','matches','recommendations','summary','meta','metadata','query','input']);
-  Object.keys(data).forEach(key => {
-    if (consumedKeys.has(key)) return;
-    if (specialKeys.has(key.toLowerCase())) return;
-    const value = data[key];
-    const title = prettifyTitle(key);
-    if (value === null || value === undefined || value === '') return;
 
-    if (Array.isArray(value) && value.length && value.every(v => isPlainObject(v) && !pickValue(v, ['price','url','product_url','title','name','model']))) {
-      html += `<div class="extra-section"><div class="extra-title">${title}</div>`;
-      value.forEach(item => {
-        if (isPlainObject(item)) {
-          const itemTitle = safeText(pickValue(item, ['title','label','name'])) || '';
-          if (itemTitle) html += `<div class="extra-title" style="font-size:14px;margin-top:12px">${itemTitle}</div>`;
-          const rows = objectToRows(item).filter(r => r[0].toLowerCase() !== 'title' && r[0].toLowerCase() !== 'label' && r[0].toLowerCase() !== 'name');
-          if (rows.length) {
-            html += `<table class="extra-table">${rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('')}</table>`;
-          }
-        }
-      });
-      html += `</div>`;
-    } else {
-      html += renderValueAsHtml(value, title);
-    }
-  });
+  for (const [key, val] of Object.entries(obj)) {
+    if (SKIP_KEYS.has(key) || val === null || val === undefined) continue;
+    if (Array.isArray(val) && val.length === 0) continue;
+    if (typeof val === 'object' && !Array.isArray(val) && Object.keys(val).length === 0) continue;
+
+    const title = key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    html += `<div class="extra-section"><div class="extra-title">${escHtml(title)}</div>`;
+    html += renderValue(val);
+    html += `</div>`;
+  }
+
   return html;
 }
 
-
-function normalizeStructuredNode(node, query, depth = 0) {
-  if (depth > 3 || node === null || node === undefined) return null;
-
-  if (typeof node === 'string') {
-    const text = safeText(node);
-    if (!text) return null;
-
-    const nested = extractJsonBlock(text);
-    if (nested && nested !== text) {
-      const parsedNested = normalizeStructuredNode(nested, query, depth + 1);
-      if (parsedNested && (parsedNested.products.length || parsedNested.summary || parsedNested.extraHtml)) {
-        return parsedNested;
-      }
-    }
-
-    const markdownParsed = parseMarkdownResponse(text, query);
-    if (markdownParsed && (markdownParsed.products.length || markdownParsed.extraHtml || markdownParsed.summary)) {
-      return markdownParsed;
-    }
-
-    return { summary: text, products: [], extraHtml: '', raw: text };
+function renderValue(val) {
+  // Plain string
+  if (typeof val === 'string') {
+    if (isUrl(val)) return `<a class="extra-link" href="${val}" target="_blank" rel="noopener">🔗 ${escHtml(val)}</a>`;
+    return `<p class="extra-para">${escHtml(val)}</p>`;
   }
 
-  if (Array.isArray(node)) {
-    const productScore = scoreProductArray(node);
-    if (productScore >= 3) {
-      return {
-        summary: `Here are the best matches found for "${query}".`,
-        products: node.filter(isPlainObject).map(item => normalizeProduct(item, query)),
-        extraHtml: '',
-        raw: node
-      };
-    }
-
-    const rows = node.map(item => {
-      if (isPlainObject(item)) {
-        const title = safeText(pickValue(item, ['title','label','name'])) || prettifyTitle('item');
-        const value = safeText(pickValue(item, ['value','text','description','details'])) || safeText(item);
-        return [title, value || '—'];
-      }
-      return [safeText(item)];
-    }).filter(row => row.some(Boolean));
-
-    return {
-      summary: `Here is the information returned for "${query}".`,
-      products: [],
-      extraHtml: rows.length
-        ? `<div class="extra-section"><table class="extra-table">${rows.map(r => `<tr>${r.map(c => `<td>${c || '—'}</td>`).join('')}</tr>`).join('')}</table></div>`
-        : '',
-      raw: node
-    };
-  }
-
-  if (!isPlainObject(node)) return null;
-
-  const consumedKeys = new Set();
-  let products = [];
-  let summary = '';
-  let extraHtml = '';
-
-  const summaryKeys = ['summary','answer','message','overview','intro','response','text','description','details','content','body'];
-
-  const textCandidates = [];
-  const addText = (v) => {
-    const t = safeText(v);
-    if (t && !textCandidates.includes(t)) textCandidates.push(t);
-  };
-
-  // Priority text fields first
-  for (const k of summaryKeys) {
-    if (Object.prototype.hasOwnProperty.call(node, k)) {
-      const v = node[k];
-      if (typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean') addText(v);
-      if (v && typeof v === 'object') {
-        const child = normalizeStructuredNode(v, query, depth + 1);
-        if (child && (child.products.length || child.extraHtml || child.summary)) return child;
-      }
-      consumedKeys.add(k);
-    }
-  }
-
-  // Gather other text-like leaf values for markdown parsing / nested JSON detection.
-  Object.keys(node).forEach(k => {
-    const v = node[k];
-    if (typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean') {
-      addText(v);
-    } else if (Array.isArray(v)) {
-      if (v.length && v.every(isPlainObject)) return;
-      const joined = v.map(x => safeText(x)).filter(Boolean).join('\n');
-      if (joined) addText(joined);
-    }
-  });
-
-  // Directly inspect obvious product arrays
-  const candidateKeys = ['products','product','items','results','matches','recommendations'];
-  let productArray = null;
-  for (const key of candidateKeys) {
-    const val = node[key];
-    if (Array.isArray(val) && val.length) {
-      productArray = val;
-      consumedKeys.add(key);
-      break;
-    }
-  }
-
-  if (!productArray) {
-    productArray = findBestProductArray(node);
-    if (productArray) {
-      Object.keys(node).forEach(k => {
-        if (node[k] === productArray) consumedKeys.add(k);
+  // Array
+  if (Array.isArray(val)) {
+    // Array of objects → table
+    if (val.length && typeof val[0] === 'object' && val[0] !== null) {
+      const headers = Object.keys(val[0]);
+      let t = `<table class="extra-table"><tr>${headers.map(h =>
+        `<td>${escHtml(h.replace(/_/g,' '))}</td>`).join('')}</tr>`;
+      val.forEach(row => {
+        t += `<tr>${headers.map(h => {
+          const cell = row[h];
+          if (isUrl(String(cell || '')))
+            return `<td><a class="extra-link" href="${cell}" target="_blank" rel="noopener">🔗 Link</a></td>`;
+          return `<td>${escHtml(String(cell ?? ''))}</td>`;
+        }).join('')}</tr>`;
       });
+      return t + `</table>`;
     }
+    // Array of strings → list
+    return `<ul class="extra-list">${val.map(item =>
+      `<li>${isUrl(String(item)) ? `<a class="extra-link" href="${item}" target="_blank" rel="noopener">🔗 ${escHtml(String(item))}</a>` : escHtml(String(item))}</li>`
+    ).join('')}</ul>`;
   }
 
-  if (productArray && Array.isArray(productArray)) {
-    products = productArray.filter(isPlainObject).map(item => normalizeProduct(item, query));
-  }
-
-  // If there is a nested JSON string inside one of the text fields, try that next.
-  if (!products.length) {
-    for (const txt of textCandidates) {
-      const nested = extractJsonBlock(txt);
-      if (nested && nested !== txt) {
-        const nestedParsed = normalizeStructuredNode(nested, query, depth + 1);
-        if (nestedParsed && (nestedParsed.products.length || nestedParsed.extraHtml || nestedParsed.summary)) {
-          if (!products.length && nestedParsed.products.length) products = nestedParsed.products;
-          if (!summary && nestedParsed.summary) summary = nestedParsed.summary;
-          if (!extraHtml && nestedParsed.extraHtml) extraHtml = nestedParsed.extraHtml;
-          break;
-        }
-      }
+  // Object → key-value grid
+  if (typeof val === 'object') {
+    let kv = `<div class="extra-kv">`;
+    for (const [k, v] of Object.entries(val)) {
+      const vStr = String(v ?? '');
+      kv += `<span class="extra-kv-key">${escHtml(k.replace(/_/g,' '))}:</span>`;
+      kv += `<span class="extra-kv-val">${isUrl(vStr) ? `<a class="extra-link" href="${vStr}" target="_blank" rel="noopener">🔗 ${escHtml(vStr)}</a>` : escHtml(vStr)}</span>`;
     }
+    return kv + `</div>`;
   }
 
-  // Use markdown response if the main text field contains a table/list.
-  for (const txt of textCandidates) {
-    if (!txt) continue;
-    const markdownParsed = parseMarkdownResponse(txt, query);
-    if (markdownParsed && markdownParsed.products && markdownParsed.products.length) {
-      if (!products.length) products = markdownParsed.products;
-      if (!summary && markdownParsed.summary) summary = markdownParsed.summary;
-      if (markdownParsed.extraHtml) {
-        extraHtml = extraHtml ? `${extraHtml}${markdownParsed.extraHtml}` : markdownParsed.extraHtml;
-      }
-      break;
-    }
-  }
-
-  // Fall back to the first meaningful text candidate as summary.
-  for (const k of summaryKeys) {
-    const v = pickValue(node, [k]);
-    if (safeText(v)) {
-      summary = safeText(v);
-      break;
-    }
-  }
-  if (!summary && textCandidates.length) summary = textCandidates[0];
-
-  const builtExtra = buildExtraHtml(node, consumedKeys);
-  extraHtml = builtExtra + (extraHtml ? extraHtml : '');
-
-  if (!summary) {
-    summary = products.length
-      ? `Here are the best matches found for "${query}".`
-      : `Here is the information returned for "${query}".`;
-  }
-
-  return { summary, products, extraHtml, raw: node };
+  return `<p class="extra-para">${escHtml(String(val))}</p>`;
 }
 
-function normalizeYandexJson(raw, query) {
-  const data = extractJsonBlock(raw);
-  if (!data) return null;
-  return normalizeStructuredNode(data, query, 0);
+function isUrl(s) {
+  return /^https?:\/\//.test(s.trim());
 }
 
-function parseMarkdownResponse(raw, query) {
-  const lines         = String(raw || '').split('\n');
-  const products      = [];
-  const summaryParts  = [];
-  const extraSections = [];
-
-  let colMap           = null;
-  let productTableDone = false;
-  let currentSection   = null;
-
-  function flushSection() {
-    if (currentSection && (currentSection.title || currentSection.rows.length))
-      extraSections.push(currentSection);
-    currentSection = null;
-  }
-
-  function isProductHeader(cells) {
-    const j = cells.map(c => c.toLowerCase()).join(' ');
-    return (j.includes('brand') || j.includes('model') || j.includes('product') || j.includes('name'))
-        && (j.includes('price') || j.includes('aed'));
-  }
-
-  function mapHeaders(cells) {
-    const map = {};
-    cells.forEach((raw, idx) => {
-      const c = raw.toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
-      if (!c || /^(#|no|num|number)$/.test(c)) return;
-      if (/brand/.test(c))                                         map.brand    = idx;
-      if (/model|product|name/.test(c) && map.model === undefined) map.model    = idx;
-      if (/capacit|size|power|watt|litre|liter/.test(c))           map.specs    = idx;
-      if (/feature|selling|timer|keep|connect|spec|highlight|point/.test(c)) map.features = idx;
-      if (/price|aed|cost/.test(c))                                map.price    = idx;
-      if (/where|buy|availab|retail|store|stock/.test(c))          map.where    = idx;
-    });
-    return map;
-  }
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const trimmed = line.trim();
-    if (!trimmed) continue;
-
-    const isTableRow = trimmed.startsWith('|');
-    const isSep      = /^\|[\s|:\-]+\|$/.test(trimmed);
-
-    if (isTableRow) {
-      if (isSep) continue;
-      const cells = trimmed.replace(/^\||\|$/g, '').split('|').map(c => stripMd(c));
-
-      if (!productTableDone && colMap === null && isProductHeader(cells)) {
-        colMap = mapHeaders(cells);
-        continue;
-      }
-
-      if (!productTableDone && colMap !== null) {
-        const get = key => (colMap[key] !== undefined && cells[colMap[key]]) ? cells[colMap[key]].trim() : '';
-        const brand = get('brand');
-        const model = get('model');
-        if (!brand && !model) continue;
-        const rawName = (brand && model)
-          ? (model.toLowerCase().startsWith(brand.toLowerCase()) ? model : `${brand} ${model}`)
-          : (model || brand);
-        const name = rawName.replace(/\s*[–\-]\s*\*[A-Z0-9]{4,}\*/g, '').replace(/\s*\*[A-Z0-9]{5,}\*/g, '').trim();
-        const priceRaw   = get('price').replace(/,/g, '');
-        const priceMatch = priceRaw.match(/\d+/);
-        const price      = priceMatch ? parseInt(priceMatch[0]) : null;
-        const featRaw  = get('features');
-        const features = featRaw ? featRaw.split(/[•\n;,]/).map(f => f.replace(/^[\s\-\*]+/, '').trim()).filter(f => f.length > 2 && f.length < 80).slice(0, 5) : [];
-        const specs = get('specs');
-        const where = get('where');
-        const onSDG = /sharaf/i.test(where);
-        const url   = onSDG ? `https://uae.sharafdg.com/search/?q=${encodeURIComponent(name)}` : null;
-        let why = '';
-        if (features.length > 0) why = `Matches "${query}" &mdash; highlights include ${features.slice(0,2).join(' and ')}`;
-        else if (specs) why = `Matches "${query}" &mdash; ${specs}`;
-        products.push({ name, brand, specs, price, original_price: null, features, why, url, energy_rating: null });
-        continue;
-      }
-
-      if (productTableDone) {
-        if (!currentSection) currentSection = { title: '', rows: [] };
-        currentSection.rows.push(cells);
-      }
-
-    } else {
-      if (colMap !== null && !productTableDone && products.length > 0) {
-        productTableDone = true;
-        colMap = null;
-      }
-
-      const clean = stripMd(trimmed);
-      if (!clean) continue;
-
-      if (!productTableDone) {
-        summaryParts.push(clean);
-      } else {
-        if (/^#{1,4} /.test(trimmed)) {
-          flushSection();
-          currentSection = { title: clean, rows: [] };
-        } else {
-          if (!currentSection) currentSection = { title: '', rows: [] };
-          currentSection.rows.push([clean]);
-        }
-      }
-    }
-  }
-  flushSection();
-
-  const summary = summaryParts.filter(s => s.length > 4 && !/^[\|\-\s]+$/.test(s)).slice(0, 3).join(' ') || `Here are the best matches found for "${query}".`;
-
-  let extraHtml = '';
-  extraSections.forEach(sec => {
-    if (!sec.title && !sec.rows.length) return;
-    extraHtml += `<div class="extra-section">`;
-    if (sec.title) extraHtml += `<div class="extra-title">${sec.title}</div>`;
-    const isTable = sec.rows.some(r => r.length > 1);
-    if (isTable) {
-      extraHtml += `<table class="extra-table">`;
-      sec.rows.forEach(row => { extraHtml += `<tr>${row.map(c=>`<td>${c}</td>`).join('')}</tr>`; });
-      extraHtml += `</table>`;
-    } else {
-      sec.rows.forEach(row => { if (row[0]) extraHtml += `<p class="extra-para">${row[0]}</p>`; });
-    }
-    extraHtml += `</div>`;
-  });
-
-  return { summary, products, extraHtml };
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
 }
 
+// ─── SETTINGS ─────────────────────────────────────────────────────
 function toggleSettings() {
   const p = document.getElementById('settingsPanel');
   p.style.display = p.style.display === 'none' ? 'block' : 'none';
 }
 function toggleExtra() {
-  const body = document.getElementById('extraBody');
-  const chev = document.getElementById('extraChevron');
+  const body    = document.getElementById('extraBody');
+  const chevron = document.getElementById('extraChevron');
   body.classList.toggle('open');
-  chev.innerHTML = body.classList.contains('open') ? '&#9650;' : '&#9660;';
+  chevron.textContent = body.classList.contains('open') ? '▲' : '▼';
 }
 function saveSettings() {
   localStorage.setItem('sdg_key',    document.getElementById('apiKey').value);
@@ -924,27 +433,25 @@ function loadSettings() {
   document.getElementById('proxyUrl').value = localStorage.getItem('sdg_prox')   || 'https://smart-search-proxy.vercel.app/api/proxy';
 }
 
+// ─── PROGRESS ─────────────────────────────────────────────────────
 let progressInterval = null;
 function startProgress() {
-  const msgs = [
-    'Connecting to Sharaf DG…','Searching product catalog…',
-    'Analysing your request…','Finding best matches…',
-    'Fetching prices & details…','Almost there…'
-  ];
+  const msgs = ['Connecting to Sharaf DG…','Searching product catalog…','Analysing your request…','Finding best matches…','Fetching prices & details…','Almost there…'];
   let i = 0;
   const el = document.getElementById('loaderMsg');
   if (el) el.textContent = msgs[0];
   progressInterval = setInterval(() => {
-    i = Math.min(i+1, msgs.length-1);
-    if (el) { el.style.opacity='0'; setTimeout(()=>{ el.textContent=msgs[i]; el.style.opacity='1'; }, 150); }
+    i = Math.min(i + 1, msgs.length - 1);
+    if (el) { el.style.opacity='0'; setTimeout(()=>{ el.textContent=msgs[i]; el.style.opacity='1'; },150); }
   }, 1800);
 }
 function stopProgress() {
   if (progressInterval) { clearInterval(progressInterval); progressInterval = null; }
 }
 
+// ─── SEARCH ───────────────────────────────────────────────────────
 function go(s) {
-  const v = s==='v'
+  const v = s === 'v'
     ? document.getElementById('heroIn').value.trim()
     : document.getElementById('hdrIn').value.trim();
   if (v) {
@@ -960,10 +467,10 @@ async function doSearch(q) {
   const promptId = document.getElementById('promptId').value.trim();
   const proxy    = document.getElementById('proxyUrl').value.trim();
 
-  if (!key)      { showErr('Please enter your API Key in ⚙ Settings.');         return; }
-  if (!fold)     { showErr('Please enter your Folder ID in ⚙ Settings.');       return; }
-  if (!promptId) { showErr('Please enter your Agent Prompt ID in ⚙ Settings.'); return; }
-  if (!proxy)    { showErr('Please enter your Proxy URL in ⚙ Settings.');       return; }
+  if (!key)      { showErr('Please enter your API Key in ⚙️ Settings.');         return; }
+  if (!fold)     { showErr('Please enter your Folder ID in ⚙️ Settings.');       return; }
+  if (!promptId) { showErr('Please enter your Agent Prompt ID in ⚙️ Settings.'); return; }
+  if (!proxy)    { showErr('Please enter your Proxy URL in ⚙️ Settings.');       return; }
 
   const $ = id => document.getElementById(id);
   $('aiPanel').classList.remove('on');
@@ -983,52 +490,43 @@ async function doSearch(q) {
     const data = await r.json();
     if (!r.ok) throw new Error(data.error || 'Search error ' + r.status);
 
-    const raw = data.answer || data.raw || '';
+    const raw = (data.answer || '').trim();
     let parsed = null;
 
+    // ── Parse JSON from agent ──────────────────────────────────────
     try {
-      parsed = normalizeYandexJson(raw, q);
-    } catch (_) {}
+      let clean = raw;
+      // Strip markdown fences if present
+      if (clean.startsWith('```')) {
+        clean = clean.replace(/^```[a-z]*\n?/, '').replace(/```\s*$/, '').trim();
+      }
+      // Extract first JSON object even if there's surrounding text
+      const m = clean.match(/(\{[\s\S]*\})/);
+      const obj = JSON.parse(m ? m[1] : clean);
 
-    if (!parsed || !parsed.products || !parsed.products.length) {
-      try {
-        const fb = parseMarkdownResponse(raw, q);
-        if (fb.products.length > 0) parsed = fb;
-      } catch (_) {}
+      if (obj && typeof obj === 'object') {
+        const products  = Array.isArray(obj.products) ? obj.products : [];
+        const summary   = obj.summary || `Here are the best matches for "${q}".`;
+        // Build extra HTML from all other fields (tips, guide, links, etc.)
+        const extraHtml = buildExtraHtml(obj);
+        parsed = { products, summary, extraHtml };
+      }
+    } catch(e) {
+      // JSON parse failed — show raw in summary as last resort
+      parsed = { products: [], summary: raw.substring(0, 600), extraHtml: '' };
     }
 
     stopProgress();
-
-    if (parsed && parsed.products && parsed.products.length > 0) {
-      renderResults(q, parsed, $);
-    } else if (parsed && parsed.extraHtml) {
-      $('loader').classList.remove('on');
-      $('aiSummary').textContent = parsed.summary || raw.substring(0, 600) + (raw.length > 600 ? '…' : '');
-      $('resMeta').innerHTML = `<strong>Information found for "${q}"</strong>`;
-      $('prodGrid').innerHTML = '';
-      $('extraBody').innerHTML = parsed.extraHtml;
-      $('extraInfo').style.display = 'block';
-      $('extraBody').classList.add('open');
-      $('extraChevron').innerHTML = '&#9650;';
-      $('aiPanel').classList.add('on');
-      $('aiPanel').scrollIntoView({ behavior:'smooth', block:'start' });
-    } else {
-      $('loader').classList.remove('on');
-      $('aiSummary').textContent = raw.substring(0, 600) + (raw.length > 600 ? '…' : '');
-      $('resMeta').innerHTML = '';
-      $('prodGrid').innerHTML = '';
-      $('extraInfo').style.display = 'none';
-      $('aiPanel').classList.add('on');
-      $('aiPanel').scrollIntoView({ behavior:'smooth', block:'start' });
-    }
+    renderResults(q, parsed, $);
 
   } catch(e) {
     stopProgress();
     $('loader').classList.remove('on');
-    if (e.name === 'TypeError' && e.message.toLowerCase().includes('fetch'))
-      showErr('Connection error — the request timed out or the server is unavailable. Please try again.');
-    else
+    if (e.name === 'TypeError' || e.message.toLowerCase().includes('fetch')) {
+      showErr('Connection error — the search timed out or the server is unreachable. Please try again.');
+    } else {
       showErr('Error: ' + e.message);
+    }
   } finally {
     $('heroBtn').disabled = false;
   }
@@ -1037,16 +535,23 @@ async function doSearch(q) {
 function renderResults(q, parsed, $) {
   if (!$) $ = id => document.getElementById(id);
   const products = parsed.products || [];
-  $('aiSummary').textContent = parsed.summary || `Here are the best matches for "${q}".`;
-  $('resMeta').innerHTML = `<strong>${products.length} product${products.length!==1?'s':''} found on Sharaf DG</strong>`;
-  $('prodGrid').innerHTML = products.map((p,i) => cardHTML(p,i)).join('');
 
-  const extraInfo = $('extraInfo'), extraBody = $('extraBody');
+  $('aiSummary').textContent = parsed.summary || `Here are the best matches for "${q}".`;
+  $('resMeta').innerHTML = `<strong>${products.length} product${products.length !== 1 ? 's' : ''} found on Sharaf DG</strong>`;
+  $('prodGrid').innerHTML = products.length
+    ? products.map((p, i) => cardHTML(p, i)).join('')
+    : `<p style="grid-column:1/-1;text-align:center;color:var(--muted);padding:32px;font-size:14px">
+        No products were returned. The AI response is shown above.
+       </p>`;
+
+  // Extra AI Insights panel
+  const extraInfo = $('extraInfo');
+  const extraBody = $('extraBody');
   if (parsed.extraHtml) {
     extraBody.innerHTML = parsed.extraHtml;
     extraInfo.style.display = 'block';
     extraBody.classList.add('open');
-    document.getElementById('extraChevron').innerHTML = '&#9650;';
+    document.getElementById('extraChevron').textContent = '▲';
   } else {
     extraInfo.style.display = 'none';
     extraBody.innerHTML = '';
@@ -1059,14 +564,15 @@ function renderResults(q, parsed, $) {
 
 function showErr(m) {
   const b = document.getElementById('errBox');
-  b.innerHTML = m; b.classList.add('on');
+  b.textContent = m;
+  b.classList.add('on');
   b.scrollIntoView({ behavior:'smooth', block:'center' });
 }
 
-document.getElementById('heroIn').addEventListener('keypress', e => { if(e.key==='Enter') go('v'); });
-document.getElementById('hdrIn').addEventListener('keypress',  e => { if(e.key==='Enter') go('h'); });
+document.getElementById('heroIn').addEventListener('keypress', e => { if (e.key === 'Enter') go('v'); });
+document.getElementById('hdrIn').addEventListener('keypress',  e => { if (e.key === 'Enter') go('h'); });
+
 loadSettings();
 </script>
-
 </body>
 </html>
