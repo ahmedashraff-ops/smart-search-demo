@@ -402,6 +402,7 @@ function stripMd(s) {
 
 function extractJsonBlock(raw) {
   if (!raw) return null;
+  if (typeof raw === 'object') return raw;
   let text = String(raw).trim();
   if (!text) return null;
   if (text.startsWith('```')) {
@@ -591,35 +592,118 @@ function buildExtraHtml(data, consumedKeys = new Set()) {
   return html;
 }
 
-function normalizeYandexJson(raw, query) {
-  const data = extractJsonBlock(raw);
-  if (!data) return null;
 
-  let consumedKeys = new Set();
+function normalizeStructuredNode(node, query, depth = 0) {
+  if (depth > 3 || node === null || node === undefined) return null;
+
+  if (typeof node === 'string') {
+    const text = safeText(node);
+    if (!text) return null;
+
+    const nested = extractJsonBlock(text);
+    if (nested && nested !== text) {
+      const parsedNested = normalizeStructuredNode(nested, query, depth + 1);
+      if (parsedNested && (parsedNested.products.length || parsedNested.summary || parsedNested.extraHtml)) {
+        return parsedNested;
+      }
+    }
+
+    const markdownParsed = parseMarkdownResponse(text, query);
+    if (markdownParsed && (markdownParsed.products.length || markdownParsed.extraHtml || markdownParsed.summary)) {
+      return markdownParsed;
+    }
+
+    return { summary: text, products: [], extraHtml: '', raw: text };
+  }
+
+  if (Array.isArray(node)) {
+    const productScore = scoreProductArray(node);
+    if (productScore >= 3) {
+      return {
+        summary: `Here are the best matches found for "${query}".`,
+        products: node.filter(isPlainObject).map(item => normalizeProduct(item, query)),
+        extraHtml: '',
+        raw: node
+      };
+    }
+
+    const rows = node.map(item => {
+      if (isPlainObject(item)) {
+        const title = safeText(pickValue(item, ['title','label','name'])) || prettifyTitle('item');
+        const value = safeText(pickValue(item, ['value','text','description','details'])) || safeText(item);
+        return [title, value || '—'];
+      }
+      return [safeText(item)];
+    }).filter(row => row.some(Boolean));
+
+    return {
+      summary: `Here is the information returned for "${query}".`,
+      products: [],
+      extraHtml: rows.length
+        ? `<div class="extra-section"><table class="extra-table">${rows.map(r => `<tr>${r.map(c => `<td>${c || '—'}</td>`).join('')}</tr>`).join('')}</table></div>`
+        : '',
+      raw: node
+    };
+  }
+
+  if (!isPlainObject(node)) return null;
+
+  const consumedKeys = new Set();
   let products = [];
   let summary = '';
   let extraHtml = '';
 
+  const summaryKeys = ['summary','answer','message','overview','intro','response','text','description','details','content','body'];
+
+  const textCandidates = [];
+  const addText = (v) => {
+    const t = safeText(v);
+    if (t && !textCandidates.includes(t)) textCandidates.push(t);
+  };
+
+  // Priority text fields first
+  for (const k of summaryKeys) {
+    if (Object.prototype.hasOwnProperty.call(node, k)) {
+      const v = node[k];
+      if (typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean') addText(v);
+      if (v && typeof v === 'object') {
+        const child = normalizeStructuredNode(v, query, depth + 1);
+        if (child && (child.products.length || child.extraHtml || child.summary)) return child;
+      }
+      consumedKeys.add(k);
+    }
+  }
+
+  // Gather other text-like leaf values for markdown parsing / nested JSON detection.
+  Object.keys(node).forEach(k => {
+    const v = node[k];
+    if (typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean') {
+      addText(v);
+    } else if (Array.isArray(v)) {
+      if (v.length && v.every(isPlainObject)) return;
+      const joined = v.map(x => safeText(x)).filter(Boolean).join('\n');
+      if (joined) addText(joined);
+    }
+  });
+
+  // Directly inspect obvious product arrays
   const candidateKeys = ['products','product','items','results','matches','recommendations'];
   let productArray = null;
-  if (Array.isArray(data)) {
-    productArray = data;
-  } else if (isPlainObject(data)) {
-    for (const key of candidateKeys) {
-      const val = data[key];
-      if (Array.isArray(val) && val.length) {
-        productArray = val;
-        consumedKeys.add(key);
-        break;
-      }
+  for (const key of candidateKeys) {
+    const val = node[key];
+    if (Array.isArray(val) && val.length) {
+      productArray = val;
+      consumedKeys.add(key);
+      break;
     }
-    if (!productArray) {
-      productArray = findBestProductArray(data);
-      if (productArray) {
-        Object.keys(data).forEach(k => {
-          if (data[k] === productArray) consumedKeys.add(k);
-        });
-      }
+  }
+
+  if (!productArray) {
+    productArray = findBestProductArray(node);
+    if (productArray) {
+      Object.keys(node).forEach(k => {
+        if (node[k] === productArray) consumedKeys.add(k);
+      });
     }
   }
 
@@ -627,20 +711,48 @@ function normalizeYandexJson(raw, query) {
     products = productArray.filter(isPlainObject).map(item => normalizeProduct(item, query));
   }
 
-  if (isPlainObject(data)) {
-    const summaryKeys = ['summary','answer','message','overview','intro','response','text'];
-    for (const k of summaryKeys) {
-      const v = pickValue(data, [k]);
-      if (safeText(v)) { summary = safeText(v); consumedKeys.add(k); break; }
+  // If there is a nested JSON string inside one of the text fields, try that next.
+  if (!products.length) {
+    for (const txt of textCandidates) {
+      const nested = extractJsonBlock(txt);
+      if (nested && nested !== txt) {
+        const nestedParsed = normalizeStructuredNode(nested, query, depth + 1);
+        if (nestedParsed && (nestedParsed.products.length || nestedParsed.extraHtml || nestedParsed.summary)) {
+          if (!products.length && nestedParsed.products.length) products = nestedParsed.products;
+          if (!summary && nestedParsed.summary) summary = nestedParsed.summary;
+          if (!extraHtml && nestedParsed.extraHtml) extraHtml = nestedParsed.extraHtml;
+          break;
+        }
+      }
     }
-    if (!summary && Array.isArray(data.summary) && data.summary.length) {
-      summary = safeText(data.summary[0]);
-      consumedKeys.add('summary');
-    }
-    extraHtml = buildExtraHtml(data, consumedKeys);
-  } else if (Array.isArray(data)) {
-    extraHtml = buildExtraHtml({ data }, consumedKeys);
   }
+
+  // Use markdown response if the main text field contains a table/list.
+  for (const txt of textCandidates) {
+    if (!txt) continue;
+    const markdownParsed = parseMarkdownResponse(txt, query);
+    if (markdownParsed && markdownParsed.products && markdownParsed.products.length) {
+      if (!products.length) products = markdownParsed.products;
+      if (!summary && markdownParsed.summary) summary = markdownParsed.summary;
+      if (markdownParsed.extraHtml) {
+        extraHtml = extraHtml ? `${extraHtml}${markdownParsed.extraHtml}` : markdownParsed.extraHtml;
+      }
+      break;
+    }
+  }
+
+  // Fall back to the first meaningful text candidate as summary.
+  for (const k of summaryKeys) {
+    const v = pickValue(node, [k]);
+    if (safeText(v)) {
+      summary = safeText(v);
+      break;
+    }
+  }
+  if (!summary && textCandidates.length) summary = textCandidates[0];
+
+  const builtExtra = buildExtraHtml(node, consumedKeys);
+  extraHtml = builtExtra + (extraHtml ? extraHtml : '');
 
   if (!summary) {
     summary = products.length
@@ -648,11 +760,13 @@ function normalizeYandexJson(raw, query) {
       : `Here is the information returned for "${query}".`;
   }
 
-  if (!products.length && !extraHtml && typeof data === 'string') {
-    summary = safeText(data);
-  }
+  return { summary, products, extraHtml, raw: node };
+}
 
-  return { summary, products, extraHtml, raw: data };
+function normalizeYandexJson(raw, query) {
+  const data = extractJsonBlock(raw);
+  if (!data) return null;
+  return normalizeStructuredNode(data, query, 0);
 }
 
 function parseMarkdownResponse(raw, query) {
