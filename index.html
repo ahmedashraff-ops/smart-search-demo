@@ -94,7 +94,6 @@ header{background:var(--white);border-bottom:3px solid var(--orange);position:st
 .buy-btn{background:var(--orange);color:var(--blue);border:none;border-radius:7px;padding:8px 16px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-block;transition:background .2s;white-space:nowrap}
 .buy-btn:hover{background:var(--orange-dk)}
 .buy-btn.no-url{background:#e5e7eb;color:#9ca3af;cursor:default}
-.oos-badge{background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px}
 .energy-tag{background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px}
 .card-why{padding:12px 16px;background:#fff8e1;border-top:1px solid #fde68a;font-size:12px;color:#78350f;line-height:1.5}
 .card-why-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#e09600;display:block;margin-bottom:3px}
@@ -284,16 +283,13 @@ function cardHTML(p, i) {
     </div>
     <div class="card-footer">
       <div>
-        ${p.price
-          ? `<div class="price-lbl">AED</div>
-             <div class="price-num">${Number(p.price).toLocaleString()}</div>
-             ${p.original_price ? `<div class="price-old">AED ${Number(p.original_price).toLocaleString()}</div>` : ''}`
-          : `<div class="oos-badge">Out of Stock</div>`
-        }
+        <div class="price-lbl">AED</div>
+        <div class="price-num">${p.price?Number(p.price).toLocaleString():'–'}</div>
+        ${p.original_price?`<div class="price-old">AED ${Number(p.original_price).toLocaleString()}</div>`:''}
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
         ${p.energy_rating?`<div class="energy-tag">${esc(p.energy_rating)}</div>`:''}
-        ${p.price ? btn : `<span class="buy-btn no-url">Unavailable</span>`}
+        ${btn}
       </div>
     </div>
     ${p.why?`<div class="card-why"><span class="card-why-lbl">✨ Why this matches</span>${esc(p.why)}</div>`:''}
@@ -724,19 +720,10 @@ async function doSearch(q) {
     // 1 — AI Response (summary)
     $('aiSummary').textContent = summary;
 
-    // 2 — Products (deduplicated)
-    // Normalise name for comparison: lowercase, strip punctuation/spaces
-    const normName = n => n.toLowerCase().replace(/[^a-z0-9]/g,'');
-    const seen = new Set();
-    const unique = products.filter(p => {
-      const key = normName(p.name);
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
-    $('resMeta').innerHTML = `<strong>${unique.length} product${unique.length!==1?'s':''} found on Sharaf DG</strong>`;
-    $('prodGrid').innerHTML = unique.length
-      ? unique.map((p,i) => cardHTML(p,i)).join('')
+    // 2 — Products
+    $('resMeta').innerHTML = `<strong>${products.length} product${products.length!==1?'s':''} found on Sharaf DG</strong>`;
+    $('prodGrid').innerHTML = products.length
+      ? products.map((p,i) => cardHTML(p,i)).join('')
       : `<p style="grid-column:1/-1;text-align:center;color:var(--muted);padding:32px;font-size:14px">No product cards could be extracted. See the AI Response above.</p>`;
 
     // 3 — AI Insights (rest of agent output: tips, why section etc.)
