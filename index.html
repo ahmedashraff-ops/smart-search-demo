@@ -367,7 +367,6 @@ function cardHTML(p, i) {
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
         ${p.energy_rating?`<div class="energy-tag">${esc(p.energy_rating)}</div>`:''}
-        ${viewBtn}
       </div>
     </div>
     ${p.why?`<div class="card-why"><span class="card-why-lbl">✨ Why this matches</span>${esc(p.why)}</div>`:''}
@@ -376,7 +375,6 @@ function cardHTML(p, i) {
         <input type="checkbox" onchange="toggleCompare('${p.name.replace(/'/g,"\\'")}', this)" id="chk-${i}"/>
         Compare
       </label>
-      ${viewBtn}
     </div>
   </div>`;
 }
